@@ -1,0 +1,13 @@
+#!/bin/sh 
+
+set -e
+
+if [ "$1" = "remove" ]; then
+    if [ -x /usr/sbin/update-gdkpixbuf-loaders ]; then
+        /usr/sbin/update-gdkpixbuf-loaders
+    fi
+fi
+
+#DEBHELPER#
+
+exit 0

@@ -1,0 +1,12 @@
+--- rsvg-paint-server.c.orig	2005-05-03 21:21:33.821765848 +0200
++++ rsvg-paint-server.c	2005-05-03 21:22:27.241644792 +0200
+@@ -262,6 +262,9 @@
+ 		scale = 100000000.;
+ 	else
+ 		scale = 1.0 / (dx * dx + dy * dy);
++	if (isnan(scale)) scale = 0.;
++	if (isnan(dx)) dx = 0.;
++	if (isnan(dy)) dy = 0.;
+ 	agl->a = dx * scale;
+ 	agl->b = dy * scale;
+ 	agl->c = -(x1 * agl->a + y1 * agl->b);
