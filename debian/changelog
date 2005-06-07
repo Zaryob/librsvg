@@ -1,3 +1,9 @@
+librsvg2 (2.9.5-3) unstable; urgency=low
+
+  * Really upload to unstable.
+
+ -- Josselin Mouette <joss@debian.org>  Tue,  7 Jun 2005 23:42:58 +0200
+
 librsvg2 (2.9.5-2) experimental; urgency=low
 
   * Upload to unstable.
