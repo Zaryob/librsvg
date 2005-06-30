@@ -1,3 +1,16 @@
+librsvg2 (2.9.5-4) unstable; urgency=low
+
+  * Set myself as maintainer.
+  * Don't require mozilla-dev on hurd-i386 (closes: #312615).
+  * keep-aspect-ratio.patch: assume you want to keep the aspect ratio when
+    only one of width and height are specified (closes: #316309).
+  * Pass --as-needed to ld.
+  * open-file-twice.patch: don't try to open the file twice.
+  * open-relative-patch.patch: don't pass a base_uri for opening local files,
+    it only makes things fail when entering a relative path (closes: #315822).
+
+ -- Josselin Mouette <joss@debian.org>  Thu, 30 Jun 2005 20:58:29 +0200
+
 librsvg2 (2.9.5-3) unstable; urgency=low
 
   * Really upload to unstable.

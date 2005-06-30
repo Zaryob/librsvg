@@ -1,9 +1,9 @@
 Source: librsvg2
 Section: libdevel
 Priority: optional
-Maintainer: Takuo KITAME <kitame@debian.org>
+Maintainer: Josselin Mouette <joss@debian.org>
 Uploaders: @GNOME_TEAM@
-Build-Depends: cdbs, debhelper (>= 4.1), libxml2-dev, libpopt-dev (>= 1.5), libart-2.0-dev, libgtk2.0-dev (>= 2.4.1-3), libpango1.0-dev (>= 1.4.0-3), libgnomeprintui2.2-dev, libpopt-dev, libgsf-1-dev, gnome-pkg-tools, libcroco3-dev, gtk-doc-tools, mozilla-dev, libxt-dev
+Build-Depends: cdbs, debhelper (>= 4.1), libxml2-dev, libpopt-dev (>= 1.5), libart-2.0-dev, libgtk2.0-dev (>= 2.4.1-3), libpango1.0-dev (>= 1.4.0-3), libgnomeprintui2.2-dev, libpopt-dev, libgsf-1-dev, gnome-pkg-tools, libcroco3-dev, gtk-doc-tools, mozilla-dev [!hurd-i386], libxt-dev
 Standards-Version: 3.6.1
 
 Package: librsvg2-dev

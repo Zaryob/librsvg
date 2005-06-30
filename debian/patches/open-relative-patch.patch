@@ -1,0 +1,11 @@
+--- rsvg-file-util.c.old	2005-06-30 20:56:58.052914200 +0200
++++ rsvg-file-util.c	2005-06-30 20:57:38.498765496 +0200
+@@ -125,7 +125,7 @@
+ 	GByteArray *f;
+ 
+ 	base_uri = rsvg_get_base_uri_from_filename(file_name);
+-	f = _rsvg_acquire_xlink_href_resource (file_name, base_uri, error);
++	f = _rsvg_acquire_xlink_href_resource (file_name, NULL, error);
+ 
+ 	if (f)
+ 		{
