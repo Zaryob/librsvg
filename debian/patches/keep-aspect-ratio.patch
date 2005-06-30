@@ -8,7 +8,7 @@
 +
 +		if (zoomx < 0)
 +			zoom = zoomy;
-+		elif (zoomy < 0)
++		else if (zoomy < 0)
 +			zoom = zoomx;
 +		else
 +			zoom = MIN (zoomx, zoomy);
