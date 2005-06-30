@@ -6,10 +6,10 @@ librsvg2 (2.9.5-4) unstable; urgency=low
     only one of width and height are specified (closes: #316309).
   * Pass --as-needed to ld.
   * open-file-twice.patch: don't try to open the file twice.
-  * open-relative-patch.patch: don't pass a base_uri for opening local files,
-    it only makes things fail when entering a relative path (closes: #315822).
+  * open-relative-path.patch: always build an absolute base_uri, so that we
+    can open a relative path (closes: #315822).
 
- -- Josselin Mouette <joss@debian.org>  Thu, 30 Jun 2005 20:58:29 +0200
+ -- Josselin Mouette <joss@debian.org>  Thu, 30 Jun 2005 21:59:20 +0200
 
 librsvg2 (2.9.5-3) unstable; urgency=low
 
