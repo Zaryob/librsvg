@@ -1,3 +1,23 @@
+librsvg (2.12.7-1) experimental; urgency=low
+
+  * New upstream release (closes: #331279).
+    + -h 0 or -w 0 should now work (closes: #278750).
+    + rsvg-filter.c includes config.h (closes: #292286).
+  * Rename the source package to librsvg.
+  * librsvg2-bin.install: use a wildcard for the plugin
+    (closes: #312615).
+  * Update build-dependencies, especially libxml.
+  * open-relative-path.patch, keep-aspect-ratio.patch,
+    open-file-twice.patch: removed, included upstream.
+  * paint-server.patch: apply to rsvg-art-paint-server.c.
+  * watch: update for 2.12.
+  * Break the dependency cycle, by making librsvg2-2 stop depending
+    on librsvg2-common. Packages will now have to depend on
+    librsvg2-common if they include SVG graphics.
+  * Bump the shlibs version.
+
+ -- Josselin Mouette <joss@debian.org>  Wed, 12 Oct 2005 00:05:32 +0200
+
 librsvg2 (2.9.5-4) unstable; urgency=low
 
   * Set myself as maintainer.
