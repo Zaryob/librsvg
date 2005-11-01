@@ -1,3 +1,10 @@
+librsvg2 (2.9.5-5) unstable; urgency=low
+
+  * Rebuild with latest libgsf and bump libgsf-1-dev build-dep to >= 1.13.2-2.
+    [debian/control, debian/control.in]
+
+ -- Loic Minier <lool@dooz.org>  Tue,  1 Nov 2005 20:45:02 +0100
+
 librsvg2 (2.9.5-4) unstable; urgency=low
 
   * Set myself as maintainer.
