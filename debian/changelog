@@ -1,11 +1,12 @@
 librsvg (2.12.7-2) UNRELEASED; urgency=low
 
-  * Make librsvg2-2 conflict with older librsvg2-common packages, 
+  * Make librsvg2-2 conflict with older librsvg2-common packages,
     otherwise serious breakage can occur.
-  * Make librsvg2-common depend on the exact librsvg2-2 version to avoid 
+  * Make librsvg2-common depend on the exact librsvg2-2 version to avoid
     such breakage in the future.
+  * Bump libgsf-1-dev build-dep to >= 1.13.2-2.
 
- -- Josselin Mouette <joss@debian.org>  Mon, 17 Oct 2005 10:50:36 +0200
+ -- Josselin Mouette <joss@debian.org>  Thu,  3 Nov 2005 14:11:18 +0100
 
 librsvg (2.12.7-1) experimental; urgency=low
 
