@@ -1,3 +1,10 @@
+librsvg2 (2.9.5-6) unstable; urgency=low
+
+  * open-relative-path2.patch: stolen from upstream. It should let rsvg 
+    open relative paths correctly (closes: #315822).
+
+ -- Josselin Mouette <joss@debian.org>  Mon, 14 Nov 2005 09:43:40 +0100
+
 librsvg2 (2.9.5-5) unstable; urgency=low
 
   * Rebuild with latest libgsf and bump libgsf-1-dev build-dep to >= 1.13.2-2.
