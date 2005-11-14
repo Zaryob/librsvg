@@ -1,11 +1,6 @@
-===================================================================
-RCS file: /cvs/gnome/librsvg/rsvg-image.c,v
-retrieving revision 1.5
-retrieving revision 1.6
-diff -u -r1.5 -r1.6
---- rsvg-image.c	2005/02/17 18:25:52	1.5
-+++ rsvg-image.c	2005/02/23 23:42:12	1.6
-@@ -233,7 +233,7 @@
+--- rsvg-shapes.c	2005/02/17 18:25:52	1.5
++++ rsvg-shapes.c	2005/02/23 23:42:12	1.6
+@@ -1489,7 +1489,7 @@
  {
  	gchar *absolute_filename;
  
