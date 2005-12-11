@@ -1,3 +1,10 @@
+librsvg (2.12.7-3) UNRELEASED; urgency=low
+
+  * Only suggest librsvg2-bin instead of recommending it
+    (closes: #269048).
+
+ -- Josselin Mouette <joss@debian.org>  Sun, 11 Dec 2005 20:54:43 +0100
+
 librsvg (2.12.7-2) experimental; urgency=low
 
   * Make librsvg2-2 conflict with older librsvg2-common packages,

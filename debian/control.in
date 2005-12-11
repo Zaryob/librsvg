@@ -20,7 +20,7 @@ Package: librsvg2-2
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}
-Recommends: librsvg2-bin
+Suggests: librsvg2-bin
 Conflicts: librsvg2-common (<< 2.12)
 Description: SAX-based renderer library for SVG files. (for GNOME2)
  SAX-based renderer library for SVG files.
