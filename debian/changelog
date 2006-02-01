@@ -1,3 +1,9 @@
+librsvg (2.12.7-4) unstable; urgency=high
+
+  * Fix the conflict line to include the epoch (closes: #350229).
+
+ -- Josselin Mouette <joss@debian.org>  Wed,  1 Feb 2006 23:29:46 +0100
+
 librsvg (2.12.7-3) unstable; urgency=low
 
   * Only suggest librsvg2-bin instead of recommending it
