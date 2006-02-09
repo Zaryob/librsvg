@@ -1,0 +1,15 @@
+--- rsvg.c.orig	2006-02-09 18:33:01.000000000 +0100
++++ rsvg.c	2006-02-09 18:38:08.000000000 +0100
+@@ -1003,6 +1003,12 @@
+ 	return handle;
+ }
+ 
++RsvgHandle *
++rsvg_handle_new_gz (void)
++{
++	return rsvg_handle_new ();
++}
++
+ static RsvgDimensionData
+ rsvg_get_dimensions(RsvgHandle * handle)
+ {

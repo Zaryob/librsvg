@@ -1,3 +1,11 @@
+librsvg (2.12.7-5) unstable; urgency=low
+
+  * rsvg-gz.patch: provide the rsvg_handle_new_gz function
+    (closes: #348920). Do not provide the C prototype to force 
+    applications using it to use rsvg_handle_new instead.
+
+ -- Josselin Mouette <joss@debian.org>  Thu,  9 Feb 2006 22:09:04 +0100
+
 librsvg (2.12.7-4) unstable; urgency=high
 
   * Fix the conflict line to include the epoch (closes: #350229).
