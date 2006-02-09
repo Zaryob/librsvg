@@ -1,4 +1,4 @@
-librsvg (2.12.7-5) unstable; urgency=low
+librsvg (2.12.7-5) unstable; urgency=high
 
   * rsvg-gz.patch: provide the rsvg_handle_new_gz function
     (closes: #348920). Do not provide the C prototype to force 
