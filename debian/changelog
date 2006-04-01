@@ -2,11 +2,12 @@ librsvg (2.14.2-1) unstable; urgency=low
 
   * New upstream release.
     + paint-server.patch: removed, unneeded with the cairo backend.
+    + rsvg-gz.patch: updated.
   * Build-depend on libcairo2-dev.
   * Bump requirement for libcroco3-dev.
   * Disable the mozilla plugin (incidentally closes: #327547, #349936).
 
- -- Josselin Mouette <joss@debian.org>  Sat,  1 Apr 2006 17:33:52 +0200
+ -- Josselin Mouette <joss@debian.org>  Sat,  1 Apr 2006 17:44:25 +0200
 
 librsvg (2.12.7-5) unstable; urgency=high
 
