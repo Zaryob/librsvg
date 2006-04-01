@@ -1,3 +1,9 @@
+librsvg (2.14.2-2) UNRELEASED; urgency=low
+
+  * Update watch file.
+
+ -- Josselin Mouette <joss@debian.org>  Sat,  1 Apr 2006 18:04:26 +0200
+
 librsvg (2.14.2-1) unstable; urgency=low
 
   * New upstream release.
