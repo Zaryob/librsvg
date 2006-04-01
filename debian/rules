@@ -10,13 +10,12 @@ ifeq ($(DEB_BUILD_ARCH),alpha)
 endif
 
 DEB_CONFIGURE_EXTRA_FLAGS := --enable-pixbuf-loader --with-croco \
-			     --with-svgz --disable-gnome-vfs
+			     --with-svgz --disable-gnome-vfs \
+			     --disable-mozilla-plugin
 
 DEB_CONFIGURE_SCRIPT_ENV += LDFLAGS="-Wl,-O1 -Wl,--as-needed"
 
 DEB_DH_MAKESHLIBS_ARGS_librsvg2-2 := -V 'librsvg2-2 (>= 2.12.7)'
-
-DEB_DH_SHLIBDEPS_ARGS := -Xmozilla
 
 clean::
 	rm -rf doc/html doc/sgml doc/xml

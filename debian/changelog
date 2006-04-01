@@ -1,3 +1,12 @@
+librsvg (2.14.2-1) unstable; urgency=low
+
+  * New upstream release.
+  * Build-depend on libcairo2-dev.
+  * Bump requirement for libcroco3-dev.
+  * Disable the mozilla plugin (incidentally closes: #327547, #349936).
+
+ -- Josselin Mouette <joss@debian.org>  Sat,  1 Apr 2006 17:24:25 +0200
+
 librsvg (2.12.7-5) unstable; urgency=high
 
   * rsvg-gz.patch: provide the rsvg_handle_new_gz function
