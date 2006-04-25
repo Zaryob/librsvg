@@ -1,0 +1,15 @@
+===================================================================
+RCS file: /cvs/gnome/librsvg/rsvg-image.c,v
+retrieving revision 1.25.2.1
+retrieving revision 1.25.2.2
+diff -u -r1.25.2.1 -r1.25.2.2
+--- rsvg-image.c	2006/04/19 23:52:30	1.25.2.1
++++ rsvg-image.c	2006/04/25 12:43:36	1.25.2.2
+@@ -581,6 +581,7 @@
+ {
+ 	RsvgNodeImage *image;
+ 	image = g_new (RsvgNodeImage, 1);
++	_rsvg_node_init(&image->super);
+ 	image->img = NULL;
+ 	image->preserve_aspect_ratio = RSVG_ASPECT_RATIO_XMID_YMID;
+ 	image->x = image->y = image->w = image->h = _rsvg_css_parse_length("0");
