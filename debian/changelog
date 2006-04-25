@@ -7,8 +7,10 @@ librsvg (2.14.3-2) unstable; urgency=low
   * rsvg-gz.patch: updated so that the symbol still gets exported.
   * rules, control.in: add missing python dependency.
     + Also build-depend on python.
+  * librsvg2-dev.{install,links,postinst}: move documentation to a more 
+    suitable place (closes: #363142).
 
- -- Josselin Mouette <joss@debian.org>  Tue, 25 Apr 2006 21:30:30 +0200
+ -- Josselin Mouette <joss@debian.org>  Tue, 25 Apr 2006 21:49:48 +0200
 
 librsvg (2.14.3-1) unstable; urgency=low
 
