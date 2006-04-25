@@ -2,11 +2,12 @@ librsvg (2.14.3-2) unstable; urgency=low
 
   * export-get-type.patch: Correctly export rsvg_error_get_type
     (closes: #362646).
-  * rsvg-image_crasher.patch, stolen from CVS: fix crasher with some 
+  * rsvg-image_crasher.patch, stolen from CVS: fix crasher with some
     images (closes: #361653).
   * rsvg-gz.patch: updated so that the symbol still gets exported.
+  * rules, control.in: add missing python dependency.
 
- -- Josselin Mouette <joss@debian.org>  Tue, 25 Apr 2006 21:11:17 +0200
+ -- Josselin Mouette <joss@debian.org>  Tue, 25 Apr 2006 21:25:15 +0200
 
 librsvg (2.14.3-1) unstable; urgency=low
 

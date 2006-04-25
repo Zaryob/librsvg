@@ -45,7 +45,7 @@ Description: SAX-based renderer library for SVG files (extra runtime)
 Package: librsvg2-bin
 Section: graphics
 Architecture: any
-Depends: ${shlibs:Depends}, librsvg2-2 (>= ${Source-Version})
+Depends: ${shlibs:Depends}, ${python:Depends}, librsvg2-2 (>= ${Source-Version})
 Conflicts: librsvg2-common (<< 2.7)
 Description: command-line and graphical viewers for SVG files
  The rsvg library is an efficient renderer for Scalable Vector Graphics

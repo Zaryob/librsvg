@@ -9,6 +9,9 @@ ifeq ($(DEB_BUILD_ARCH),alpha)
    CFLAGS += -mieee
 endif
 
+binary-install/librsvg2-bin::
+	dh_python -plibrsvg2-bin
+
 DEB_CONFIGURE_EXTRA_FLAGS := --enable-pixbuf-loader --with-croco \
 			     --with-svgz --disable-gnome-vfs \
 			     --disable-mozilla-plugin
