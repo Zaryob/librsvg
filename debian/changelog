@@ -1,3 +1,10 @@
+librsvg (2.14.3-2) UNRELEASED; urgency=low
+
+  * export-get-type.patch: Correctly export rsvg_error_get_type
+    (closes: #362646).
+
+ -- Josselin Mouette <joss@debian.org>  Tue, 25 Apr 2006 09:45:13 +0200
+
 librsvg (2.14.3-1) unstable; urgency=low
 
   * New upstream release.
