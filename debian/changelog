@@ -1,3 +1,12 @@
+librsvg (2.14.4-1) unstable; urgency=low
+
+  * New upstream release.
+  * rsvg-image_crasher.patch, export-get-type.patch: removed, integrated
+    upstream.
+  * Standards-version is 3.7.2.
+
+ -- Josselin Mouette <joss@debian.org>  Sun, 18 Jun 2006 05:07:20 +0200
+
 librsvg (2.14.3-2) unstable; urgency=low
 
   * export-get-type.patch: Correctly export rsvg_error_get_type
