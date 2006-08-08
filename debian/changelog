@@ -1,9 +1,89 @@
-librsvg (2.12.7-3) UNRELEASED; urgency=low
+librsvg (2.15.90-1) experimental; urgency=low
+
+  * New upstream development releases; no API changes.
+    - Target at experimental.
+    - Add missing build-deps on libglib2.0-dev (>= 2.11.0), libxml2-dev (>=
+      2.4.7), libfreetype6-dev, libgnomeprint2.2-dev (>= 2.2.0).
+    - Bump up build-deps to libcairo2-dev >= 1.2.0, gtk-doc-tools (>= 1.0).
+    - Drop obsolete build-dep on libpopt-dev.
+
+ -- Loic Minier <lool@dooz.org>  Tue,  8 Aug 2006 17:38:07 +0200
+
+librsvg (2.14.4-2) unstable; urgency=low
+
+  Loic Minier <lool@dooz.org>:
+  * Stop shipping *.la files in librsvg2-dev now that
+    libnautilus-extension-dev doesn't ship these.
+
+ -- J.H.M. Dassen (Ray) <jdassen@debian.org>  Thu, 22 Jun 2006 21:56:18 +0200
+
+librsvg (2.14.4-1) unstable; urgency=low
+
+  * New upstream release.
+  * rsvg-image_crasher.patch, export-get-type.patch: removed, integrated
+    upstream.
+  * Standards-version is 3.7.2.
+
+ -- Josselin Mouette <joss@debian.org>  Sun, 18 Jun 2006 05:07:20 +0200
+
+librsvg (2.14.3-2) unstable; urgency=low
+
+  * export-get-type.patch: Correctly export rsvg_error_get_type
+    (closes: #362646).
+  * rsvg-image_crasher.patch, stolen from CVS: fix crasher with some
+    images (closes: #361653).
+  * rsvg-gz.patch: updated so that the symbol still gets exported.
+  * rules, control.in: add missing python dependency.
+    + Also build-depend on python.
+  * librsvg2-dev.{install,links,postinst}: move documentation to a more 
+    suitable place (closes: #363142).
+
+ -- Josselin Mouette <joss@debian.org>  Tue, 25 Apr 2006 21:49:48 +0200
+
+librsvg (2.14.3-1) unstable; urgency=low
+
+  * New upstream release.
+  * [debian/control.in] Bumped libgtk2.0-dev and libcairo2-dev dependencies
+    and versioned libgnomeprintui2.2-dev build dependency to rebuild without
+    the .la files for libXcursor and libXrender.
+
+  Josselin Mouette <joss@debian.org>:
+  * Update watch file.
+
+ -- J.H.M. Dassen (Ray) <jdassen@debian.org>  Fri, 21 Apr 2006 11:20:56 +0200
+
+librsvg (2.14.2-1) unstable; urgency=low
+
+  * New upstream release.
+    + paint-server.patch: removed, unneeded with the cairo backend.
+    + rsvg-gz.patch: updated.
+  * Build-depend on libcairo2-dev.
+  * Bump requirement for libcroco3-dev.
+  * Disable the mozilla plugin (incidentally closes: #327547, #349936).
+
+ -- Josselin Mouette <joss@debian.org>  Sat,  1 Apr 2006 17:44:25 +0200
+
+librsvg (2.12.7-5) unstable; urgency=high
+
+  * rsvg-gz.patch: provide the rsvg_handle_new_gz function
+    (closes: #348920). Do not provide the C prototype to force 
+    applications using it to use rsvg_handle_new instead.
+
+ -- Josselin Mouette <joss@debian.org>  Thu,  9 Feb 2006 22:09:04 +0100
+
+librsvg (2.12.7-4) unstable; urgency=high
+
+  * Fix the conflict line to include the epoch (closes: #350229).
+
+ -- Josselin Mouette <joss@debian.org>  Wed,  1 Feb 2006 23:29:46 +0100
+
+librsvg (2.12.7-3) unstable; urgency=low
 
   * Only suggest librsvg2-bin instead of recommending it
     (closes: #269048).
+  * Upload to unstable.
 
- -- Josselin Mouette <joss@debian.org>  Sun, 11 Dec 2005 20:54:43 +0100
+ -- Josselin Mouette <joss@debian.org>  Sat,  7 Jan 2006 18:32:09 +0100
 
 librsvg (2.12.7-2) experimental; urgency=low
 
