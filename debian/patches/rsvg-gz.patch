@@ -10,13 +10,13 @@
 +{
 +	return rsvg_handle_new ();
 +}
---- librsvg.def.old	2006-04-25 21:06:32.000000000 +0200
-+++ librsvg.def	2006-04-25 21:06:49.000000000 +0200
+--- librsvg.def.orig	2006-09-05 23:46:41.000000000 +0200
++++ librsvg.def	2006-09-05 23:46:48.000000000 +0200
 @@ -7,6 +7,7 @@
- 	rsvg_handle_set_dpi
- 	rsvg_handle_set_dpi_x_y
- 	rsvg_handle_new
-+	rsvg_handle_new_gz
- 	rsvg_handle_write
- 	rsvg_handle_close
- 	rsvg_handle_get_pixbuf
+ rsvg_handle_set_dpi
+ rsvg_handle_set_dpi_x_y
+ rsvg_handle_new
++rsvg_handle_new_gz
+ rsvg_handle_write
+ rsvg_handle_close
+ rsvg_handle_get_pixbuf

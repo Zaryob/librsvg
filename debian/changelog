@@ -3,8 +3,9 @@ librsvg (2.16.0-1) experimental; urgency=low
   * New upstream release.
   * Bump shlibs requirement.
   * Remove libart build-dependency.
+  * rsvg-gz.patch: updated.
 
- -- Josselin Mouette <joss@debian.org>  Tue,  5 Sep 2006 23:40:45 +0200
+ -- Josselin Mouette <joss@debian.org>  Tue,  5 Sep 2006 23:47:26 +0200
 
 librsvg (2.15.90-1) experimental; urgency=low
 
