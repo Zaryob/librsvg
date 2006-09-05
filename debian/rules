@@ -18,7 +18,7 @@ DEB_CONFIGURE_EXTRA_FLAGS := --enable-pixbuf-loader --with-croco \
 
 DEB_CONFIGURE_SCRIPT_ENV += LDFLAGS="-Wl,-O1 -Wl,--as-needed"
 
-DEB_DH_MAKESHLIBS_ARGS_librsvg2-2 := -V 'librsvg2-2 (>= 2.12.7)'
+DEB_DH_MAKESHLIBS_ARGS_librsvg2-2 := -V 'librsvg2-2 (>= 2.16.0)'
 
 clean::
 	rm -rf doc/html doc/sgml doc/xml
