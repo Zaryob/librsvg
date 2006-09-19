@@ -9,6 +9,9 @@ ifeq ($(DEB_BUILD_ARCH),alpha)
    CFLAGS += -mieee
 endif
 
+binary-install/librsvg2-common::
+	dh_gtkmodules -plibrsvg2-common
+
 binary-install/librsvg2-bin::
 	dh_python -plibrsvg2-bin
 
