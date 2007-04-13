@@ -1,8 +1,58 @@
-librsvg (2.14.4-3) UNRELEASED; urgency=low
+librsvg (2.16.1-2) UNRELEASED; urgency=low
 
   * Add a get-orig-source target to retrieve the upstream tarball.
+  * Include the new check-dist Makefile to prevent accidental uploads to
+    unstable; bump build-dep on gnome-pkg-tools to >= 0.10.
 
- -- Loic Minier <lool@dooz.org>  Sat, 13 Jan 2007 23:33:29 +0100
+ -- Loic Minier <lool@dooz.org>  Mon, 22 Jan 2007 11:36:49 +0100
+
+librsvg (2.16.1-1) experimental; urgency=low
+
+  * New upstream release.
+  * Bump shlibs requirement.
+
+ -- Josselin Mouette <joss@debian.org>  Fri,  8 Dec 2006 23:33:34 +0100
+
+librsvg (2.16.0-3) experimental; urgency=low
+
+  * Call dh_gtkmodules with an appropriate LD_LIBRARY_PATH.
+  * Don't hardcode the library package name.
+
+ -- Loic Minier <lool@dooz.org>  Wed, 27 Sep 2006 08:11:17 +0200
+
+librsvg (2.16.0-2) experimental; urgency=low
+
+  [ Josselin Mouette ]
+  * Build-depend on gtk+ 2.10.
+
+  [ Loic Minier ]
+  * Convert the package to the new Gtk modules handling.
+    - Bump up the libgtk2.0-dev build-dep to >= 2.10.1-1.
+    - Call dh_gtkmodules.
+    - Add ${misc:Depends}.
+    - Drop librsvg2-common.postinst and librsvg2-common.postrm.
+
+ -- Loic Minier <lool@dooz.org>  Tue, 19 Sep 2006 13:02:21 +0200
+
+librsvg (2.16.0-1) experimental; urgency=low
+
+  * New upstream release.
+  * Bump shlibs requirement.
+  * Remove libart build-dependency.
+  * rsvg-gz.patch: updated.
+
+ -- Josselin Mouette <joss@debian.org>  Tue,  5 Sep 2006 23:47:26 +0200
+
+librsvg (2.15.90-1) experimental; urgency=low
+
+  * New upstream development releases; no API changes.
+    - Target at experimental.
+    - Add missing build-deps on libglib2.0-dev (>= 2.11.0), libxml2-dev (>=
+      2.4.7), libfreetype6-dev, libgnomeprint2.2-dev (>= 2.2.0).
+    - Bump up build-deps to libcairo2-dev >= 1.2.0, gtk-doc-tools (>= 1.0).
+    - Drop obsolete build-dep on libpopt-dev.
+
+ -- Loic Minier <lool@dooz.org>  Tue,  8 Aug 2006 17:38:07 +0200
 
 librsvg (2.14.4-2) unstable; urgency=low
 
