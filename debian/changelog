@@ -10,8 +10,9 @@ librsvg (2.16.1-2) unstable; urgency=low
   * Set LDFLAGS directly instead of via DEB_CONFIGURE_SCRIPT_ENV; build-dep on
     cdbs >= 0.4.41.
   * Cleanups.
+  * Fix watch file to track all stable versions and use HTTP.
 
- -- Loic Minier <lool@dooz.org>  Sat, 14 Apr 2007 09:06:47 +0200
+ -- Loic Minier <lool@dooz.org>  Sat, 14 Apr 2007 09:08:22 +0200
 
 librsvg (2.16.1-1) experimental; urgency=low
 
