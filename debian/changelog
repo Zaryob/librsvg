@@ -11,8 +11,9 @@ librsvg (2.16.1-2) unstable; urgency=low
     cdbs >= 0.4.41.
   * Cleanups.
   * Fix watch file to track all stable versions and use HTTP.
+  * Fix URL in copyright.
 
- -- Loic Minier <lool@dooz.org>  Sat, 14 Apr 2007 09:08:22 +0200
+ -- Loic Minier <lool@dooz.org>  Sat, 14 Apr 2007 09:10:08 +0200
 
 librsvg (2.16.1-1) experimental; urgency=low
 
