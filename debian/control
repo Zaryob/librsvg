@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Josselin Mouette <joss@debian.org>
 Uploaders: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>, J.H.M. Dassen (Ray) <jdassen@debian.org>, Loic Minier <lool@dooz.org>
 Build-Depends: cdbs,
-               debhelper (>= 4.1),
+               debhelper (>= 5),
                libxml2-dev (>= 2.6.22),
                libgtk2.0-dev (>= 2.10.1-1),
                libpango1.0-dev (>= 1.4.0-3),
