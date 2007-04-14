@@ -7,8 +7,11 @@ librsvg (2.16.1-2) unstable; urgency=low
   * Wrap build-deps and deps.
   * Bump up Debhelper compatibility level to 5.
   * Drop clean target which removed the upstream documentation.
+  * Set LDFLAGS directly instead of via DEB_CONFIGURE_SCRIPT_ENV; build-dep on
+    cdbs >= 0.4.41.
+  * Cleanups.
 
- -- Loic Minier <lool@dooz.org>  Sat, 14 Apr 2007 08:59:16 +0200
+ -- Loic Minier <lool@dooz.org>  Sat, 14 Apr 2007 09:06:47 +0200
 
 librsvg (2.16.1-1) experimental; urgency=low
 

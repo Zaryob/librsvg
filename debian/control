@@ -3,7 +3,7 @@ Section: libdevel
 Priority: optional
 Maintainer: Josselin Mouette <joss@debian.org>
 Uploaders: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>, J.H.M. Dassen (Ray) <jdassen@debian.org>, Loic Minier <lool@dooz.org>
-Build-Depends: cdbs,
+Build-Depends: cdbs (>= 0.4.41),
                debhelper (>= 5),
                libxml2-dev (>= 2.6.22),
                libgtk2.0-dev (>= 2.10.1-1),
