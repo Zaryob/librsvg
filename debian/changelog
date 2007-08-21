@@ -1,10 +1,11 @@
 librsvg (2.18.1-1) unstable; urgency=low
 
   * New upstream stable release.
-    - Basic support for SVG 1.1's text-rendering 
+    - Basic support for SVG 1.1's text-rendering
       and shape-rendering properties
+    - Bump shlibs to >= 2.18.1
 
- -- Alan Baghumian <alan@technotux.org>  Tue, 21 Aug 2007 09:53:21 +0330
+ -- Alan Baghumian <alan@technotux.org>  Tue, 21 Aug 2007 11:48:12 +0330
 
 librsvg (2.18.0-1) unstable; urgency=low
 

@@ -25,5 +25,5 @@ DEB_CONFIGURE_EXTRA_FLAGS += --enable-pixbuf-loader --with-croco \
 
 LDFLAGS += -Wl,-z,defs -Wl,-O1 -Wl,--as-needed
 
-DEB_DH_MAKESHLIBS_ARGS_$(LIBRSVG2_PKG) += -V '$(LIBRSVG2_PKG) (>= 2.16.1)'
+DEB_DH_MAKESHLIBS_ARGS_$(LIBRSVG2_PKG) += -V '$(LIBRSVG2_PKG) (>= 2.18.1)'
 
