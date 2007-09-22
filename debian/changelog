@@ -1,3 +1,10 @@
+librsvg (2.18.2-2) UNRELEASED; urgency=low
+
+  * Use binary:version and source:Version for binnNMU-safe uploads as
+    added in dpkg-dev 1.13.19. Add to Build-Depends accordingly.
+
+ -- Kilian Krause <kilian@debian.org>  Sat, 22 Sep 2007 12:45:07 +0200
+
 librsvg (2.18.2-1) unstable; urgency=low
 
   [ Alan Baghumian ]
