@@ -6,6 +6,8 @@ librsvg (2.22.0-1) unstable; urgency=low
   * debian/control.in:
     + Update and cleanup build dependencies.
     + Cleanup and correct dependencies of the -dev package.
+  * debian/patches/99_ltmain_as-needed.patch:
+    + Updated to apply cleanly again.
 
  -- Sebastian Dröge <slomo@debian.org>  Thu, 21 Feb 2008 19:19:09 +0100
 
