@@ -1,3 +1,14 @@
+librsvg (2.22.0-1) unstable; urgency=low
+
+  * New upstream release, with no API changes.
+    This release adds support for GIO and we want to rebuild it once GLib 2.16
+    is in unstable.
+  * debian/control.in:
+    + Update and cleanup build dependencies.
+    + Cleanup and correct dependencies of the -dev package.
+
+ -- Sebastian Dröge <slomo@debian.org>  Thu, 21 Feb 2008 19:19:09 +0100
+
 librsvg (2.20.0-1) unstable; urgency=low
 
   [ Kilian Krause ]
