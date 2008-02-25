@@ -1,3 +1,9 @@
+librsvg (2.22.1-1) unstable; urgency=low
+
+  * New upstream bugfix release.
+
+ -- Sebastian Dröge <slomo@debian.org>  Mon, 25 Feb 2008 06:45:05 +0100
+
 librsvg (2.22.0-1) unstable; urgency=low
 
   * New upstream release, with no API changes.
