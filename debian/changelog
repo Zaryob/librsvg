@@ -1,3 +1,10 @@
+librsvg (2.22.2-2) unstable; urgency=low
+
+  * debian/control.in:
+    + Build depend on GLib >= 2.16.0 for GIO support.
+
+ -- Sebastian Dröge <slomo@debian.org>  Tue, 11 Mar 2008 05:56:01 +0100
+
 librsvg (2.22.2-1) unstable; urgency=low
 
   * New upstream bugfix release.
