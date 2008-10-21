@@ -1,3 +1,12 @@
+librsvg (2.22.2-3) UNRELEASED; urgency=low
+
+  * Build a dbg package. Closes: #496189.
+  * debian/control:
+    - Update Standards-Version to 3.8.0, no changes needed.
+    - Added Homepage field.
+
+ -- Emilio Pozuelo Monfort <pochu@ubuntu.com>  Tue, 21 Oct 2008 10:54:35 +0200
+
 librsvg (2.22.2-2) unstable; urgency=low
 
   * debian/control.in:
