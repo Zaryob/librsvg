@@ -1,3 +1,10 @@
+librsvg (2.22.3-1) experimental; urgency=low
+
+  * New upstream release.
+  * Bump shlibs version to 2.22.3.
+
+ -- Josselin Mouette <joss@debian.org>  Fri, 21 Nov 2008 22:35:18 +0100
+
 librsvg (2.22.2-3) unstable; urgency=low
 
   * Build a dbg package. Closes: #496189.
