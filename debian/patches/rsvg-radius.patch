@@ -1,0 +1,13 @@
+--- librsvg-2.22.2.orig/rsvg-path.c
++++ librsvg-2.22.2/rsvg-path.c
+@@ -114,8 +114,9 @@
+        cause divide by zero and subsequent NaNs.  We should
+        really do some ranged check ie -0.001 < x < 000.1 rather
+        can just a straight check again zero.
++       And now we even do! http://bugs.debian.org/508443
+      */
+-    if ((rx == 0.0) || (ry == 0.0))
++    if ((fabs(rx) < DBL_EPSILON) || (fabs(ry) < DBL_EPSILON))
+         return;
+
+     sin_th = sin (x_axis_rotation * (M_PI / 180.0));
