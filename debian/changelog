@@ -1,3 +1,12 @@
+librsvg (2.22.2-2lenny1) testing; urgency=low
+
+  * rsvg-radius.patch: new patch. Check radii against floating point 
+    underflow instead of comparing them to 0.0. Thanks a lot to Thomas 
+    Viehmann for all the testing and providing the patch.
+    Closes: #508443.
+
+ -- Josselin Mouette <joss@debian.org>  Tue, 23 Dec 2008 22:32:14 +0100
+
 librsvg (2.22.2-2) unstable; urgency=low
 
   * debian/control.in:
