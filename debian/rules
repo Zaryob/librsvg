@@ -17,7 +17,7 @@ binary-install/librsvg2-common::
 		dh_gtkmodules -plibrsvg2-common
 
 binary-install/librsvg2-bin::
-	dh_python -plibrsvg2-bin
+	dh_pysupport -plibrsvg2-bin
 
 DEB_CONFIGURE_EXTRA_FLAGS += --enable-pixbuf-loader --with-croco \
 			     --with-svgz --disable-gnome-vfs \

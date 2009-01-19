@@ -13,6 +13,7 @@ librsvg (2.22.3-2) UNRELEASED; urgency=low
     - librsvg-dev depends on ${misc:Depends}. Thanks lintian!
   * debian/shlibs.local: Removed. It was added as a hack to workaround
     a dependency issue, but it's not needed anymore.
+  * Use dh_pysupport instead of the deprecated dh_python.
 
  -- Josselin Mouette <joss@debian.org>  Mon, 22 Dec 2008 18:38:29 +0100
 
