@@ -1,3 +1,9 @@
+librsvg (2.22.2-5) UNRELEASED; urgency=low
+
+  * Use -1~ instead of -1 in the libgtk2.0-dev build-dep to ease backports.
+
+ -- Loic Minier <lool@dooz.org>  Mon, 19 Jan 2009 16:42:47 +0100
+
 librsvg (2.22.2-4) unstable; urgency=low
 
   * rsvg-radius.patch: new patch. Check radii against floating point 
