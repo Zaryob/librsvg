@@ -8,10 +8,8 @@ librsvg (2.22.3-2) UNRELEASED; urgency=low
 
   [ Emilio Pozuelo Monfort ]
   * debian/control:
-    - Build-depend on libgtk2.0-dev 2.10.1 instead of 2.10.1-1.
-      There was no -0 revision that wouldn't satisfy the requirements,
-      so it's fine to just depend on 2.10.1. Thanks lintian and
-      Sebastien Bacher!
+    - Build-depend on libgtk2.0-dev 2.10.1-1~ instead of 2.10.1-1 to ease
+      backports.  Spotted by lintian.
     - librsvg-dev depends on ${misc:Depends}. Thanks lintian!
   * debian/shlibs.local: Removed. It was added as a hack to workaround
     a dependency issue, but it's not needed anymore.
