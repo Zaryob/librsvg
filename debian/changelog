@@ -1,9 +1,17 @@
 librsvg (2.22.3-2) UNRELEASED; urgency=low
 
+  [ Josselin Mouette ]
   * rsvg-radius.patch: new patch. Check radii against floating point 
     underflow instead of comparing them to 0.0. Thanks a lot to Thomas 
     Viehmann for all the testing and providing the original patch.
     Closes: #508443.
+
+  [ Emilio Pozuelo Monfort ]
+  * debian/control:
+    - Build-depend on libgtk2.0-dev 2.10.1-1~ instead of 2.10.1-1.
+    - librsvg-dev depends on ${misc:Depends}. Thanks lintian!
+  * debian/shlibs.local: Removed. It was added as a hack to workaround
+    a dependency issue, but it's not needed anymore.
 
  -- Josselin Mouette <joss@debian.org>  Mon, 22 Dec 2008 18:38:29 +0100
 
