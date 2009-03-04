@@ -1,17 +1,28 @@
-librsvg (2.22.2-5) UNRELEASED; urgency=low
+librsvg (2.22.3-2) UNRELEASED; urgency=low
 
-  * Use -1~ instead of -1 in the libgtk2.0-dev build-dep to ease backports.
-
- -- Loic Minier <lool@dooz.org>  Mon, 19 Jan 2009 16:42:47 +0100
-
-librsvg (2.22.2-4) unstable; urgency=low
-
+  [ Josselin Mouette ]
   * rsvg-radius.patch: new patch. Check radii against floating point 
     underflow instead of comparing them to 0.0. Thanks a lot to Thomas 
-    Viehmann for all the testing and providing the patch.
+    Viehmann for all the testing and providing the original patch.
     Closes: #508443.
 
- -- Josselin Mouette <joss@debian.org>  Mon, 22 Dec 2008 18:32:57 +0100
+  [ Emilio Pozuelo Monfort ]
+  * debian/control:
+    - Build-depend on libgtk2.0-dev 2.10.1-1~ instead of 2.10.1-1 to ease
+      backports.  Spotted by lintian.
+    - librsvg-dev depends on ${misc:Depends}. Thanks lintian!
+  * debian/shlibs.local: Removed. It was added as a hack to workaround
+    a dependency issue, but it's not needed anymore.
+  * Use dh_pysupport instead of the deprecated dh_python.
+
+ -- Josselin Mouette <joss@debian.org>  Mon, 22 Dec 2008 18:38:29 +0100
+
+librsvg (2.22.3-1) experimental; urgency=low
+
+  * New upstream release.
+  * Bump shlibs version to 2.22.3.
+
+ -- Josselin Mouette <joss@debian.org>  Fri, 21 Nov 2008 22:35:18 +0100
 
 librsvg (2.22.2-3) unstable; urgency=low
 
