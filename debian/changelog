@@ -1,4 +1,4 @@
-librsvg (2.22.3-2) UNRELEASED; urgency=low
+librsvg (2.22.3-2) unstable; urgency=low
 
   [ Josselin Mouette ]
   * rsvg-radius.patch: new patch. Check radii against floating point 
@@ -15,7 +15,7 @@ librsvg (2.22.3-2) UNRELEASED; urgency=low
     a dependency issue, but it's not needed anymore.
   * Use dh_pysupport instead of the deprecated dh_python.
 
- -- Josselin Mouette <joss@debian.org>  Mon, 22 Dec 2008 18:38:29 +0100
+ -- Josselin Mouette <joss@debian.org>  Wed, 04 Mar 2009 14:48:38 +0100
 
 librsvg (2.22.3-1) experimental; urgency=low
 
