@@ -19,7 +19,7 @@ Build-Depends: cdbs (>= 0.4.41),
                python,
                python-support,
                dpkg-dev (>= 1.13.19)
-Standards-Version: 3.8.0
+Standards-Version: 3.8.1
 Homepage: http://librsvg.sourceforge.net/
 XS-Python-Version: current
 
@@ -67,7 +67,7 @@ Description: SAX-based renderer library for SVG files (extra runtime)
  to load SVG images transparently inside GTK+ applications.
 
 Package: librsvg2-dbg
-Section: libdevel
+Section: debug
 Priority: extra
 Architecture: any
 Depends: ${misc:Depends},
