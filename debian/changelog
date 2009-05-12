@@ -1,5 +1,6 @@
 librsvg (2.26.0-1) UNRELEASED; urgency=low
 
+  [ Luca Bruno ]
   * New upstream release.
   * Bump shlibs version to 2.26.0.
   * debian/control.in:
@@ -7,6 +8,10 @@ librsvg (2.26.0-1) UNRELEASED; urgency=low
     - Fix debug package section.
   * debian/patches/rsvg-radius.patch:
     - Removed as applied upstream. 
+
+  [ Josselin Mouette ]
+  * Build-depend on libglib2.0-doc, libgtk2.0-doc and libcairo2-doc to 
+    ensure proper xrefs.
 
  -- Luca Bruno <lethalman88@gmail.com>  Fri, 08 May 2009 16:28:54 +0200
 
