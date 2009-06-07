@@ -1,4 +1,4 @@
-librsvg (2.26.0-1) UNRELEASED; urgency=low
+librsvg (2.26.0-1) unstable; urgency=low
 
   [ Luca Bruno ]
   * New upstream release.
@@ -13,7 +13,10 @@ librsvg (2.26.0-1) UNRELEASED; urgency=low
   * Build-depend on libglib2.0-doc, libgtk2.0-doc and libcairo2-doc to 
     ensure proper xrefs.
 
- -- Luca Bruno <lethalman88@gmail.com>  Fri, 08 May 2009 16:28:54 +0200
+  [ Sebastian Dröge ]
+  * Upload to unstable.
+
+ -- Sebastian Dröge <slomo@debian.org>  Sun, 07 Jun 2009 11:37:23 +0200
 
 librsvg (2.22.3-2) unstable; urgency=low
 
