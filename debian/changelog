@@ -1,3 +1,12 @@
+librsvg (2.26.0-2) unstable; urgency=low
+
+  * debian/control.in:
+    - Don't restrict XS-Python-Version to "current" to avoid a dependency
+      on python << 2.6.
+    - Standards-Version is 3.8.4, no changes needed.
+
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Wed, 24 Mar 2010 12:32:10 +0100
+
 librsvg (2.26.0-1) unstable; urgency=low
 
   [ Luca Bruno ]
