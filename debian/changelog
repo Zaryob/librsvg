@@ -1,3 +1,13 @@
+librsvg (2.26.2-1) unstable; urgency=low
+
+  * New upstream release.
+    + debian/patches/99_ltmain_as-needed.patch,
+      debian/patches/rsvg-gz.patch:
+      - Refreshed.
+    + debian/control.in: Bump libgtk2.0 dependencies to (>= 2.16.0)
+
+ -- David Weinehall <tao@debian.org>  Wed, 31 Mar 2010 00:02:42 +0300
+
 librsvg (2.26.0-2) unstable; urgency=low
 
   * debian/control.in:
