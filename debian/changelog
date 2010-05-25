@@ -1,3 +1,10 @@
+librsvg (2.26.3-2) UNRELEASED; urgency=low
+
+  * No need to explicitly disable the Mozilla plugin anymore.
+    Closes: #583129.
+
+ -- Josselin Mouette <joss@debian.org>  Tue, 25 May 2010 17:46:12 +0200
+
 librsvg (2.26.3-1) unstable; urgency=low
 
   * New upstream bugfix release.
