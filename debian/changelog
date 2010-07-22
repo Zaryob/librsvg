@@ -1,9 +1,16 @@
-librsvg (2.26.3-2) UNRELEASED; urgency=low
+librsvg (2.26.3-1+exp1) experimental; urgency=low
 
+  [ Josselin Mouette ]
   * No need to explicitly disable the Mozilla plugin anymore.
     Closes: #583129.
 
- -- Josselin Mouette <joss@debian.org>  Tue, 25 May 2010 17:46:12 +0200
+  [ Sebastian Dröge ]
+  * debian/librsvg2-common.install,
+    debian/control.in:
+    + Depend on standalone gdk-pixbuf and move loaders library
+      to the correct location.
+
+ -- Sebastian Dröge <slomo@debian.org>  Thu, 22 Jul 2010 21:13:43 +0200
 
 librsvg (2.26.3-1) unstable; urgency=low
 
