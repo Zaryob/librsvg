@@ -20,9 +20,8 @@ binary-install/librsvg2-bin::
 	dh_pysupport -plibrsvg2-bin
 
 DEB_CONFIGURE_EXTRA_FLAGS += --enable-pixbuf-loader --with-croco \
-			     --with-svgz --disable-gnome-vfs \
-			     --disable-mozilla-plugin
+			     --with-svgz --disable-gnome-vfs
 
 LDFLAGS += -Wl,-z,defs -Wl,-O1 -Wl,--as-needed
 
-DEB_DH_MAKESHLIBS_ARGS_$(LIBRSVG2_PKG) += -V '$(LIBRSVG2_PKG) (>= 2.22.3)'
+DEB_DH_MAKESHLIBS_ARGS_$(LIBRSVG2_PKG) += -V '$(LIBRSVG2_PKG) (>= 2.26.0)'

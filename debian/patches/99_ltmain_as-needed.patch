@@ -1,7 +1,7 @@
 --- ltmain.sh.old	2007-10-09 07:38:25.000000000 +0200
 +++ ltmain.sh	2007-10-09 07:39:25.000000000 +0200
-@@ -1794,6 +1794,11 @@
- 	arg=`$echo "X$arg" | $Xsed -e "s/^ //"`
+@@ -4716,6 +4716,11 @@
+ 	arg=$func_stripname_result
  	;;
  
 +      -Wl,--as-needed)
@@ -10,9 +10,9 @@
 +	;;
 +
        -Wl,*)
- 	args=`$echo "X$arg" | $Xsed -e "$sed_quote_subst" -e 's/^-Wl,//'`
- 	arg=
-@@ -2137,6 +2142,15 @@
+ 	func_stripname '-Wl,' '' "$arg"
+ 	args=$func_stripname_result
+@@ -5067,6 +5072,15 @@
  	lib=
  	found=no
  	case $deplib in
