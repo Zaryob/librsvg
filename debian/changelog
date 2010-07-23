@@ -1,4 +1,4 @@
-librsvg (2.26.3-1+exp1) experimental; urgency=low
+librsvg (2.26.3-2) experimental; urgency=low
 
   [ Josselin Mouette ]
   * No need to explicitly disable the Mozilla plugin anymore.
@@ -9,8 +9,10 @@ librsvg (2.26.3-1+exp1) experimental; urgency=low
     debian/control.in:
     + Depend on standalone gdk-pixbuf and move loaders library
       to the correct location.
+    + (Build-) depend on libgtk2.0-dev (>= 2.21.5) to allow the
+      experimental dependency resolver to work.
 
- -- Sebastian Dröge <slomo@debian.org>  Thu, 22 Jul 2010 21:13:43 +0200
+ -- Sebastian Dröge <slomo@debian.org>  Fri, 23 Jul 2010 07:50:24 +0200
 
 librsvg (2.26.3-1) unstable; urgency=low
 

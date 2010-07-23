@@ -16,6 +16,7 @@ Build-Depends: cdbs (>= 0.4.41),
                libglib2.0-dev (>= 2.16.0),
                libcairo2-dev (>= 1.2.0),
                libpango1.0-dev (>= 1.10.0),
+               libgdk-pixbuf2.0-dev (>= 2.21.6),
                libgtk2.0-dev (>= 2.16.0-1~),
                libgsf-1-dev (>= 1.13.2-2),
                gnome-pkg-tools (>= 0.10),
@@ -36,9 +37,10 @@ Section: libdevel
 Architecture: any
 Depends: ${misc:Depends},
          librsvg2-2 (= ${binary:Version}),
-         libgtk2.0-dev (>= 2.16.0-1),
          libglib2.0-dev (>= 2.12.0),
+         libgdk-pixbuf2.0-dev (>= 2.21.6),
          libcairo2-dev (>= 1.2.0)
+         libgtk2.0-dev (>= 2.16.0-1),
 Description: SAX-based renderer library for SVG files (development)
  The rsvg library is an efficient renderer for Scalable Vector Graphics
  (SVG) pictures.
