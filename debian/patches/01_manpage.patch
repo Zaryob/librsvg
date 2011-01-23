@@ -1,6 +1,18 @@
+From 27c60bb77256cf6cd54177bf979ea6ff8a6d2764 Mon Sep 17 00:00:00 2001
+From: Emilio Pozuelo Monfort <pochu27@gmail.com>
+Date: Sun, 23 Jan 2011 20:05:16 +0000
+Subject: [PATCH] rsvg.1: Fix typo
+
+https://bugzilla.gnome.org/show_bug.cgi?id=640336
+---
+ rsvg.1 |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/rsvg.1 b/rsvg.1
+index 6a13b98..51a478d 100644
 --- a/rsvg.1
 +++ b/rsvg.1
-@@ -6,7 +6,7 @@
+@@ -6,7 +6,7 @@ rsvg \- Turn SVG files into raster images.
  [options] in.svg out.png
  .I ""
  .SH DESCRIPTION
@@ -9,3 +21,6 @@
  .SS OPTIONS
  .TP
  .I "\-d \-\-dpi-x number"
+-- 
+1.7.2.3
+
