@@ -16,8 +16,7 @@ LDFLAGS += -Wl,-z,defs -Wl,-O1 -Wl,--as-needed
 DEB_CONFIGURE_EXTRA_FLAGS += \
 	--enable-pixbuf-loader \
 	--with-croco \
-	--with-svgz \
-	--disable-gnome-vfs
+	--with-svgz
 
 DEB_DH_MAKESHLIBS_ARGS_$(LIBRSVG2_PKG) += -V -- -c4
 DEB_DH_MAKESHLIBS_ARGS_librsvg2-common = --no-act

@@ -1,4 +1,4 @@
-librsvg (2.32.0-1) UNRELEASED; urgency=low
+librsvg (2.32.0-1) experimental; urgency=low
 
   * New upstream release.
     + debian/control.in:
@@ -17,8 +17,9 @@ librsvg (2.32.0-1) UNRELEASED; urgency=low
   * debian/rules:
     + Make the shlibs file always depend on the latest upstream version.
     + Abort the build if the symbols file is outdated.
+    + Drop obsolete configure flag.
 
- -- Emilio Pozuelo Monfort <pochu@debian.org>  Sun, 23 Jan 2011 01:19:28 +0000
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Sun, 23 Jan 2011 19:55:29 +0000
 
 librsvg (2.26.3-2) experimental; urgency=low
 
