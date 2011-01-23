@@ -1,3 +1,16 @@
+librsvg (2.32.0-1) UNRELEASED; urgency=low
+
+  * New upstream release.
+    + debian/control.in:
+      - Update build dependencies.
+    + debian/librsvg2-common.install,
+      debian/librsvg2-dev.links:
+      - Updated for the new help location.
+    + debian/rules:
+      - Don't run dh_makeshlibs on librsvg2-common.
+
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Sun, 23 Jan 2011 01:19:28 +0000
+
 librsvg (2.26.3-2) experimental; urgency=low
 
   [ Josselin Mouette ]
