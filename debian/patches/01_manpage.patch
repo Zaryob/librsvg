@@ -1,5 +1,5 @@
---- librsvg2-2.8.1.orig/rsvg.1
-+++ librsvg2-2.8.1/rsvg.1
+--- a/rsvg.1
++++ b/rsvg.1
 @@ -6,7 +6,7 @@
  [options] in.svg out.png
  .I ""

@@ -1,6 +1,6 @@
---- rsvg-gobject.c	2006-02-06 05:41:56.000000000 +0100
-+++ rsvg-gobject.c.new	2006-04-01 17:42:25.000000000 +0200
-@@ -333,3 +333,9 @@
+--- a/rsvg-gobject.c
++++ b/rsvg-gobject.c
+@@ -369,3 +369,9 @@
  {
      return RSVG_HANDLE (g_object_new (RSVG_TYPE_HANDLE, NULL));
  }
@@ -10,8 +10,8 @@
 +{
 +    return rsvg_handle_new ();
 +}
---- librsvg.def.orig	2006-09-05 23:46:41.000000000 +0200
-+++ librsvg.def	2006-09-05 23:46:48.000000000 +0200
+--- a/librsvg.def
++++ b/librsvg.def
 @@ -7,6 +7,7 @@
  rsvg_handle_set_dpi
  rsvg_handle_set_dpi_x_y
