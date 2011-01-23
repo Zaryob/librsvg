@@ -11,6 +11,16 @@ ifeq ($(DEB_BUILD_ARCH),alpha)
 endif
 
 LIBRSVG2_PKG := librsvg2-2
+LDFLAGS += -Wl,-z,defs -Wl,-O1 -Wl,--as-needed
+
+DEB_CONFIGURE_EXTRA_FLAGS += \
+	--enable-pixbuf-loader \
+	--with-croco \
+	--with-svgz \
+	--disable-gnome-vfs
+
+DEB_DH_MAKESHLIBS_ARGS_$(LIBRSVG2_PKG) += -V -- -c4
+DEB_DH_MAKESHLIBS_ARGS_librsvg2-common = --no-act
 
 binary-install/librsvg2-common::
 	LD_LIBRARY_PATH=debian/$(LIBRSVG2_PKG)/usr/lib:$(LD_LIBRARY_PATH) \
@@ -18,11 +28,3 @@ binary-install/librsvg2-common::
 
 binary-install/librsvg2-bin::
 	dh_pysupport -plibrsvg2-bin
-
-DEB_CONFIGURE_EXTRA_FLAGS += --enable-pixbuf-loader --with-croco \
-			     --with-svgz --disable-gnome-vfs
-
-LDFLAGS += -Wl,-z,defs -Wl,-O1 -Wl,--as-needed
-
-DEB_DH_MAKESHLIBS_ARGS_$(LIBRSVG2_PKG) += -V '$(LIBRSVG2_PKG) (>= 2.26.0)'
-DEB_DH_MAKESHLIBS_ARGS_librsvg2-common = --no-act
