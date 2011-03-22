@@ -1,9 +1,48 @@
-librsvg (2.26.3-2) UNRELEASED; urgency=low
+librsvg (2.32.0-2) UNRELEASED; urgency=low
 
+  * debian/patches/01_manpage.patch:
+    - Forwarded upstream.
+
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Sun, 23 Jan 2011 20:10:19 +0000
+
+librsvg (2.32.0-1) experimental; urgency=low
+
+  * New upstream release.
+    + debian/control.in:
+      - Update build dependencies.
+    + debian/librsvg2-common.install,
+      debian/librsvg2-dev.links:
+      - Updated for the new help location.
+    + debian/rules:
+      - Don't run dh_makeshlibs on librsvg2-common.
+  * debian/source/format,
+    debian/patches/*,
+    debian/rules:
+    + Switch to source format 3.0 (quilt).
+  * debian/librsvg2-2.symbols:
+    + Add a symbols file.
+  * debian/rules:
+    + Make the shlibs file always depend on the latest upstream version.
+    + Abort the build if the symbols file is outdated.
+    + Drop obsolete configure flag.
+
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Sun, 23 Jan 2011 19:55:29 +0000
+
+librsvg (2.26.3-2) experimental; urgency=low
+
+  [ Josselin Mouette ]
   * No need to explicitly disable the Mozilla plugin anymore.
     Closes: #583129.
 
- -- Josselin Mouette <joss@debian.org>  Tue, 25 May 2010 17:46:12 +0200
+  [ Sebastian Dröge ]
+  * debian/librsvg2-common.install,
+    debian/control.in:
+    + Depend on standalone gdk-pixbuf and move loaders library
+      to the correct location.
+    + (Build-) depend on libgtk2.0-dev (>= 2.21.5) to allow the
+      experimental dependency resolver to work.
+
+ -- Sebastian Dröge <slomo@debian.org>  Fri, 23 Jul 2010 07:50:24 +0200
 
 librsvg (2.26.3-1) unstable; urgency=low
 

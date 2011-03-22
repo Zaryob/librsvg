@@ -1,5 +1,5 @@
---- ltmain.sh.old	2007-10-09 07:38:25.000000000 +0200
-+++ ltmain.sh	2007-10-09 07:39:25.000000000 +0200
+--- a/ltmain.sh
++++ b/ltmain.sh
 @@ -4716,6 +4716,11 @@
  	arg=$func_stripname_result
  	;;

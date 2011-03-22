@@ -1,0 +1,22 @@
+--- a/rsvg-gobject.c
++++ b/rsvg-gobject.c
+@@ -369,3 +369,9 @@
+ {
+     return RSVG_HANDLE (g_object_new (RSVG_TYPE_HANDLE, NULL));
+ }
++
++RsvgHandle *
++rsvg_handle_new_gz (void)
++{
++    return rsvg_handle_new ();
++}
+--- a/librsvg.def
++++ b/librsvg.def
+@@ -7,6 +7,7 @@
+ rsvg_handle_set_dpi
+ rsvg_handle_set_dpi_x_y
+ rsvg_handle_new
++rsvg_handle_new_gz
+ rsvg_handle_write
+ rsvg_handle_close
+ rsvg_handle_get_pixbuf
