@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Josselin Mouette <joss@debian.org>
 Uploaders: @GNOME_TEAM@
 Build-Depends: cdbs,
-               debhelper (>= 5),
+               debhelper (>= 8),
                libfreetype6-dev,
                libfontconfig1-dev (>= 1.0.1),
                libxml2-dev (>= 2.6.22),

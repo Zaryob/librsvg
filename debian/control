@@ -9,7 +9,7 @@ Priority: optional
 Maintainer: Josselin Mouette <joss@debian.org>
 Uploaders: David Weinehall <tao@debian.org>, Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>, Emilio Pozuelo Monfort <pochu@debian.org>, Michael Biebl <biebl@debian.org>, Sebastian Dröge <slomo@debian.org>
 Build-Depends: cdbs,
-               debhelper (>= 5),
+               debhelper (>= 8),
                libfreetype6-dev,
                libfontconfig1-dev (>= 1.0.1),
                libxml2-dev (>= 2.6.22),

@@ -3,6 +3,9 @@ librsvg (2.34.0-1) UNRELEASED; urgency=low
   * New upstream release.
   * debian/watch: Switch to .bz2 tarballs.
   * Bump Standards-Version to 3.9.2. No further changes.
+  * Bump debhelper compatibility level to 8.
+    - Update Build-Depends on debhelper.
+    - Strip leading debian/tmp/ from .install files.
 
  -- Michael Biebl <biebl@debian.org>  Mon, 06 Jun 2011 16:30:48 +0200
 
