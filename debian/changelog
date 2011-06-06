@@ -2,6 +2,7 @@ librsvg (2.34.0-1) UNRELEASED; urgency=low
 
   * New upstream release.
   * debian/watch: Switch to .bz2 tarballs.
+  * Bump Standards-Version to 3.9.2. No further changes.
 
  -- Michael Biebl <biebl@debian.org>  Mon, 06 Jun 2011 16:30:48 +0200
 
