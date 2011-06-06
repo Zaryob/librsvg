@@ -1,8 +1,9 @@
-librsvg (2.32.1-2) UNRELEASED; urgency=low
+librsvg (2.34.0-1) UNRELEASED; urgency=low
 
+  * New upstream release.
   * debian/watch: Switch to .bz2 tarballs.
 
- -- Michael Biebl <biebl@debian.org>  Mon, 06 Jun 2011 16:18:06 +0200
+ -- Michael Biebl <biebl@debian.org>  Mon, 06 Jun 2011 16:30:48 +0200
 
 librsvg (2.32.1-1) unstable; urgency=low
 
