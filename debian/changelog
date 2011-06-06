@@ -7,6 +7,7 @@ librsvg (2.34.0-1) UNRELEASED; urgency=low
     - Update Build-Depends on debhelper.
     - Strip leading debian/tmp/ from .install files.
   * Remove debian/patches/01_manpage.patch, merged upstream.
+  * Remove a few ancient Conflicts which are no longer necessary.
 
  -- Michael Biebl <biebl@debian.org>  Mon, 06 Jun 2011 16:30:48 +0200
 
