@@ -1,3 +1,14 @@
+librsvg (2.34.0-2) UNRELEASED; urgency=low
+
+  [ Steve Langasek ]
+  * Build for multiarch. (Closes: #634719, #634535)
+  * Add a versioned build-depends on libgdk-pixbuf2.0-dev to pick up the
+    new preferred loader path, and declare a breaks: on older versions of
+    gdk-pixbuf which won't look in this directory.
+  * Declare a breaks on libgtk2.0-0 for the same reason.
+
+ -- Michael Biebl <biebl@debian.org>  Thu, 21 Jul 2011 15:22:27 +0200
+
 librsvg (2.34.0-1) unstable; urgency=low
 
   * New upstream release.

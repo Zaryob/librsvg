@@ -14,6 +14,7 @@ LIBRSVG2_PKG := librsvg2-2
 LDFLAGS += -Wl,-z,defs -Wl,-O1 -Wl,--as-needed
 
 DEB_CONFIGURE_EXTRA_FLAGS += \
+	--libdir=/usr/lib/$(DEB_HOST_MULTIARCH) \
 	--enable-pixbuf-loader \
 	--with-croco \
 	--with-svgz
@@ -22,7 +23,7 @@ DEB_DH_MAKESHLIBS_ARGS_$(LIBRSVG2_PKG) += -V -- -c4
 DEB_DH_MAKESHLIBS_ARGS_librsvg2-common = --no-act
 
 binary-install/librsvg2-common::
-	LD_LIBRARY_PATH=debian/$(LIBRSVG2_PKG)/usr/lib:$(LD_LIBRARY_PATH) \
+	LD_LIBRARY_PATH=debian/$(LIBRSVG2_PKG)/usr/lib/$(DEB_HOST_MULTIARCH):$(LD_LIBRARY_PATH) \
 		dh_gtkmodules -plibrsvg2-common
 
 binary-install/librsvg2-bin::
