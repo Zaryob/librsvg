@@ -1,4 +1,4 @@
-librsvg (2.34.0-2) UNRELEASED; urgency=low
+librsvg (2.34.0-2) unstable; urgency=low
 
   [ Steve Langasek ]
   * Build for multiarch. (Closes: #634719, #634535)
@@ -7,7 +7,7 @@ librsvg (2.34.0-2) UNRELEASED; urgency=low
     gdk-pixbuf which won't look in this directory.
   * Declare a breaks on libgtk2.0-0 for the same reason.
 
- -- Michael Biebl <biebl@debian.org>  Thu, 21 Jul 2011 15:22:27 +0200
+ -- Michael Biebl <biebl@debian.org>  Thu, 28 Jul 2011 18:40:43 +0200
 
 librsvg (2.34.0-1) unstable; urgency=low
 
