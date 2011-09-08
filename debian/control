@@ -29,6 +29,8 @@ Build-Depends: cdbs (>= 0.4.93),
                libcairo2-doc
 Standards-Version: 3.9.2
 Homepage: http://librsvg.sourceforge.net/
+Vcs-Svn: svn://svn.debian.org/svn/pkg-gnome/desktop/unstable/librsvg
+Vcs-Browser: http://svn.debian.org/viewsvn/pkg-gnome/desktop/unstable/librsvg
 XS-Python-Version: >= 2.5
 
 Package: librsvg2-dev

@@ -1,3 +1,9 @@
+librsvg (2.34.0-3) UNRELEASED; urgency=low
+
+  * debian/control.in: Add Vcs-* fields.
+
+ -- Martin Pitt <mpitt@debian.org>  Thu, 08 Sep 2011 14:20:28 +0200
+
 librsvg (2.34.0-2) unstable; urgency=low
 
   [ Steve Langasek ]
