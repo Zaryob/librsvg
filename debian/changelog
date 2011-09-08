@@ -1,9 +1,9 @@
-librsvg (2.34.1-2) UNRELEASED; urgency=low
+librsvg (2.34.1-2) unstable; urgency=low
 
   * debian/control.in: Add libgtk-3-dev build dependency to also build the
     GTK3 tools.
 
- -- Martin Pitt <mpitt@debian.org>  Thu, 08 Sep 2011 16:10:11 +0200
+ -- Martin Pitt <mpitt@debian.org>  Thu, 08 Sep 2011 16:10:48 +0200
 
 librsvg (2.34.1-1) unstable; urgency=low
 
