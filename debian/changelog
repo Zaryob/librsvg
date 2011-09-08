@@ -7,6 +7,8 @@ librsvg (2.34.1-1) UNRELEASED; urgency=low
     - Store node type separately in RsvgNode (#658014)
     - [CVE-2011-3146]
   * debian/control.in: Add Vcs-* fields.
+  * Add 01_null_crash.patch: Fix crash on some broken SVGs. Patch by Bruno
+    Girin. (GNOME #626559, LP #608026)
 
  -- Martin Pitt <mpitt@debian.org>  Thu, 08 Sep 2011 14:20:28 +0200
 
