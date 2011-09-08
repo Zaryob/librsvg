@@ -9,6 +9,11 @@ librsvg (2.34.1-1) UNRELEASED; urgency=low
   * debian/control.in: Add Vcs-* fields.
   * Add 01_null_crash.patch: Fix crash on some broken SVGs. Patch by Bruno
     Girin. (GNOME #626559, LP #608026)
+  * Add debian/librsvg2-common.postinst.in, and debian/rules code to produce
+    the postinst from substituting the multiarch dir: Register the librsvg
+    gdk-pixbuf loader. This is usually handled by the libgdk-pixbuf2.0-0
+    trigger, but this fails on first installation in some scenarios (see
+    https://launchpad.net/bugs/719861 comment 9).
 
  -- Martin Pitt <mpitt@debian.org>  Thu, 08 Sep 2011 14:20:28 +0200
 

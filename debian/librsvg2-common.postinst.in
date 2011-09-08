@@ -1,0 +1,16 @@
+#!/bin/sh
+set -e
+
+#DEBHELPER#
+
+if [ "$1" = configure ]; then
+    # run an update there because the trigger might not work; see
+    # https://launchpad.net/bugs/719861 comment 9 for details
+    GDKPIXDIR=/usr/lib/#MULTIARCH#/gdk-pixbuf-2.0/
+    if [ -d $GDKPIXDIR ]; then
+        for VERSION in  `ls $GDKPIXDIR`; do
+	    $GDKPIXDIR/gdk-pixbuf-query-loaders $GDKPIXDIR/$VERSION/loaders/*.so /usr/lib/gdk-pixbuf-2.0/$VERSION/loaders/*.so > $GDKPIXDIR/$VERSION/loaders.cache 2>/dev/null || true
+	done
+    fi
+fi
+
