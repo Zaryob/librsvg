@@ -1,4 +1,4 @@
-librsvg (2.34.1-1) UNRELEASED; urgency=low
+librsvg (2.34.1-1) unstable; urgency=low
 
   * New upstream version:
     - cairo: reduce cost of measuring bounding boxes
@@ -15,7 +15,7 @@ librsvg (2.34.1-1) UNRELEASED; urgency=low
     trigger, but this fails on first installation in some scenarios (see
     https://launchpad.net/bugs/719861 comment 9).
 
- -- Martin Pitt <mpitt@debian.org>  Thu, 08 Sep 2011 14:20:28 +0200
+ -- Martin Pitt <mpitt@debian.org>  Thu, 08 Sep 2011 15:37:00 +0200
 
 librsvg (2.34.0-2) unstable; urgency=low
 
