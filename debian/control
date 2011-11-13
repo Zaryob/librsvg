@@ -88,7 +88,6 @@ Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
          librsvg2-2 (= ${binary:Version})
-Multi-Arch: same
 Description: SAX-based renderer library for SVG files (debug)
  The rsvg library is an efficient renderer for Scalable Vector Graphics
  (SVG) pictures.

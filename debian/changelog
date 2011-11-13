@@ -1,3 +1,9 @@
+librsvg (2.34.1-4) UNRELEASED; urgency=low
+
+  * Remove incorrect M-A: same statement for the debug package.
+
+ -- Josselin Mouette <joss@debian.org>  Sun, 13 Nov 2011 17:19:17 +0100
+
 librsvg (2.34.1-3) unstable; urgency=low
 
   * debian/librsvg2-common.postinst.in: Simplify by merely activating the
