@@ -1,6 +1,11 @@
-librsvg (2.34.1-4) UNRELEASED; urgency=low
+librsvg (2.34.2-1) UNRELEASED; urgency=low
 
+  [ Josselin Mouette ]
   * Remove incorrect M-A: same statement for the debug package.
+
+  [ Martin Pitt ]
+  * New upstream release.
+  * Drop 01_null_crash.patch, accepted upstream.
 
  -- Josselin Mouette <joss@debian.org>  Sun, 13 Nov 2011 17:19:17 +0100
 
