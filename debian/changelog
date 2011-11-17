@@ -6,6 +6,13 @@ librsvg (2.34.2-1) UNRELEASED; urgency=low
   [ Martin Pitt ]
   * New upstream release.
   * Drop 01_null_crash.patch, accepted upstream.
+  * This version supports introspection, enable it:
+    - debian/control.in: Add gir1.2-rsvg-2.0 binary package,
+      g-i/libgirepository-dev build dependencies, and add gir1.2-rsvg-2.0
+      dependency to -dev.
+    - debian/rules: Configure with --enable-introspection.
+    - Add debian/gir1.2-rsvg-2.0.install: Install typelib.
+    - debian/librsvg2-dev.install: Install *.gir.
 
  -- Josselin Mouette <joss@debian.org>  Sun, 13 Nov 2011 17:19:17 +0100
 
