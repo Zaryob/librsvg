@@ -1,4 +1,4 @@
-librsvg (2.34.2-1) UNRELEASED; urgency=low
+librsvg (2.34.2-1) unstable; urgency=low
 
   [ Josselin Mouette ]
   * Remove incorrect M-A: same statement for the debug package.
@@ -14,7 +14,7 @@ librsvg (2.34.2-1) UNRELEASED; urgency=low
     - Add debian/gir1.2-rsvg-2.0.install: Install typelib.
     - debian/librsvg2-dev.install: Install *.gir.
 
- -- Josselin Mouette <joss@debian.org>  Sun, 13 Nov 2011 17:19:17 +0100
+ -- Martin Pitt <mpitt@debian.org>  Thu, 17 Nov 2011 09:38:21 +0100
 
 librsvg (2.34.1-3) unstable; urgency=low
 
