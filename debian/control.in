@@ -23,8 +23,7 @@ Build-Depends: cdbs (>= 0.4.93),
                gir1.2-glib-2.0,
                gir1.2-freedesktop,
                gir1.2-gdkpixbuf-2.0,
-               python,
-               python-support,
+               python (>= 2.6.6-3~),
                libglib2.0-doc,
                libgtk2.0-doc,
                libcairo2-doc
@@ -32,7 +31,7 @@ Standards-Version: 3.9.2
 Homepage: http://librsvg.sourceforge.net/
 Vcs-Svn: svn://svn.debian.org/svn/pkg-gnome/desktop/unstable/librsvg
 Vcs-Browser: http://svn.debian.org/viewsvn/pkg-gnome/desktop/unstable/librsvg
-XS-Python-Version: >= 2.5
+X-Python-Version: >= 2.5
 
 Package: librsvg2-dev
 Section: libdevel
@@ -44,6 +43,7 @@ Depends: ${misc:Depends},
          libgdk-pixbuf2.0-dev (>= 2.21.6),
          libcairo2-dev (>= 1.2.0),
          libgtk2.0-dev (>= 2.21.5)
+Suggests: librsvg2-doc
 Multi-Arch: same
 Description: SAX-based renderer library for SVG files (development)
  The rsvg library is an efficient renderer for Scalable Vector Graphics
@@ -82,6 +82,19 @@ Description: SAX-based renderer library for SVG files (extra runtime)
  This package includes the gdk-pixbuf loader and a GTK+ engine, allowing
  to load SVG images transparently inside GTK+ applications.
 
+Package: librsvg2-doc
+Section: doc
+Architecture: all
+Depends: ${misc:Depends}
+Suggests: devhelp
+Breaks: librsvg2-dev (<< 2.34.2-2)
+Replaces: librsvg2-dev (<< 2.34.2-2)
+Description: SAX-based renderer library for SVG files (documentation)
+ The rsvg library is an efficient renderer for Scalable Vector Graphics
+ (SVG) pictures.
+ .
+ This package provides the API documentation.
+
 Package: librsvg2-dbg
 Section: debug
 Priority: extra
@@ -111,7 +124,7 @@ Description: command-line and graphical viewers for SVG files
  to the PNG format and a graphical SVG viewer.
 
 Package: gir1.2-rsvg-2.0
-Section: libs
+Section: introspection
 Architecture: any
 Depends: ${misc:Depends},
          ${gir:Depends}

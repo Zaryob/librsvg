@@ -17,6 +17,7 @@ DEB_CONFIGURE_EXTRA_FLAGS += \
 	--libdir=/usr/lib/$(DEB_HOST_MULTIARCH) \
 	--enable-pixbuf-loader \
 	--enable-introspection \
+	--enable-gtk-doc \
 	--with-croco \
 	--with-svgz
 
@@ -30,7 +31,7 @@ binary-install/librsvg2-common::
 		debian/$(cdbs_curpkg).postinst
 
 binary-install/librsvg2-bin::
-	dh_pysupport -plibrsvg2-bin
+	dh_python2 -plibrsvg2-bin
 
 clean::
 	rm -f debian/librsvg2-common.postinst
