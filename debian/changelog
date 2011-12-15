@@ -4,8 +4,9 @@ librsvg (2.34.2-2) UNRELEASED; urgency=low
     - Tighten dependency between librsvg2-dev and gir1.2-rsvg-2.0.
     - Change section of gir1.2-rsvg-2.0 to introspection.
   * Switch to dh_python2.
+  * Split API documentation into librsvg2-doc. Closes: #649422
 
- -- Michael Biebl <biebl@debian.org>  Thu, 17 Nov 2011 22:37:11 +0100
+ -- Michael Biebl <biebl@debian.org>  Thu, 15 Dec 2011 04:13:40 +0100
 
 librsvg (2.34.2-1) unstable; urgency=low
 
