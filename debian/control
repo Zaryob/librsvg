@@ -116,7 +116,7 @@ Description: command-line and graphical viewers for SVG files
  to the PNG format and a graphical SVG viewer.
 
 Package: gir1.2-rsvg-2.0
-Section: libs
+Section: introspection
 Architecture: any
 Depends: ${misc:Depends},
          ${gir:Depends}
