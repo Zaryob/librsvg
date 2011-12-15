@@ -1,4 +1,4 @@
-librsvg (2.34.2-2) UNRELEASED; urgency=low
+librsvg (2.34.2-2) unstable; urgency=low
 
   * debian/control.in:
     - Tighten dependency between librsvg2-dev and gir1.2-rsvg-2.0.
@@ -7,7 +7,7 @@ librsvg (2.34.2-2) UNRELEASED; urgency=low
   * Split API documentation into librsvg2-doc. Closes: #649422
   * Regenerate gtk-doc API documentation during build.
 
- -- Michael Biebl <biebl@debian.org>  Thu, 15 Dec 2011 04:13:40 +0100
+ -- Michael Biebl <biebl@debian.org>  Thu, 15 Dec 2011 06:53:10 +0100
 
 librsvg (2.34.2-1) unstable; urgency=low
 
