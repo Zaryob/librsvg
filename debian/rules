@@ -30,7 +30,7 @@ binary-install/librsvg2-common::
 		debian/$(cdbs_curpkg).postinst
 
 binary-install/librsvg2-bin::
-	dh_pysupport -plibrsvg2-bin
+	dh_python2 -plibrsvg2-bin
 
 clean::
 	rm -f debian/librsvg2-common.postinst
