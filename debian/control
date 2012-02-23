@@ -49,7 +49,6 @@ Depends: ${misc:Depends},
          libcairo2-dev (>= 1.2.0),
          libgtk2.0-dev (>= 2.21.5)
 Suggests: librsvg2-doc
-Multi-Arch: same
 Description: SAX-based renderer library for SVG files (development)
  The rsvg library is an efficient renderer for Scalable Vector Graphics
  (SVG) pictures.
