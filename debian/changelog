@@ -1,4 +1,4 @@
-librsvg (2.34.2-3) UNRELEASED; urgency=low
+librsvg (2.34.2-3) unstable; urgency=low
 
   [ Josselin Mouette ]
   *  Remove MA: same statements for -dev packages, because they depend 
@@ -17,7 +17,7 @@ librsvg (2.34.2-3) UNRELEASED; urgency=low
   * Add Recommonds on librsvg2-common to librsvg2-2 so the gdk-pixbuf loader
     is installed by default.
 
- -- Michael Biebl <biebl@debian.org>  Thu, 08 Mar 2012 06:41:21 +0100
+ -- Michael Biebl <biebl@debian.org>  Thu, 08 Mar 2012 06:44:35 +0100
 
 librsvg (2.34.2-2) unstable; urgency=low
 
