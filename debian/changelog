@@ -10,7 +10,7 @@ librsvg (2.35.2-1) experimental; urgency=low
   * debian/librsvg2-bin.install: Remove the /usr/share/pixmap directory.
     Upstream no longer installs a svg icon.
   * debian/patches/10_rsvg-gz.patch: Refresh for the new release and add a
-    DEP-5 patch header.
+    DEP-3 patch header.
 
  -- Michael Biebl <biebl@debian.org>  Thu, 08 Mar 2012 09:00:08 +0100
 
