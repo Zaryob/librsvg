@@ -1,4 +1,4 @@
-librsvg (2.35.2-1) UNRELEASED; urgency=low
+librsvg (2.35.2-1) experimental; urgency=low
 
   * New upstream development release.
   * debian/control.in: Update Build-Depends.
@@ -12,7 +12,7 @@ librsvg (2.35.2-1) UNRELEASED; urgency=low
   * debian/patches/10_rsvg-gz.patch: Refresh for the new release and add a
     DEP-5 patch header.
 
- -- Michael Biebl <biebl@debian.org>  Thu, 08 Mar 2012 08:59:25 +0100
+ -- Michael Biebl <biebl@debian.org>  Thu, 08 Mar 2012 09:00:08 +0100
 
 librsvg (2.34.2-3) unstable; urgency=low
 
