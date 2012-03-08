@@ -14,7 +14,11 @@ LIBRSVG2_PKG := librsvg2-2
 LDFLAGS += -Wl,-z,defs -Wl,-O1 -Wl,--as-needed
 
 DEB_CONFIGURE_EXTRA_FLAGS += \
+	--libdir=/usr/lib/$(DEB_HOST_MULTIARCH) \
 	--enable-pixbuf-loader \
+	--enable-introspection \
+	--enable-gtk-doc \
+	--disable-gtk-theme \
 	--with-croco \
 	--with-svgz
 
@@ -22,8 +26,12 @@ DEB_DH_MAKESHLIBS_ARGS_$(LIBRSVG2_PKG) += -V -- -c4
 DEB_DH_MAKESHLIBS_ARGS_librsvg2-common = --no-act
 
 binary-install/librsvg2-common::
-	LD_LIBRARY_PATH=debian/$(LIBRSVG2_PKG)/usr/lib:$(LD_LIBRARY_PATH) \
-		dh_gtkmodules -plibrsvg2-common
+	sed -e"s/#MULTIARCH#/$(DEB_HOST_MULTIARCH)/g" debian/$(cdbs_curpkg).postinst.in > \
+		debian/$(cdbs_curpkg).postinst
 
 binary-install/librsvg2-bin::
-	dh_pysupport -plibrsvg2-bin
+	dh_python2 -plibrsvg2-bin
+
+clean::
+	rm -f debian/librsvg2-common.postinst
+

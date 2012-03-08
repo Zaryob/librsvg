@@ -1,2 +1,1 @@
-debian/tmp/usr/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.so
-debian/tmp/usr/lib/gtk-2.0/*/engines/*.so
+usr/lib/*/gdk-pixbuf-2.0/2.10.0/loaders/*.so
