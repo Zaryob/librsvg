@@ -1,9 +1,14 @@
 librsvg (2.34.2-3) UNRELEASED; urgency=low
 
+  [ Josselin Mouette ]
   *  Remove MA: same statements for -dev packages, because they depend 
      on gir packages which are not MA compatible.
 
- -- Josselin Mouette <joss@debian.org>  Thu, 23 Feb 2012 21:20:10 +0100
+  [ Michael Biebl ]
+  * debian/rules: Stop calling dh_gtkmodules. This tool is deprecated and has
+    been replaced by triggers.
+
+ -- Michael Biebl <biebl@debian.org>  Thu, 08 Mar 2012 05:51:20 +0100
 
 librsvg (2.34.2-2) unstable; urgency=low
 
