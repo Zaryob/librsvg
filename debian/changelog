@@ -9,6 +9,9 @@ librsvg (2.34.2-3) UNRELEASED; urgency=low
     been replaced by triggers.
   * Stop building the gtk2 theme engine. It is unused and creates an unwanted
     dependency on libgtk2.0-0 in librsvg2-common.
+  * Drop useless Depends on libgtk2.0-dev from librsvg2-dev.
+  * Tigthen the Depends on libglib2.0-dev and libgdk-pixbuf2.0-dev for
+    librsvg2-dev.
 
  -- Michael Biebl <biebl@debian.org>  Thu, 08 Mar 2012 05:51:20 +0100
 

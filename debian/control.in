@@ -39,10 +39,9 @@ Architecture: any
 Depends: ${misc:Depends},
          librsvg2-2 (= ${binary:Version}),
          gir1.2-rsvg-2.0 (= ${binary:Version}),
-         libglib2.0-dev (>= 2.12.0),
-         libgdk-pixbuf2.0-dev (>= 2.21.6),
-         libcairo2-dev (>= 1.2.0),
-         libgtk2.0-dev (>= 2.21.5)
+         libglib2.0-dev (>= 2.24.0),
+         libgdk-pixbuf2.0-dev (>= 2.23.5-2),
+         libcairo2-dev (>= 1.2.0)
 Suggests: librsvg2-doc
 Description: SAX-based renderer library for SVG files (development)
  The rsvg library is an efficient renderer for Scalable Vector Graphics
@@ -126,6 +125,7 @@ Package: gir1.2-rsvg-2.0
 Section: introspection
 Architecture: any
 Depends: ${misc:Depends},
+         ${shlibs:Depends},
          ${gir:Depends}
 Description: gir files for renderer library for SVG files
  The rsvg library is an efficient renderer for Scalable Vector Graphics
