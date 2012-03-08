@@ -1,8 +1,16 @@
---- a/rsvg-gobject.c
-+++ b/rsvg-gobject.c
-@@ -369,3 +369,9 @@
- {
-     return RSVG_HANDLE (g_object_new (RSVG_TYPE_HANDLE, NULL));
+Description: Revert ABI breakage
+ Provide the rsvg_handle_new_gz function.
+ Do not provide the C prototype to force
+ applications using it to use rsvg_handle_new instead.
+Author: Josselin Mouette <joss@debian.org>
+Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=348920
+Index: librsvg-2.35.2/rsvg-gobject.c
+===================================================================
+--- librsvg-2.35.2.orig/rsvg-gobject.c	2012-02-06 20:44:12.000000000 +0100
++++ librsvg-2.35.2/rsvg-gobject.c	2012-03-08 07:15:20.325930529 +0100
+@@ -356,3 +356,9 @@
+                          "flags", flags,
+                          NULL);
  }
 +
 +RsvgHandle *
@@ -10,13 +18,15 @@
 +{
 +    return rsvg_handle_new ();
 +}
---- a/librsvg.def
-+++ b/librsvg.def
-@@ -7,6 +7,7 @@
- rsvg_handle_set_dpi
- rsvg_handle_set_dpi_x_y
- rsvg_handle_new
+Index: librsvg-2.35.2/librsvg.def
+===================================================================
+--- librsvg-2.35.2.orig/librsvg.def	2012-02-06 20:44:12.000000000 +0100
++++ librsvg-2.35.2/librsvg.def	2012-03-08 07:15:59.117929157 +0100
+@@ -23,6 +23,7 @@
+ rsvg_handle_new_from_file
+ rsvg_handle_new_from_gfile_sync
+ rsvg_handle_new_from_stream_sync
 +rsvg_handle_new_gz
- rsvg_handle_write
- rsvg_handle_close
- rsvg_handle_get_pixbuf
+ rsvg_handle_new_with_flags
+ rsvg_handle_read_stream_sync
+ rsvg_handle_render_cairo

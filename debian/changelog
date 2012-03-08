@@ -9,8 +9,10 @@ librsvg (2.35.2-1) UNRELEASED; urgency=low
   * debian/watch: Track .xz tarballs.
   * debian/librsvg2-bin.install: Remove the /usr/share/pixmap directory.
     Upstream no longer installs a svg icon.
+  * debian/patches/10_rsvg-gz.patch: Refresh for the new release and add a
+    DEP-5 patch header.
 
- -- Michael Biebl <biebl@debian.org>  Thu, 08 Mar 2012 08:54:51 +0100
+ -- Michael Biebl <biebl@debian.org>  Thu, 08 Mar 2012 08:59:25 +0100
 
 librsvg (2.34.2-3) unstable; urgency=low
 
