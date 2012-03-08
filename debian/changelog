@@ -12,8 +12,12 @@ librsvg (2.34.2-3) UNRELEASED; urgency=low
   * Drop useless Depends on libgtk2.0-dev from librsvg2-dev.
   * Tighten the Depends on libglib2.0-dev and libgdk-pixbuf2.0-dev for
     librsvg2-dev.
+  * Add Depends on librsvg2-common to librsvg2-dev so packages building
+    against librsvg can rely on the gdk-pixbuf loader being available.
+  * Add Recommonds on librsvg2-common to librsvg2-2 so the gdk-pixbuf loader
+    is installed by default.
 
- -- Michael Biebl <biebl@debian.org>  Thu, 08 Mar 2012 05:51:20 +0100
+ -- Michael Biebl <biebl@debian.org>  Thu, 08 Mar 2012 06:41:21 +0100
 
 librsvg (2.34.2-2) unstable; urgency=low
 
