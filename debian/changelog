@@ -7,6 +7,8 @@ librsvg (2.34.2-3) UNRELEASED; urgency=low
   [ Michael Biebl ]
   * debian/rules: Stop calling dh_gtkmodules. This tool is deprecated and has
     been replaced by triggers.
+  * Stop building the gtk2 theme engine. It is unused and creates an unwanted
+    dependency on libgtk2.0-0 in librsvg2-common.
 
  -- Michael Biebl <biebl@debian.org>  Thu, 08 Mar 2012 05:51:20 +0100
 

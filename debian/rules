@@ -18,6 +18,7 @@ DEB_CONFIGURE_EXTRA_FLAGS += \
 	--enable-pixbuf-loader \
 	--enable-introspection \
 	--enable-gtk-doc \
+	--disable-gtk-theme \
 	--with-croco \
 	--with-svgz
 
