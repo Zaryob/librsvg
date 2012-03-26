@@ -1,10 +1,10 @@
-librsvg (2.36.0-1) UNRELEASED; urgency=low
+librsvg (2.36.0-1) unstable; urgency=low
 
   * New upstream release.
   * Update debian/copyright using the machine-readable copyright format 1.0.
   * Bump Standards-Version to 3.9.3.
 
- -- Michael Biebl <biebl@debian.org>  Tue, 27 Mar 2012 01:47:07 +0200
+ -- Michael Biebl <biebl@debian.org>  Tue, 27 Mar 2012 01:47:52 +0200
 
 librsvg (2.35.2-1) experimental; urgency=low
 
