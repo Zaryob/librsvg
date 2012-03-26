@@ -1,3 +1,19 @@
+librsvg (2.35.2-1) experimental; urgency=low
+
+  * New upstream development release.
+  * debian/control.in: Update Build-Depends.
+  * debian/librsvg2-2.symbols: Add new symbols and remove a few private
+    symbols which are no longer exported.
+  * debian/rules: Remove obsolete configure switches, libcroco and svgz
+    support are no longer optional.
+  * debian/watch: Track .xz tarballs.
+  * debian/librsvg2-bin.install: Remove the /usr/share/pixmap directory.
+    Upstream no longer installs a svg icon.
+  * debian/patches/10_rsvg-gz.patch: Refresh for the new release and add a
+    DEP-3 patch header.
+
+ -- Michael Biebl <biebl@debian.org>  Thu, 08 Mar 2012 09:00:08 +0100
+
 librsvg (2.34.2-3) unstable; urgency=low
 
   [ Josselin Mouette ]

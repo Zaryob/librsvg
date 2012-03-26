@@ -18,9 +18,7 @@ DEB_CONFIGURE_EXTRA_FLAGS += \
 	--enable-pixbuf-loader \
 	--enable-introspection \
 	--enable-gtk-doc \
-	--disable-gtk-theme \
-	--with-croco \
-	--with-svgz
+	--disable-gtk-theme
 
 DEB_DH_MAKESHLIBS_ARGS_$(LIBRSVG2_PKG) += -V -- -c4
 DEB_DH_MAKESHLIBS_ARGS_librsvg2-common = --no-act
