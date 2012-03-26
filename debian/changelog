@@ -1,8 +1,9 @@
 librsvg (2.36.0-1) UNRELEASED; urgency=low
 
   * New upstream release.
+  * Update debian/copyright using the machine-readable copyright format 1.0.
 
- -- Michael Biebl <biebl@debian.org>  Mon, 26 Mar 2012 19:45:48 +0200
+ -- Michael Biebl <biebl@debian.org>  Tue, 27 Mar 2012 01:46:14 +0200
 
 librsvg (2.35.2-1) experimental; urgency=low
 
