@@ -30,7 +30,7 @@ Build-Depends: cdbs (>= 0.4.93),
                libglib2.0-doc,
                libgtk2.0-doc,
                libcairo2-doc
-Standards-Version: 3.9.2
+Standards-Version: 3.9.3
 Homepage: http://librsvg.sourceforge.net/
 Vcs-Svn: svn://svn.debian.org/svn/pkg-gnome/desktop/unstable/librsvg
 Vcs-Browser: http://svn.debian.org/viewsvn/pkg-gnome/desktop/unstable/librsvg
