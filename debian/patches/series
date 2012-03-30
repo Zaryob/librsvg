@@ -1,2 +1,3 @@
 10_rsvg-gz.patch
+20_Revert-Remove-obsolete-script.patch
 99_ltmain_as-needed.patch
