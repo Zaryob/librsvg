@@ -14,6 +14,8 @@ endif
 LIBRSVG2_PKG := librsvg2-2
 LDFLAGS += -Wl,-z,defs -Wl,-O1 -Wl,--as-needed
 
+DEB_DH_AUTORECONF_ARGS = --as-needed
+
 DEB_CONFIGURE_EXTRA_FLAGS += \
 	--libdir=/usr/lib/$(DEB_HOST_MULTIARCH) \
 	--enable-pixbuf-loader \

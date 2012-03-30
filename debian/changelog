@@ -3,8 +3,10 @@ librsvg (2.36.0-2) unstable; urgency=low
   * Revert upstream commit which dropped the "rsvg" script until all reverse
     dependencies have been fixed to use "rsvg-convert". Closes: #666276
   * Use dh-autoreconf to update the build system.
+  * Disable 99_ltmain_as-needed.patch and use dh-autoreconf --as-needed
+    instead.
 
- -- Michael Biebl <biebl@debian.org>  Fri, 30 Mar 2012 22:48:05 +0200
+ -- Michael Biebl <biebl@debian.org>  Fri, 30 Mar 2012 23:13:11 +0200
 
 librsvg (2.36.0-1) unstable; urgency=low
 
