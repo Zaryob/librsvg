@@ -1,4 +1,4 @@
-librsvg (2.36.0-3) UNRELEASED; urgency=low
+librsvg (2.36.0-3) unstable; urgency=low
 
   * Instead of bringing the old rsvg script back, just install a symlink
     /usr/bin/rsvg → /usr/bin/rsvg-convert. This is safe because both tools
@@ -10,7 +10,7 @@ librsvg (2.36.0-3) UNRELEASED; urgency=low
   * Remove python/dh_python2 dependency. With the rsvg python script gone this
     is no longer necessary.
 
- -- Michael Biebl <biebl@debian.org>  Sat, 31 Mar 2012 22:26:18 +0200
+ -- Michael Biebl <biebl@debian.org>  Sat, 31 Mar 2012 22:28:04 +0200
 
 librsvg (2.36.0-2) unstable; urgency=low
 
