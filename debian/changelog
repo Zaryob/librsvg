@@ -7,8 +7,10 @@ librsvg (2.36.0-3) UNRELEASED; urgency=low
     cycle. This way we don't need any Breaks.
   * Stop using dh-autoreconf since we no longer need to update the build
     system.
+  * Remove python/dh_python2 dependency. With the rsvg python script gone this
+    is no longer necessary.
 
- -- Michael Biebl <biebl@debian.org>  Sat, 31 Mar 2012 22:24:46 +0200
+ -- Michael Biebl <biebl@debian.org>  Sat, 31 Mar 2012 22:26:18 +0200
 
 librsvg (2.36.0-2) unstable; urgency=low
 
