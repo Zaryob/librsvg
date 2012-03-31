@@ -1,3 +1,13 @@
+librsvg (2.36.0-3) UNRELEASED; urgency=low
+
+  * Instead of bringing the old rsvg script back, just install a symlink
+    /usr/bin/rsvg → /usr/bin/rsvg-convert. This is safe because both tools
+    provide the same command line interface and output. Once all reverse
+    dependencies are updated we can drop the symlink in the next release
+    cycle. This way we don't need any Breaks.
+
+ -- Michael Biebl <biebl@debian.org>  Sat, 31 Mar 2012 20:31:37 +0200
+
 librsvg (2.36.0-2) unstable; urgency=low
 
   * Revert upstream commit which dropped the "rsvg" script until all reverse
