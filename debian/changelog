@@ -1,3 +1,10 @@
+librsvg (2.36.0-4) UNRELEASED; urgency=low
+
+  * rsvg didn't expect an -o parameter for the output file so apply some
+    compat magic when rsvg-convert is being called as rsvg.
+
+ -- Michael Biebl <biebl@debian.org>  Sun, 01 Apr 2012 00:17:04 +0200
+
 librsvg (2.36.0-3) unstable; urgency=low
 
   * Instead of bringing the old rsvg script back, just install a symlink
