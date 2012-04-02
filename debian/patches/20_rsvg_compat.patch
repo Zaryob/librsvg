@@ -28,7 +28,7 @@ index f26fd87..d31115c 100644
 +    if (rsvg_compat) {
 +        /* We are being called as rsvg. Apply some compat magic */
 +        if (n_args == 2) {
-+            output = args[1];
++            output = g_strdup (args[1]);
 +            n_args = 1;
 +        } else {
 +            fprintf (stderr, _("Please supply an input and output file.\n"));
