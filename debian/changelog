@@ -1,8 +1,8 @@
-librsvg (2.36.0-5) UNRELEASED; urgency=low
+librsvg (2.36.0-5) unstable; urgency=low
 
   * Fix segfault by duplicating the output string.
 
- -- Michael Biebl <biebl@debian.org>  Mon, 02 Apr 2012 05:44:14 +0200
+ -- Michael Biebl <biebl@debian.org>  Mon, 02 Apr 2012 05:47:25 +0200
 
 librsvg (2.36.0-4) unstable; urgency=low
 
