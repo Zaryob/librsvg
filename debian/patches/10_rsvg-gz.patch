@@ -18,15 +18,3 @@ Index: librsvg-2.35.2/rsvg-gobject.c
 +{
 +    return rsvg_handle_new ();
 +}
-Index: librsvg-2.35.2/librsvg.def
-===================================================================
---- librsvg-2.35.2.orig/librsvg.def	2012-02-06 20:44:12.000000000 +0100
-+++ librsvg-2.35.2/librsvg.def	2012-03-08 07:15:59.117929157 +0100
-@@ -23,6 +23,7 @@
- rsvg_handle_new_from_file
- rsvg_handle_new_from_gfile_sync
- rsvg_handle_new_from_stream_sync
-+rsvg_handle_new_gz
- rsvg_handle_new_with_flags
- rsvg_handle_read_stream_sync
- rsvg_handle_render_cairo

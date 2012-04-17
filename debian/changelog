@@ -1,8 +1,9 @@
 librsvg (2.36.1-1) UNRELEASED; urgency=low
 
   * New upstream release.
+  * debian/patches/10_rsvg-gz.patch: Updated.
 
- -- Michael Biebl <biebl@debian.org>  Tue, 17 Apr 2012 17:05:50 +0200
+ -- Michael Biebl <biebl@debian.org>  Tue, 17 Apr 2012 17:15:11 +0200
 
 librsvg (2.36.0-5) unstable; urgency=low
 
