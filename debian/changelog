@@ -1,3 +1,9 @@
+librsvg (2.36.1-1) UNRELEASED; urgency=low
+
+  * New upstream release.
+
+ -- Michael Biebl <biebl@debian.org>  Tue, 17 Apr 2012 17:05:50 +0200
+
 librsvg (2.36.0-5) unstable; urgency=low
 
   * Fix segfault by duplicating the output string.
