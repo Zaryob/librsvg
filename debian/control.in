@@ -5,6 +5,7 @@ Maintainer: Josselin Mouette <joss@debian.org>
 Uploaders: @GNOME_TEAM@
 Build-Depends: cdbs (>= 0.4.93),
                debhelper (>= 8.1.3),
+               dh-autoreconf (>= 4),
                libxml2-dev (>= 2.7.0),
                libglib2.0-dev (>= 2.24.0),
                libcairo2-dev (>= 1.2.0),
@@ -22,7 +23,9 @@ Build-Depends: cdbs (>= 0.4.93),
                gir1.2-freedesktop,
                libglib2.0-doc,
                libgtk2.0-doc,
-               libcairo2-doc
+               libcairo2-doc,
+               valac-0.18 (>= 0.17.5)
+Build-Conflicts: valac-0.16
 Standards-Version: 3.9.3
 Homepage: http://librsvg.sourceforge.net/
 Vcs-Svn: svn://svn.debian.org/svn/pkg-gnome/desktop/unstable/librsvg

@@ -1,5 +1,6 @@
 #!/usr/bin/make -f
 
+include /usr/share/cdbs/1/rules/autoreconf.mk
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/rules/utils.mk
 include /usr/share/cdbs/1/class/gnome.mk
@@ -10,6 +11,8 @@ ifeq ($(DEB_BUILD_ARCH),alpha)
    CFLAGS += -mieee
 endif
 
+DEB_DH_AUTORECONF_ARGS += --as-needed
+
 LIBRSVG2_PKG := librsvg2-2
 LDFLAGS += -Wl,-z,defs -Wl,-O1 -Wl,--as-needed
 
@@ -17,8 +20,10 @@ DEB_CONFIGURE_EXTRA_FLAGS += \
 	--libdir=/usr/lib/$(DEB_HOST_MULTIARCH) \
 	--enable-pixbuf-loader \
 	--enable-introspection \
+	--enable-vala \
 	--enable-gtk-doc \
-	--disable-gtk-theme
+	--disable-gtk-theme \
+	$(NULL)
 
 DEB_DH_MAKESHLIBS_ARGS_$(LIBRSVG2_PKG) += -V -- -c4
 DEB_DH_MAKESHLIBS_ARGS_librsvg2-common = --no-act
