@@ -1,3 +1,10 @@
+librsvg (2.36.4-1) UNRELEASED; urgency=low
+
+  * Team upload
+  * New upstream version
+
+ -- Simon McVittie <smcv@debian.org>  Mon, 22 Oct 2012 19:30:23 +0100
+
 librsvg (2.36.1-1) unstable; urgency=low
 
   * New upstream release.
