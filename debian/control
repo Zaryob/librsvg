@@ -28,7 +28,8 @@ Build-Depends: cdbs (>= 0.4.93),
                gir1.2-freedesktop,
                libglib2.0-doc,
                libgtk2.0-doc,
-               libcairo2-doc
+               libcairo2-doc,
+               valac (>= 0.17.5) | valac-0.18 (>= 0.17.5)
 Standards-Version: 3.9.3
 Homepage: http://librsvg.sourceforge.net/
 Vcs-Svn: svn://svn.debian.org/svn/pkg-gnome/desktop/unstable/librsvg

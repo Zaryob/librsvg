@@ -4,6 +4,9 @@ librsvg (2.36.4-1) UNRELEASED; urgency=low
   * New upstream version (LP: #1038843)
   * Use dh-autoreconf with --as-needed instead of patching ltmain.sh
     (from Ubuntu, thanks Iain Lane)
+  * Enable Vala bindings (based on Ubuntu changes, thanks to Robert Ancell)
+    - Build-Conflicts: valac-0.16 because if both are installed, the
+      default version 0.16 is selected, breaking our build
 
  -- Simon McVittie <smcv@debian.org>  Mon, 22 Oct 2012 19:30:23 +0100
 
