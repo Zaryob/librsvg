@@ -27,9 +27,6 @@ binary-install/librsvg2-common::
 	sed -e"s/#MULTIARCH#/$(DEB_HOST_MULTIARCH)/g" debian/$(cdbs_curpkg).postinst.in > \
 		debian/$(cdbs_curpkg).postinst
 
-binary-install/librsvg2-bin::
-	dh_python2 -plibrsvg2-bin
-
 clean::
 	rm -f debian/librsvg2-common.postinst
 

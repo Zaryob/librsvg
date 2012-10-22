@@ -20,16 +20,13 @@ Build-Depends: cdbs (>= 0.4.93),
                libgirepository1.0-dev (>= 0.10.8),
                gir1.2-glib-2.0,
                gir1.2-freedesktop,
-               gir1.2-gdkpixbuf-2.0,
-               python (>= 2.6.6-3~),
                libglib2.0-doc,
                libgtk2.0-doc,
                libcairo2-doc
-Standards-Version: 3.9.2
+Standards-Version: 3.9.3
 Homepage: http://librsvg.sourceforge.net/
 Vcs-Svn: svn://svn.debian.org/svn/pkg-gnome/desktop/unstable/librsvg
 Vcs-Browser: http://svn.debian.org/viewsvn/pkg-gnome/desktop/unstable/librsvg
-X-Python-Version: >= 2.5
 
 Package: librsvg2-dev
 Section: libdevel

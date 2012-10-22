@@ -1,6 +1,8 @@
---- a/ltmain.sh
-+++ b/ltmain.sh
-@@ -4716,6 +4716,11 @@
+Index: librsvg-2.36.0/ltmain.sh
+===================================================================
+--- librsvg-2.36.0.orig/ltmain.sh	2012-02-03 13:14:50.000000000 +0100
++++ librsvg-2.36.0/ltmain.sh	2012-03-30 22:37:32.269507414 +0200
+@@ -5787,6 +5787,11 @@
  	arg=$func_stripname_result
  	;;
  
@@ -12,7 +14,7 @@
        -Wl,*)
  	func_stripname '-Wl,' '' "$arg"
  	args=$func_stripname_result
-@@ -5067,6 +5072,15 @@
+@@ -6147,6 +6152,15 @@
  	lib=
  	found=no
  	case $deplib in

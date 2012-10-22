@@ -1,1 +1,1 @@
-/usr/lib/mozilla/plugins/libmozsvgdec.so /usr/lib/mozilla-firefox/plugins/libmozsvgdec.so
+usr/bin/rsvg-convert usr/bin/rsvg
