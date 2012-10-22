@@ -1,7 +1,7 @@
 librsvg (2.36.4-1) UNRELEASED; urgency=low
 
   * Team upload
-  * New upstream version
+  * New upstream version (LP: #1038843)
   * Use dh-autoreconf with --as-needed instead of patching ltmain.sh
     (from Ubuntu, thanks Iain Lane)
 
