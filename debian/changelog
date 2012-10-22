@@ -1,4 +1,4 @@
-librsvg (2.36.4-1) UNRELEASED; urgency=low
+librsvg (2.36.4-1) experimental; urgency=low
 
   * Team upload
   * New upstream version (LP: #1038843)
@@ -8,7 +8,7 @@ librsvg (2.36.4-1) UNRELEASED; urgency=low
     - Build-Conflicts: valac-0.16 because if both are installed, the
       default version 0.16 is selected, breaking our build
 
- -- Simon McVittie <smcv@debian.org>  Mon, 22 Oct 2012 19:30:23 +0100
+ -- Simon McVittie <smcv@debian.org>  Mon, 22 Oct 2012 20:17:48 +0100
 
 librsvg (2.36.1-1) unstable; urgency=low
 
