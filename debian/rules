@@ -1,5 +1,6 @@
 #!/usr/bin/make -f
 
+include /usr/share/cdbs/1/rules/autoreconf.mk
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/rules/utils.mk
 include /usr/share/cdbs/1/class/gnome.mk
@@ -9,6 +10,8 @@ include /usr/share/gnome-pkg-tools/1/rules/gnome-get-source.mk
 ifeq ($(DEB_BUILD_ARCH),alpha)
    CFLAGS += -mieee
 endif
+
+DEB_DH_AUTORECONF_ARGS += --as-needed
 
 LIBRSVG2_PKG := librsvg2-2
 LDFLAGS += -Wl,-z,defs -Wl,-O1 -Wl,--as-needed

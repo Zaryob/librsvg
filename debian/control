@@ -7,9 +7,10 @@ Source: librsvg
 Section: libdevel
 Priority: optional
 Maintainer: Josselin Mouette <joss@debian.org>
-Uploaders: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>, Martin Pitt <mpitt@debian.org>, Michael Biebl <biebl@debian.org>
+Uploaders: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>, Michael Biebl <biebl@debian.org>
 Build-Depends: cdbs (>= 0.4.93),
                debhelper (>= 8.1.3),
+               dh-autoreconf (>= 4),
                libxml2-dev (>= 2.7.0),
                libglib2.0-dev (>= 2.24.0),
                libcairo2-dev (>= 1.2.0),
