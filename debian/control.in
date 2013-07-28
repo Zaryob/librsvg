@@ -25,8 +25,8 @@ Build-Depends: cdbs (>= 0.4.93),
                valac (>= 0.17.5)
 Standards-Version: 3.9.4
 Homepage: http://librsvg.sourceforge.net/
-Vcs-Svn: svn://svn.debian.org/svn/pkg-gnome/desktop/unstable/librsvg
-Vcs-Browser: http://svn.debian.org/viewsvn/pkg-gnome/desktop/unstable/librsvg
+Vcs-Svn: svn://svn.debian.org/pkg-gnome/desktop/unstable/librsvg
+Vcs-Browser: http://svn.debian.org/viewpkg-gnome/desktop/unstable/librsvg
 
 Package: librsvg2-dev
 Section: libdevel
