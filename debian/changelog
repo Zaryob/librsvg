@@ -5,6 +5,9 @@ librsvg (2.40.0-1) UNRELEASED; urgency=low
   * GTK2 support has been removed upstream. Drop Build-Depends on
     libgtk2.0-dev, libgtk2.0-doc and the now obsolete --disable-gtk-theme
     configure switch.
+  * Bump Build-Depends on libgtk-3-dev to (>= 3.2.0).
+  * Bump Build-Depends on libpango1.0-dev to (>= 1.36.0) to get the
+    thread-safe version.
 
  -- Michael Biebl <biebl@debian.org>  Mon, 14 Oct 2013 23:15:17 +0200
 
