@@ -1,6 +1,7 @@
 librsvg (2.40.0-1) UNRELEASED; urgency=low
 
   * New upstream release.
+  * Refresh patches.
 
  -- Michael Biebl <biebl@debian.org>  Mon, 14 Oct 2013 23:15:17 +0200
 
