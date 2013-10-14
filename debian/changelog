@@ -1,6 +1,8 @@
 librsvg (2.40.0-1) UNRELEASED; urgency=low
 
   * New upstream release.
+    - Fixes local resource access vulnerability. Closes: #724741
+      CVE-2013-1881
   * Refresh patches.
   * GTK2 support has been removed upstream. Drop Build-Depends on
     libgtk2.0-dev, libgtk2.0-doc and the now obsolete --disable-gtk-theme
