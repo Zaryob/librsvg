@@ -22,7 +22,6 @@ DEB_CONFIGURE_EXTRA_FLAGS += \
 	--enable-introspection \
 	--enable-vala \
 	--enable-gtk-doc \
-	--disable-gtk-theme \
 	$(NULL)
 
 DEB_DH_MAKESHLIBS_ARGS_$(LIBRSVG2_PKG) += -V -- -c4

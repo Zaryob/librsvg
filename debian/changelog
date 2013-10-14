@@ -2,6 +2,9 @@ librsvg (2.40.0-1) UNRELEASED; urgency=low
 
   * New upstream release.
   * Refresh patches.
+  * GTK2 support has been removed upstream. Drop Build-Depends on
+    libgtk2.0-dev, libgtk2.0-doc and the now obsolete --disable-gtk-theme
+    configure switch.
 
  -- Michael Biebl <biebl@debian.org>  Mon, 14 Oct 2013 23:15:17 +0200
 
