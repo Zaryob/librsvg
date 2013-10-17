@@ -1,5 +1,5 @@
 Source: librsvg
-Section: libdevel
+Section: libs
 Priority: optional
 Maintainer: Josselin Mouette <joss@debian.org>
 Uploaders: @GNOME_TEAM@
@@ -22,9 +22,9 @@ Build-Depends: cdbs (>= 0.4.93),
                libcairo2-doc,
                valac (>= 0.17.5)
 Standards-Version: 3.9.4
-Homepage: http://librsvg.sourceforge.net/
-Vcs-Svn: svn://svn.debian.org/pkg-gnome/desktop/unstable/librsvg
-Vcs-Browser: http://svn.debian.org/viewpkg-gnome/desktop/unstable/librsvg
+Homepage: http://live.gnome.org/LibRsvg
+Vcs-Svn: svn://anonscm.debian.org/pkg-gnome/desktop/unstable/librsvg
+Vcs-Browser: http://anonscm.debian.org/viewvc/pkg-gnome/desktop/unstable/librsvg
 
 Package: librsvg2-dev
 Section: libdevel
@@ -45,7 +45,6 @@ Description: SAX-based renderer library for SVG files (development)
  files to allow you to develop with librsvg.
 
 Package: librsvg2-2
-Section: libs
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends}
@@ -61,7 +60,6 @@ Description: SAX-based renderer library for SVG files (runtime)
  applications using librsvg.
 
 Package: librsvg2-common
-Section: libs
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
