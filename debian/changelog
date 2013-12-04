@@ -6,7 +6,7 @@ librsvg (2.36.1-2) stable; urgency=low
 
   [ Josselin Mouette ]
   * Break libgtk-3-0 (<< 3.4.2-7) which uses the anti-feature that is 
-    disable by the bugfix.
+    disabled by the security fix.
 
  -- Josselin Mouette <joss@debian.org>  Wed, 04 Dec 2013 21:08:25 +0100
 
