@@ -53,6 +53,7 @@ Depends: ${misc:Depends},
          ${shlibs:Depends}
 Recommends: librsvg2-common
 Suggests: librsvg2-bin
+Breaks: libgtk-3-0 (<< 3.4.2-7)
 Pre-Depends: ${misc:Pre-Depends}
 Multi-Arch: same
 Description: SAX-based renderer library for SVG files (runtime)

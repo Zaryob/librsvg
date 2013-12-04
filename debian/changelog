@@ -4,7 +4,11 @@ librsvg (2.36.1-2) stable; urgency=low
   * Fix CVE-2013-1881: disable loading of external entities.
     Closes: #724741.
 
- -- Josselin Mouette <joss@debian.org>  Wed, 04 Dec 2013 15:06:01 +0100
+  [ Josselin Mouette ]
+  * Break libgtk-3-0 (<< 3.4.2-7) which uses the anti-feature that is 
+    disable by the bugfix.
+
+ -- Josselin Mouette <joss@debian.org>  Wed, 04 Dec 2013 21:08:25 +0100
 
 librsvg (2.36.1-1) unstable; urgency=low
 
