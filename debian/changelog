@@ -1,3 +1,11 @@
+librsvg (2.36.1-2) stable; urgency=low
+
+  [ Raphaël Geissert ]
+  * Fix CVE-2013-1881: disable loading of external entities.
+    Closes: #724741.
+
+ -- Josselin Mouette <joss@debian.org>  Wed, 04 Dec 2013 15:06:01 +0100
+
 librsvg (2.36.1-1) unstable; urgency=low
 
   * New upstream release.

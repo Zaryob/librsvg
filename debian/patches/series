@@ -1,3 +1,5 @@
+01_CVE-2013-1881_policy.patch
+02_CVE-2013-1881_xmlentities.patch
 10_rsvg-gz.patch
 20_rsvg_compat.patch
 99_ltmain_as-needed.patch
