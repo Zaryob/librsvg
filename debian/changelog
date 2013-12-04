@@ -1,4 +1,4 @@
-librsvg (2.26.3-2) oldstable; urgency=low
+librsvg (2.26.3-1+deb6u1) oldstable; urgency=low
 
   [ Raphaël Geissert ]
   * Fix CVE-2013-1881: disable loading of external entities.
