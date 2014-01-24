@@ -1,3 +1,10 @@
+librsvg (2.26.3-1+deb6u2) oldstable; urgency=low
+
+  * CVE-2013-1881.policy.patch: updated from Raphaël Geissert. Fix 
+    policy check for non-URIs. Closes: #732144.
+
+ -- Josselin Mouette <joss@debian.org>  Fri, 24 Jan 2014 14:55:48 +0100
+
 librsvg (2.26.3-1+deb6u1) oldstable; urgency=low
 
   [ Raphaël Geissert ]
