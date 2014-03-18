@@ -1,3 +1,9 @@
+librsvg (2.40.2-1) unstable; urgency=medium
+
+  * New upstream bugfix releases
+
+ -- Iain Lane <iain@orangesquash.org.uk>  Tue, 18 Mar 2014 14:19:54 +0000
+
 librsvg (2.40.0-1) unstable; urgency=low
 
   [ Michael Biebl ]
