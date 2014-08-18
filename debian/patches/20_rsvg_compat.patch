@@ -1,9 +1,9 @@
-Index: librsvg-2.40.0/rsvg-convert.c
+Index: librsvg-2.40.3/rsvg-convert.c
 ===================================================================
---- librsvg-2.40.0.orig/rsvg-convert.c	2013-10-14 23:15:52.000814272 +0200
-+++ librsvg-2.40.0/rsvg-convert.c	2013-10-14 23:15:52.000814272 +0200
-@@ -148,6 +148,8 @@
-     cairo_t *cr = NULL;
+--- librsvg-2.40.3.orig/rsvg-convert.c	2014-08-19 01:55:20.857179988 +0200
++++ librsvg-2.40.3/rsvg-convert.c	2014-08-19 01:55:20.853179920 +0200
+@@ -115,6 +115,8 @@
+     RsvgHandleFlags flags = RSVG_HANDLE_FLAGS_NONE;
      RsvgDimensionData dimensions;
      FILE *output_file = stdout;
 +    char *basename;
@@ -11,7 +11,7 @@ Index: librsvg-2.40.0/rsvg-convert.c
  
      GOptionEntry options_table[] = {
          {"dpi-x", 'd', 0, G_OPTION_ARG_DOUBLE, &dpi_x,
-@@ -199,6 +201,27 @@
+@@ -168,6 +170,27 @@
          return 0;
      }
  
@@ -39,7 +39,7 @@ Index: librsvg-2.40.0/rsvg-convert.c
      if (output != NULL) {
          output_file = fopen (output, "wb");
          if (!output_file) {
-@@ -210,10 +233,6 @@
+@@ -179,10 +202,6 @@
          g_free (output);
      }
  
