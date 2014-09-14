@@ -1,3 +1,9 @@
+librsvg (2.40.4-1) UNRELEASED; urgency=medium
+
+  * New upstream release.
+
+ -- Michael Biebl <biebl@debian.org>  Mon, 15 Sep 2014 00:56:51 +0200
+
 librsvg (2.40.3-2) unstable; urgency=medium
 
   * Cherry-pick upstream fix to handle compressed input in rsvg-convert.
