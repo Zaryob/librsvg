@@ -2,7 +2,6 @@
 # 
 # Modifications should be made to debian/control.in instead.
 # This file is regenerated automatically in the clean target.
-
 Source: librsvg
 Section: libs
 Priority: optional
@@ -27,7 +26,7 @@ Build-Depends: cdbs (>= 0.4.93),
                libcairo2-doc,
                valac (>= 0.17.5)
 Standards-Version: 3.9.5
-Homepage: http://live.gnome.org/LibRsvg
+Homepage: https://wiki.gnome.org/Projects/LibRsvg
 Vcs-Svn: svn://anonscm.debian.org/pkg-gnome/desktop/unstable/librsvg
 Vcs-Browser: http://anonscm.debian.org/viewvc/pkg-gnome/desktop/unstable/librsvg
 
