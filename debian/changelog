@@ -1,6 +1,7 @@
 librsvg (2.40.5-1) UNRELEASED; urgency=medium
 
   * New upstream release.
+  * Bump Standards-Version to 3.9.6. No further changes.
 
  -- Michael Biebl <biebl@debian.org>  Tue, 14 Oct 2014 16:44:15 +0200
 
