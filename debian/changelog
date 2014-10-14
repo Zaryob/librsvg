@@ -2,6 +2,7 @@ librsvg (2.40.5-1) unstable; urgency=medium
 
   * New upstream release.
   * Bump Standards-Version to 3.9.6. No further changes.
+  * Install typelib files into multiarch paths.
 
  -- Michael Biebl <biebl@debian.org>  Tue, 14 Oct 2014 16:46:07 +0200
 
