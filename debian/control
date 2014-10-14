@@ -41,6 +41,7 @@ Depends: ${misc:Depends},
          libgdk-pixbuf2.0-dev (>= 2.23.5-2),
          libcairo2-dev (>= 1.2.0)
 Suggests: librsvg2-doc
+Multi-Arch: same
 Description: SAX-based renderer library for SVG files (development)
  The rsvg library is an efficient renderer for Scalable Vector Graphics
  (SVG) pictures.
@@ -124,6 +125,7 @@ Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
          ${gir:Depends}
+Multi-Arch: same
 Description: gir files for renderer library for SVG files
  The rsvg library is an efficient renderer for Scalable Vector Graphics
  (SVG) pictures.
