@@ -1,5 +1,5 @@
 Source: librsvg
-Section: libdevel
+Section: libs
 Priority: optional
 Maintainer: Josselin Mouette <joss@debian.org>
 Uploaders: @GNOME_TEAM@
@@ -9,27 +9,22 @@ Build-Depends: cdbs (>= 0.4.93),
                libxml2-dev (>= 2.7.0),
                libglib2.0-dev (>= 2.24.0),
                libcairo2-dev (>= 1.2.0),
-               libpango1.0-dev (>= 1.16.0),
+               libpango1.0-dev (>= 1.36.0),
                libgdk-pixbuf2.0-dev (>= 2.23.5-2),
-               libgtk2.0-dev (>= 2.21.5),
-               libgtk-3-dev (>= 3.0.0),
+               libgtk-3-dev (>= 3.2.0),
                libgsf-1-dev (>= 1.13.2-2),
                gnome-pkg-tools (>= 0.10),
                libcroco3-dev (>= 0.6.1),
                gtk-doc-tools (>= 1.13),
                gobject-introspection (>= 0.10.8),
                libgirepository1.0-dev (>= 0.10.8),
-               gir1.2-glib-2.0,
-               gir1.2-freedesktop,
                libglib2.0-doc,
-               libgtk2.0-doc,
                libcairo2-doc,
-               valac-0.18 (>= 0.17.5)
-Build-Conflicts: valac-0.16
-Standards-Version: 3.9.3
-Homepage: http://librsvg.sourceforge.net/
-Vcs-Svn: svn://svn.debian.org/svn/pkg-gnome/desktop/unstable/librsvg
-Vcs-Browser: http://svn.debian.org/viewsvn/pkg-gnome/desktop/unstable/librsvg
+               valac (>= 0.17.5)
+Standards-Version: 3.9.6
+Homepage: https://wiki.gnome.org/Projects/LibRsvg
+Vcs-Svn: svn://anonscm.debian.org/pkg-gnome/desktop/unstable/librsvg
+Vcs-Browser: http://anonscm.debian.org/viewvc/pkg-gnome/desktop/unstable/librsvg
 
 Package: librsvg2-dev
 Section: libdevel
@@ -42,6 +37,7 @@ Depends: ${misc:Depends},
          libgdk-pixbuf2.0-dev (>= 2.23.5-2),
          libcairo2-dev (>= 1.2.0)
 Suggests: librsvg2-doc
+Multi-Arch: same
 Description: SAX-based renderer library for SVG files (development)
  The rsvg library is an efficient renderer for Scalable Vector Graphics
  (SVG) pictures.
@@ -50,7 +46,6 @@ Description: SAX-based renderer library for SVG files (development)
  files to allow you to develop with librsvg.
 
 Package: librsvg2-2
-Section: libs
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends}
@@ -66,7 +61,6 @@ Description: SAX-based renderer library for SVG files (runtime)
  applications using librsvg.
 
 Package: librsvg2-common
-Section: libs
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
@@ -127,6 +121,7 @@ Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
          ${gir:Depends}
+Multi-Arch: same
 Description: gir files for renderer library for SVG files
  The rsvg library is an efficient renderer for Scalable Vector Graphics
  (SVG) pictures.
