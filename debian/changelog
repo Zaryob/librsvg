@@ -1,3 +1,10 @@
+librsvg (2.40.6-1) UNRELEASED; urgency=medium
+
+  * New upstream release 2.40.6.
+    - Fix path data number parsing (LP: #370061)
+
+ -- Iain Lane <laney@debian.org>  Wed, 10 Dec 2014 10:07:49 +0000
+
 librsvg (2.40.5-1) unstable; urgency=medium
 
   * New upstream release.
