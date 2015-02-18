@@ -1,9 +1,9 @@
-librsvg (2.40.7-1) UNRELEASED; urgency=medium
+librsvg (2.40.7-1) experimental; urgency=medium
 
   * New upstream release 2.40.7, fixing bugs detected by fuzz testing.
   * Refresh debian/patches/20_rsvg_compat.patch to apply cleanly
 
- -- Iain Lane <laney@debian.org>  Wed, 18 Feb 2015 12:46:29 +0000
+ -- Iain Lane <laney@debian.org>  Wed, 18 Feb 2015 14:39:41 +0000
 
 librsvg (2.40.6-1) experimental; urgency=medium
 
