@@ -1,3 +1,14 @@
+librsvg (2.40.8-1) UNRELEASED; urgency=medium
+
+  * New upstream release
+    - Bugs fixed from fuzz testing - possible double g_free() when processing
+      stroke-dasharray
+    - Optimize rendering of polylines, lines, rectangles, circles, and
+      ellipses.  These should be marginally faster, marginally more precise,
+      and should put less pressure on the memory allocator.
+
+ -- Iain Lane <laney@debian.org>  Wed, 18 Feb 2015 15:22:58 +0000
+
 librsvg (2.40.7-1) experimental; urgency=medium
 
   * New upstream release 2.40.7, fixing bugs detected by fuzz testing.
