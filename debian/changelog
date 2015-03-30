@@ -1,8 +1,8 @@
-librsvg (2.40.9-1) UNRELEASED; urgency=medium
+librsvg (2.40.9-1) experimental; urgency=medium
 
   * New upstream release 2.40.9
 
- -- Iain Lane <laney@debian.org>  Mon, 02 Mar 2015 15:35:25 +0000
+ -- Iain Lane <laney@debian.org>  Mon, 30 Mar 2015 18:05:57 +0100
 
 librsvg (2.40.8-1) experimental; urgency=medium
 
