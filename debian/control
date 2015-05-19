@@ -6,7 +6,7 @@ Source: librsvg
 Section: libs
 Priority: optional
 Maintainer: Josselin Mouette <joss@debian.org>
-Uploaders: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>, Michael Biebl <biebl@debian.org>
+Uploaders: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>, Iain Lane <laney@debian.org>, Michael Biebl <biebl@debian.org>
 Build-Depends: cdbs (>= 0.4.93),
                debhelper (>= 8.1.3),
                dh-autoreconf (>= 4),
