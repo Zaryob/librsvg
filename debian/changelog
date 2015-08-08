@@ -1,10 +1,10 @@
-librsvg (2.40.10-1) UNRELEASED; urgency=medium
+librsvg (2.40.10-1) unstable; urgency=medium
 
   * New upstream release.
   * Refresh patches.
   * Drop obsolete Breaks/Replaces from pre-wheezy.
 
- -- Michael Biebl <biebl@debian.org>  Sat, 08 Aug 2015 12:39:51 +0200
+ -- Michael Biebl <biebl@debian.org>  Sat, 08 Aug 2015 12:50:57 +0200
 
 librsvg (2.40.9-2) unstable; urgency=medium
 
