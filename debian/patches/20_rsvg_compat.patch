@@ -1,17 +1,17 @@
-Index: librsvg-2.40.10/rsvg-convert.c
+Index: librsvg-2.40.11/rsvg-convert.c
 ===================================================================
---- librsvg-2.40.10.orig/rsvg-convert.c	2015-08-08 12:41:58.515377589 +0200
-+++ librsvg-2.40.10/rsvg-convert.c	2015-08-08 12:41:58.515377589 +0200
-@@ -126,6 +126,8 @@
-     RsvgHandleFlags flags = RSVG_HANDLE_FLAGS_NONE;
+--- librsvg-2.40.11.orig/rsvg-convert.c	2015-10-08 12:52:09.876413251 +0200
++++ librsvg-2.40.11/rsvg-convert.c	2015-10-08 12:57:14.541733808 +0200
+@@ -140,6 +140,8 @@
      RsvgDimensionData dimensions;
      FILE *output_file = stdout;
+     char *export_lookup_id;
 +    char *basename;
 +    gboolean rsvg_compat = FALSE;
  
  #ifdef G_OS_WIN32
      HANDLE handle;
-@@ -183,6 +185,27 @@
+@@ -199,6 +201,27 @@
          return 0;
      }
  
@@ -39,7 +39,7 @@ Index: librsvg-2.40.10/rsvg-convert.c
      if (output != NULL) {
          output_file = fopen (output, "wb");
          if (!output_file) {
-@@ -194,10 +217,6 @@
+@@ -210,10 +233,6 @@
          g_free (output);
      }
  
