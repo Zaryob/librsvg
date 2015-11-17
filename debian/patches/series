@@ -1,2 +1,3 @@
 10_rsvg-gz.patch
 20_rsvg_compat.patch
+30_Revert-bgo-520654-Support-export-id-in-rsvg-convert-.patch
