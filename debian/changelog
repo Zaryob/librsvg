@@ -1,3 +1,18 @@
+librsvg (2.40.12-1) unstable; urgency=medium
+
+  * New upstream release.
+    - Refactore the test harness to use Glib's gtest infrastructure, instead
+      of using home-grown machinery.
+    - Gzipped SVGs now work if read from streams.
+    - References to objects/filters/URIs/etc. are now handled lazily.
+    - There is a general-purpose cycle detector so malformed SVGs don't cause
+      infinite loops.
+    - Removed parsing of Adobe blend modes; they were not implemented, anyway.
+  * debian/patches/01_Revert-bgo-520654-Support-export-id-in-rsvg-convert-.patch:
+    Refresh.
+
+ -- Iain Lane <laney@debian.org>  Wed, 02 Dec 2015 17:58:44 +0000
+
 librsvg (2.40.11-2) unstable; urgency=medium
 
   * Revert upstream commit which added support for --export-id parameter. This

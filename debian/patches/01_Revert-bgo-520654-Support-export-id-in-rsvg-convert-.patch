@@ -9,11 +9,11 @@ This reverts commit fecfcce44a959daff80a4e0f9ced83d7cdcb5903.
  rsvg-convert.c      | 64 +++++++++++++----------------------------------------
  2 files changed, 17 insertions(+), 51 deletions(-)
 
-diff --git a/rsvg-cairo-render.c b/rsvg-cairo-render.c
-index 0d51dde..011e805 100644
+Index: b/rsvg-cairo-render.c
+===================================================================
 --- a/rsvg-cairo-render.c
 +++ b/rsvg-cairo-render.c
-@@ -206,8 +206,8 @@ rsvg_handle_render_cairo_sub (RsvgHandle * handle, cairo_t * cr, const char *id)
+@@ -205,8 +205,8 @@
          drawsub = rsvg_defs_lookup (handle->priv->defs, id);
  
      if (drawsub == NULL && id != NULL) {
@@ -24,11 +24,11 @@ index 0d51dde..011e805 100644
      }
  
      draw = rsvg_cairo_new_drawing_ctx (cr, handle);
-diff --git a/rsvg-convert.c b/rsvg-convert.c
-index 53c57e1..76862d1 100644
+Index: b/rsvg-convert.c
+===================================================================
 --- a/rsvg-convert.c
 +++ b/rsvg-convert.c
-@@ -78,6 +78,14 @@ display_error (GError * err)
+@@ -78,6 +78,14 @@
      }
  }
  
@@ -43,7 +43,7 @@ index 53c57e1..76862d1 100644
  static cairo_status_t
  rsvg_cairo_write_func (void *closure, const unsigned char *data, unsigned int length)
  {
-@@ -86,26 +94,6 @@ rsvg_cairo_write_func (void *closure, const unsigned char *data, unsigned int le
+@@ -86,26 +94,6 @@
      return CAIRO_STATUS_WRITE_ERROR;
  }
  
@@ -70,7 +70,7 @@ index 53c57e1..76862d1 100644
  int
  main (int argc, char **argv)
  {
-@@ -120,7 +108,6 @@ main (int argc, char **argv)
+@@ -120,7 +108,6 @@
      int bVersion = 0;
      char *format = NULL;
      char *output = NULL;
@@ -78,7 +78,7 @@ index 53c57e1..76862d1 100644
      int keep_aspect_ratio = FALSE;
      guint32 background_color = 0;
      char *background_color_str = NULL;
-@@ -139,7 +126,6 @@ main (int argc, char **argv)
+@@ -139,7 +126,6 @@
      RsvgHandleFlags flags = RSVG_HANDLE_FLAGS_NONE;
      RsvgDimensionData dimensions;
      FILE *output_file = stdout;
@@ -86,7 +86,7 @@ index 53c57e1..76862d1 100644
  
  #ifdef G_OS_WIN32
      HANDLE handle;
-@@ -164,8 +150,6 @@ main (int argc, char **argv)
+@@ -164,8 +150,6 @@
           N_("save format [optional; defaults to 'png']"), N_("[png, pdf, ps, eps, svg, xml, recording]")},
          {"output", 'o', 0, G_OPTION_ARG_STRING, &output,
           N_("output filename [optional; defaults to stdout]"), NULL},
@@ -95,14 +95,14 @@ index 53c57e1..76862d1 100644
          {"keep-aspect-ratio", 'a', 0, G_OPTION_ARG_NONE, &keep_aspect_ratio,
           N_("whether to preserve the aspect ratio [optional; defaults to FALSE]"), NULL},
          {"background-color", 'b', 0, G_OPTION_ARG_STRING, &background_color_str,
-@@ -306,26 +290,22 @@ main (int argc, char **argv)
+@@ -306,18 +290,13 @@
              exit (1);
          }
  
 -        export_lookup_id = get_lookup_id_from_command_line (export_id);
 -        if (export_lookup_id != NULL
 -            && !rsvg_handle_has_sub (rsvg, export_lookup_id)) {
--            fprintf (stderr, _("File %s does not have an object with id \"%s\"\n"), args[i], export_id);
+-            g_printerr (_("File %s does not have an object with id \"%s\"\n"), args[i], export_id);
 -            exit (1);
 -        }
 +        /* in the case of multi-page output, all subsequent SVGs are scaled to the first's size */
@@ -112,12 +112,12 @@ index 53c57e1..76862d1 100644
              struct RsvgSizeCallbackData size_data;
  
 -            if (!rsvg_handle_get_dimensions_sub (rsvg, &dimensions, export_lookup_id))
--                fprintf (stderr, "Could not get dimensions for file %s\n", args[i]);
--
+-                g_printerr ("Could not get dimensions for file %s\n", args[i]);
 +            rsvg_handle_get_dimensions (rsvg, &dimensions);
+ 
              /* if both are unspecified, assume user wants to zoom the image in at least 1 dimension */
              if (width == -1 && height == -1) {
-                 size_data.type = RSVG_SIZE_ZOOM;
+@@ -325,7 +304,9 @@
                  size_data.x_zoom = x_zoom;
                  size_data.y_zoom = y_zoom;
                  size_data.keep_aspect_ratio = keep_aspect_ratio;
@@ -128,7 +128,7 @@ index 53c57e1..76862d1 100644
                  /* if one parameter is unspecified, assume user wants to keep the aspect ratio */
                  if (width == -1 || height == -1) {
                      size_data.type = RSVG_SIZE_WH_MAX;
-@@ -404,21 +384,7 @@ main (int argc, char **argv)
+@@ -404,21 +385,7 @@
              cairo_fill (cr);
          }
  
@@ -136,7 +136,7 @@ index 53c57e1..76862d1 100644
 -            RsvgPositionData pos;
 -
 -            if (!rsvg_handle_get_position_sub (rsvg, &pos, export_lookup_id)) {
--                fprintf (stderr, _("File %s does not have an object with id \"%s\"\n"), args[i], export_id);
+-                g_printerr (_("File %s does not have an object with id \"%s\"\n"), args[i], export_id);
 -                exit (1);
 -            }
 -
@@ -151,6 +151,3 @@ index 53c57e1..76862d1 100644
  
          if (!format || !strcmp (format, "png"))
              cairo_surface_write_to_png_stream (surface, rsvg_cairo_write_func, output_file);
--- 
-2.6.2
-
