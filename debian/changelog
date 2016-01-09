@@ -1,3 +1,9 @@
+librsvg (2.40.13-1) UNRELEASED; urgency=medium
+
+  * New upstream release.
+
+ -- Michael Biebl <biebl@debian.org>  Sat, 09 Jan 2016 22:10:11 +0100
+
 librsvg (2.40.12-1) unstable; urgency=medium
 
   * New upstream release.
