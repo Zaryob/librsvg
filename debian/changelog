@@ -1,4 +1,4 @@
-librsvg (2.40.13-3) UNRELEASED; urgency=medium
+librsvg (2.40.13-3) unstable; urgency=medium
 
   * Restore 01_Revert-bgo-520654-Support-export-id-in-rsvg-convert-.patch.
     The upstream patch 30_Don-t-crash-when-filters-don-t-exist.patch addresses
@@ -6,7 +6,7 @@ librsvg (2.40.13-3) UNRELEASED; urgency=medium
   * Bump Standards-Version to 3.9.7.
   * Drop librsvg2-dbg now that we have automatic dbgsym packages.
 
- -- Michael Biebl <biebl@debian.org>  Wed, 17 Feb 2016 00:32:25 +0100
+ -- Michael Biebl <biebl@debian.org>  Wed, 17 Feb 2016 00:37:18 +0100
 
 librsvg (2.40.13-2) unstable; urgency=medium
 
