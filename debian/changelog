@@ -4,6 +4,7 @@ librsvg (2.40.13-3) UNRELEASED; urgency=medium
     The upstream patch 30_Don-t-crash-when-filters-don-t-exist.patch addresses
     a different issue, so the revert is still necessary.
   * Bump Standards-Version to 3.9.7.
+  * Drop librsvg2-dbg now that we have automatic dbgsym packages.
 
  -- Michael Biebl <biebl@debian.org>  Wed, 17 Feb 2016 00:32:25 +0100
 

@@ -84,19 +84,6 @@ Description: SAX-based renderer library for SVG files (documentation)
  .
  This package provides the API documentation.
 
-Package: librsvg2-dbg
-Section: debug
-Priority: extra
-Architecture: any
-Depends: ${misc:Depends},
-         ${shlibs:Depends},
-         librsvg2-2 (= ${binary:Version})
-Description: SAX-based renderer library for SVG files (debug)
- The rsvg library is an efficient renderer for Scalable Vector Graphics
- (SVG) pictures.
- .
- This package contains the debugging symbols.
-
 Package: librsvg2-bin
 Section: graphics
 Architecture: any
