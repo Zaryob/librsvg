@@ -1,3 +1,11 @@
+librsvg (2.40.13-3) UNRELEASED; urgency=medium
+
+  * Restore 01_Revert-bgo-520654-Support-export-id-in-rsvg-convert-.patch.
+    The upstream patch 30_Don-t-crash-when-filters-don-t-exist.patch addresses
+    a different issue, so the revert is still necessary.
+
+ -- Michael Biebl <biebl@debian.org>  Wed, 17 Feb 2016 00:32:25 +0100
+
 librsvg (2.40.13-2) unstable; urgency=medium
 
   * Replace 01_Revert-bgo-520654-Support-export-id-in-rsvg-convert-.patch with
