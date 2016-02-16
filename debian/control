@@ -25,7 +25,7 @@ Build-Depends: cdbs (>= 0.4.93),
                libglib2.0-doc,
                libcairo2-doc,
                valac (>= 0.17.5)
-Standards-Version: 3.9.6
+Standards-Version: 3.9.7
 Homepage: https://wiki.gnome.org/Projects/LibRsvg
 Vcs-Svn: svn://anonscm.debian.org/pkg-gnome/desktop/unstable/librsvg
 Vcs-Browser: https://anonscm.debian.org/viewvc/pkg-gnome/desktop/unstable/librsvg
