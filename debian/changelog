@@ -1,3 +1,12 @@
+librsvg (2.40.15-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Bump Standards-Version to 3.9.8
+  * Drop debian/patches/30_Don-t-crash-when-filters-don-t-exist.patch
+    - now included in upstream release.
+
+ -- Andreas Henriksson <andreas@fatal.se>  Fri, 15 Apr 2016 18:36:44 +0200
+
 librsvg (2.40.13-3) unstable; urgency=medium
 
   * Restore 01_Revert-bgo-520654-Support-export-id-in-rsvg-convert-.patch.
