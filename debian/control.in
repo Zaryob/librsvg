@@ -3,8 +3,7 @@ Section: libs
 Priority: optional
 Maintainer: Josselin Mouette <joss@debian.org>
 Uploaders: @GNOME_TEAM@
-Build-Depends: cdbs (>= 0.4.93),
-               debhelper (>= 9),
+Build-Depends: debhelper (>= 9),
                dh-autoreconf (>= 4),
                libxml2-dev (>= 2.7.0),
                libglib2.0-dev (>= 2.24.0),

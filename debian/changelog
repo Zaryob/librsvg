@@ -3,6 +3,7 @@ librsvg (2.40.16-1) UNRELEASED; urgency=medium
   * New upstream release.
   * Drop 01_Revert-bgo-520654-Support-export-id-in-rsvg-convert-.patch, this
     has been fixed upstream for good.
+  * Convert from cdbs to dh.
 
  -- Michael Biebl <biebl@debian.org>  Mon, 13 Jun 2016 16:23:19 +0200
 
