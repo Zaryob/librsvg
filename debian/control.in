@@ -1,7 +1,7 @@
 Source: librsvg
 Section: libs
 Priority: optional
-Maintainer: Josselin Mouette <joss@debian.org>
+Maintainer: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>
 Uploaders: @GNOME_TEAM@
 Build-Depends: debhelper (>= 9),
                dh-autoreconf (>= 4),

@@ -5,6 +5,7 @@ librsvg (2.40.16-1) UNRELEASED; urgency=medium
     has been fixed upstream for good.
   * Convert from cdbs to dh.
   * Drop unused ${python:Depends} from librsvg2-bin.
+  * Set pkg-gnome-maintainers@lists.alioth.debian.org as Maintainer.
 
  -- Michael Biebl <biebl@debian.org>  Mon, 13 Jun 2016 16:23:19 +0200
 
