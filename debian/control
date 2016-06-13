@@ -92,7 +92,6 @@ Section: graphics
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
-         ${python:Depends},
          librsvg2-2 (>= ${binary:Version})
 Multi-Arch: foreign
 Description: command-line and graphical viewers for SVG files
