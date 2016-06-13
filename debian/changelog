@@ -6,6 +6,9 @@ librsvg (2.40.16-1) UNRELEASED; urgency=medium
   * Convert from cdbs to dh.
   * Drop unused ${python:Depends} from librsvg2-bin.
   * Set pkg-gnome-maintainers@lists.alioth.debian.org as Maintainer.
+  * Drop 20_rsvg_compat.patch and the /usr/bin/rsvg compat symlink.
+    All reverse dependencies had enough time to update to use
+    /usr/bin/rsvg-convert.
 
  -- Michael Biebl <biebl@debian.org>  Mon, 13 Jun 2016 16:23:19 +0200
 
