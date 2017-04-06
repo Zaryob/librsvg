@@ -6,7 +6,7 @@ Source: librsvg
 Section: libs
 Priority: optional
 Maintainer: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>
-Uploaders: Andreas Henriksson <andreas@fatal.se>, Iain Lane <laney@debian.org>, Michael Biebl <biebl@debian.org>
+Uploaders: Andreas Henriksson <andreas@fatal.se>, Iain Lane <laney@debian.org>, Jeremy Bicha <jbicha@ubuntu.com>, Michael Biebl <biebl@debian.org>
 Build-Depends: debhelper (>= 9),
                dh-autoreconf (>= 4),
                libxml2-dev (>= 2.7.0),

@@ -1,9 +1,13 @@
 librsvg (2.40.16-2) UNRELEASED; urgency=medium
 
+  [ Jeremy Bicha ]
   * Add debian/patches/add-thumbnailer-file.patch,
   * debian/librsvg-2-common.install:
     - Add .thumbnailer file so that svg thumbnails work with gnome-desktop3
       3.24.
+
+  [ Iain Lane ]
+  * Run dh_install with --fail-missing
 
  -- Jeremy Bicha <jbicha@ubuntu.com>  Thu, 06 Apr 2017 06:42:17 -0400
 
