@@ -1,10 +1,9 @@
 Source: librsvg
 Section: libs
 Priority: optional
-Maintainer: Josselin Mouette <joss@debian.org>
+Maintainer: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>
 Uploaders: @GNOME_TEAM@
-Build-Depends: cdbs (>= 0.4.93),
-               debhelper (>= 8.1.3),
+Build-Depends: debhelper (>= 9),
                dh-autoreconf (>= 4),
                libxml2-dev (>= 2.7.0),
                libglib2.0-dev (>= 2.24.0),
@@ -21,10 +20,10 @@ Build-Depends: cdbs (>= 0.4.93),
                libglib2.0-doc,
                libcairo2-doc,
                valac (>= 0.17.5)
-Standards-Version: 3.9.6
+Standards-Version: 3.9.8
 Homepage: https://wiki.gnome.org/Projects/LibRsvg
 Vcs-Svn: svn://anonscm.debian.org/pkg-gnome/desktop/unstable/librsvg
-Vcs-Browser: http://anonscm.debian.org/viewvc/pkg-gnome/desktop/unstable/librsvg
+Vcs-Browser: https://anonscm.debian.org/viewvc/pkg-gnome/desktop/unstable/librsvg
 
 Package: librsvg2-dev
 Section: libdevel
@@ -65,7 +64,6 @@ Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
          librsvg2-2 (= ${binary:Version})
-Breaks: libgdk-pixbuf2.0-0 (<< 2.23.5-2), libgtk2.0-0 (<< 2.24.5-4)
 Multi-Arch: same
 Description: SAX-based renderer library for SVG files (extra runtime)
  The rsvg library is an efficient renderer for Scalable Vector Graphics
@@ -79,33 +77,17 @@ Section: doc
 Architecture: all
 Depends: ${misc:Depends}
 Suggests: devhelp
-Breaks: librsvg2-dev (<< 2.34.2-2)
-Replaces: librsvg2-dev (<< 2.34.2-2)
 Description: SAX-based renderer library for SVG files (documentation)
  The rsvg library is an efficient renderer for Scalable Vector Graphics
  (SVG) pictures.
  .
  This package provides the API documentation.
 
-Package: librsvg2-dbg
-Section: debug
-Priority: extra
-Architecture: any
-Depends: ${misc:Depends},
-         ${shlibs:Depends},
-         librsvg2-2 (= ${binary:Version})
-Description: SAX-based renderer library for SVG files (debug)
- The rsvg library is an efficient renderer for Scalable Vector Graphics
- (SVG) pictures.
- .
- This package contains the debugging symbols.
-
 Package: librsvg2-bin
 Section: graphics
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
-         ${python:Depends},
          librsvg2-2 (>= ${binary:Version})
 Multi-Arch: foreign
 Description: command-line and graphical viewers for SVG files

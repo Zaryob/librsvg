@@ -1,36 +1,31 @@
 #!/usr/bin/make -f
 
-include /usr/share/cdbs/1/rules/autoreconf.mk
-include /usr/share/cdbs/1/rules/debhelper.mk
-include /usr/share/cdbs/1/rules/utils.mk
-include /usr/share/cdbs/1/class/gnome.mk
-include /usr/share/gnome-pkg-tools/1/rules/uploaders.mk
 include /usr/share/gnome-pkg-tools/1/rules/gnome-get-source.mk
 
-ifeq ($(DEB_BUILD_ARCH),alpha)
-   CFLAGS += -mieee
-endif
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,-z,defs -Wl,-O1 -Wl,--as-needed
 
-DEB_DH_AUTORECONF_ARGS += --as-needed
+%:
+	dh $@ --with autoreconf,gnome,gir
 
-LIBRSVG2_PKG := librsvg2-2
-LDFLAGS += -Wl,-z,defs -Wl,-O1 -Wl,--as-needed
+override_dh_autoreconf:
+	dh_autoreconf --as-needed
 
-DEB_CONFIGURE_EXTRA_FLAGS += \
-	--libdir=/usr/lib/$(DEB_HOST_MULTIARCH) \
-	--enable-pixbuf-loader \
-	--enable-introspection \
-	--enable-vala \
-	--enable-gtk-doc \
-	$(NULL)
+override_dh_auto_configure:
+	dh_auto_configure -- \
+		--enable-pixbuf-loader \
+		--enable-introspection \
+		--enable-vala \
+		--enable-gtk-doc
 
-DEB_DH_MAKESHLIBS_ARGS_$(LIBRSVG2_PKG) += -V -- -c4
-DEB_DH_MAKESHLIBS_ARGS_librsvg2-common = --no-act
+override_dh_makeshlibs:
+	dh_makeshlibs -V -- -c4
 
-binary-install/librsvg2-common::
-	sed -e"s/#MULTIARCH#/$(DEB_HOST_MULTIARCH)/g" debian/$(cdbs_curpkg).postinst.in > \
-		debian/$(cdbs_curpkg).postinst
+override_dh_install:
+	dh_install
+	sed -e "s/#MULTIARCH#/$(DEB_HOST_MULTIARCH)/g" debian/librsvg2-common.postinst.in > \
+		debian/librsvg2-common.postinst
 
-clean::
+override_dh_clean:
+	dh_clean
 	rm -f debian/librsvg2-common.postinst
 

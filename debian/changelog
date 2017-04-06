@@ -1,3 +1,94 @@
+librsvg (2.40.16-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Drop 01_Revert-bgo-520654-Support-export-id-in-rsvg-convert-.patch, this
+    has been fixed upstream for good.
+  * Convert from cdbs to dh.
+  * Drop unused ${python:Depends} from librsvg2-bin.
+  * Set pkg-gnome-maintainers@lists.alioth.debian.org as Maintainer.
+  * Drop 20_rsvg_compat.patch and the /usr/bin/rsvg compat symlink.
+    All reverse dependencies had enough time to update to use
+    /usr/bin/rsvg-convert.
+
+ -- Michael Biebl <biebl@debian.org>  Mon, 13 Jun 2016 21:07:28 +0200
+
+librsvg (2.40.15-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Bump Standards-Version to 3.9.8
+  * Drop debian/patches/30_Don-t-crash-when-filters-don-t-exist.patch
+    - now included in upstream release.
+
+ -- Andreas Henriksson <andreas@fatal.se>  Fri, 15 Apr 2016 18:36:44 +0200
+
+librsvg (2.40.13-3) unstable; urgency=medium
+
+  * Restore 01_Revert-bgo-520654-Support-export-id-in-rsvg-convert-.patch.
+    The upstream patch 30_Don-t-crash-when-filters-don-t-exist.patch addresses
+    a different issue, so the revert is still necessary.
+  * Bump Standards-Version to 3.9.7.
+  * Drop librsvg2-dbg now that we have automatic dbgsym packages.
+
+ -- Michael Biebl <biebl@debian.org>  Wed, 17 Feb 2016 00:37:18 +0100
+
+librsvg (2.40.13-2) unstable; urgency=medium
+
+  * Replace 01_Revert-bgo-520654-Support-export-id-in-rsvg-convert-.patch with
+    a proper upstream fix.
+
+ -- Michael Biebl <biebl@debian.org>  Fri, 29 Jan 2016 15:32:06 +0100
+
+librsvg (2.40.13-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Michael Biebl <biebl@debian.org>  Sat, 09 Jan 2016 22:15:43 +0100
+
+librsvg (2.40.12-1) unstable; urgency=medium
+
+  * New upstream release.
+    - Refactore the test harness to use Glib's gtest infrastructure, instead
+      of using home-grown machinery.
+    - Gzipped SVGs now work if read from streams.
+    - References to objects/filters/URIs/etc. are now handled lazily.
+    - There is a general-purpose cycle detector so malformed SVGs don't cause
+      infinite loops.
+    - Removed parsing of Adobe blend modes; they were not implemented, anyway.
+  * debian/patches/01_Revert-bgo-520654-Support-export-id-in-rsvg-convert-.patch:
+    Refresh.
+
+ -- Iain Lane <laney@debian.org>  Wed, 02 Dec 2015 17:58:44 +0000
+
+librsvg (2.40.11-2) unstable; urgency=medium
+
+  * Revert upstream commit which added support for --export-id parameter. This
+    change broke the behaviour of -w/-h and -x/-y which now crop the image
+    instead of scaling it. (Closes: #801992)
+
+ -- Michael Biebl <biebl@debian.org>  Tue, 17 Nov 2015 16:55:57 +0100
+
+librsvg (2.40.11-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Refresh patches.
+
+ -- Michael Biebl <biebl@debian.org>  Thu, 08 Oct 2015 13:02:58 +0200
+
+librsvg (2.40.10-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Refresh patches.
+  * Drop obsolete Breaks/Replaces from pre-wheezy.
+
+ -- Michael Biebl <biebl@debian.org>  Sat, 08 Aug 2015 12:50:57 +0200
+
+librsvg (2.40.9-2) unstable; urgency=medium
+
+  * Upload to unstable.
+  * Bump debhelper compatibility level to 9.
+
+ -- Michael Biebl <biebl@debian.org>  Wed, 20 May 2015 00:29:16 +0200
+
 librsvg (2.40.9-1) experimental; urgency=medium
 
   * New upstream release 2.40.9
