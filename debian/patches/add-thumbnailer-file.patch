@@ -43,4 +43,4 @@ https://bugzilla.gnome.org/show_bug.cgi?id=778666
 +[Thumbnailer Entry]
 +TryExec=@bindir@/gdk-pixbuf-thumbnailer
 +Exec=@bindir@/gdk-pixbuf-thumbnailer -s %s %u %o
-+MimeType=image/svg+xml;
++MimeType=image/svg+xml;image/svg+xml-compressed;
