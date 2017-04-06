@@ -1,4 +1,4 @@
-librsvg (2.40.16-2) UNRELEASED; urgency=medium
+librsvg (2.40.16-2) experimental; urgency=medium
 
   [ Jeremy Bicha ]
   * Add debian/patches/add-thumbnailer-file.patch,
@@ -9,7 +9,7 @@ librsvg (2.40.16-2) UNRELEASED; urgency=medium
   [ Iain Lane ]
   * Run dh_install with --fail-missing
 
- -- Jeremy Bicha <jbicha@ubuntu.com>  Thu, 06 Apr 2017 06:42:17 -0400
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Thu, 06 Apr 2017 14:09:58 +0100
 
 librsvg (2.40.16-1) unstable; urgency=medium
 
