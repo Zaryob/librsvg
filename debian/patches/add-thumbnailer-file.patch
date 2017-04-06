@@ -1,0 +1,46 @@
+From 998ce1dd30f5c2760e08755bacd9b6f74c3ab64e Mon Sep 17 00:00:00 2001
+From: Jeremy Bicha <jbicha@ubuntu.com>
+Date: Thu, 6 Apr 2017 07:15:41 -0400
+Subject: [PATCH] Add .thumbnailer file for gdk-pixbuf-loader
+
+This is required for svg thumbnails to work with gnome-desktop 3.24
+
+https://bugzilla.gnome.org/show_bug.cgi?id=778666
+---
+ gdk-pixbuf-loader/Makefile.am            |    9 +++++++++
+ gdk-pixbuf-loader/librsvg.thumbnailer.in |    4 ++++
+ 2 files changed, 13 insertions(+)
+ create mode 100644 gdk-pixbuf-loader/librsvg.thumbnailer.in
+
+--- a/gdk-pixbuf-loader/Makefile.am
++++ b/gdk-pixbuf-loader/Makefile.am
+@@ -51,6 +51,14 @@ EXTRA_rsvg_loader_DEPENDENCIES = libpixb
+ gdk-pixbuf-loaders: Makefile
+ 	$(AM_V_GEN) ( $(GDK_PIXBUF_QUERYLOADERS) ./libpixbufloader-svg.la && $(GDK_PIXBUF_QUERYLOADERS)) > gdk-pixbuf.loaders 2>/dev/null
+ 
++thumbnailerdir = $(datadir)/thumbnailers/
++thumbnailer_DATA = librsvg.thumbnailer
++librsvg.thumbnailer: librsvg.thumbnailer.in
++	$(AM_V_GEN) $(SED) -e "s|\@bindir\@|$(bindir)|" \
++	$< > $@
++
++EXTRA_DIST = librsvg.thumbnailer.in
++
+ install-data-hook:
+ 	if test -z "$(DESTDIR)"; then \
+ 		$(mkinstalldirs) $(DESTDIR)$(gdk_pixbuf_binarydir) ; \
+@@ -59,6 +67,7 @@ install-data-hook:
+ 
+ CLEANFILES = \
+ 	gdk-pixbuf.loaders \
++	$(thumbnailer_DATA) \
+ 	$(NULL)
+ 
+ DISTCLEANFILES = \
+--- /dev/null
++++ b/gdk-pixbuf-loader/librsvg.thumbnailer.in
+@@ -0,0 +1,4 @@
++[Thumbnailer Entry]
++TryExec=@bindir@/gdk-pixbuf-thumbnailer
++Exec=@bindir@/gdk-pixbuf-thumbnailer -s %s %u %o
++MimeType=image/svg+xml;
