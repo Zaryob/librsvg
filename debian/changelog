@@ -1,6 +1,8 @@
 librsvg (2.40.18-1) UNRELEASED; urgency=medium
 
   * New upstream release.
+    + Fixes CVE-2017-11464: division by zero caused when parsing especially
+      crafted SVG files. Closes: #869129.
 
  -- Emilio Pozuelo Monfort <pochu@debian.org>  Thu, 20 Jul 2017 21:41:33 +0200
 
