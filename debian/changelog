@@ -1,3 +1,9 @@
+librsvg (2.40.18-1) UNRELEASED; urgency=medium
+
+  * New upstream release.
+
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Thu, 20 Jul 2017 21:41:33 +0200
+
 librsvg (2.40.16-1) unstable; urgency=medium
 
   * New upstream release.
