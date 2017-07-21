@@ -3,6 +3,8 @@ librsvg (2.40.18-1) unstable; urgency=medium
   * New upstream release.
     + Fixes CVE-2017-11464: division by zero caused when parsing especially
       crafted SVG files. Closes: #869129.
+  * librsvg2-common.install: install the thumbnailer spec file. It goes in
+    the pixbuf loader package (-common) as it can't be used without it.
 
  -- Emilio Pozuelo Monfort <pochu@debian.org>  Fri, 21 Jul 2017 10:18:29 +0200
 
