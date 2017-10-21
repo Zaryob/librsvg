@@ -1,3 +1,9 @@
+librsvg (2.40.18-2) UNRELEASED; urgency=medium
+
+  * Drop Build-Depends on libgsf-1-dev. It's no longer needed with GIO 2.24.
+
+ -- Michael Biebl <biebl@debian.org>  Sat, 21 Oct 2017 04:37:44 +0200
+
 librsvg (2.40.18-1) unstable; urgency=medium
 
   * New upstream release.
