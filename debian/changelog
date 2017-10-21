@@ -8,6 +8,7 @@ librsvg (2.40.18-2) UNRELEASED; urgency=medium
   * Cherry-pick upstream fix to no longer pass deprecated --nogtkinit to
     gtkdoc-scangobj. (Closes: #876615)
   * Bump Standards-Version to 4.1.1.
+  * Bump debhelper compat level to 10 for automatic dh-autoreconf.
 
  -- Michael Biebl <biebl@debian.org>  Sat, 21 Oct 2017 04:37:44 +0200
 
