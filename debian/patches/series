@@ -1,1 +1,2 @@
 10_rsvg-gz.patch
+20_bgo-782098-Don-t-pass-deprecated-nogtkinit-to-gtkdoc.patch
