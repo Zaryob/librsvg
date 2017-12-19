@@ -1,3 +1,11 @@
+librsvg (2.40.18-3) UNRELEASED; urgency=medium
+
+  * Update Vcs fields for conversion to git
+  * Add debian/gbp.conf
+  * Bump Standards-Version to 4.1.2
+
+ -- Jeremy Bicha <jbicha@debian.org>  Tue, 19 Dec 2017 16:43:50 -0500
+
 librsvg (2.40.18-2) unstable; urgency=medium
 
   * Drop Build-Depends on libgsf-1-dev. It's no longer needed with GIO 2.24.

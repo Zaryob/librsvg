@@ -18,7 +18,7 @@ Build-Depends: debhelper (>= 10),
                libglib2.0-doc,
                libcairo2-doc,
                valac (>= 0.17.5)
-Standards-Version: 4.1.1
+Standards-Version: 4.1.2
 Homepage: https://wiki.gnome.org/Projects/LibRsvg
 Vcs-Git: https://anonscm.debian.org/git/pkg-gnome/librsvg.git
 Vcs-Browser: https://anonscm.debian.org/git/pkg-gnome/librsvg.git
@@ -48,7 +48,6 @@ Depends: ${misc:Depends},
          ${shlibs:Depends}
 Recommends: librsvg2-common
 Suggests: librsvg2-bin
-Pre-Depends: ${misc:Pre-Depends}
 Multi-Arch: same
 Description: SAX-based renderer library for SVG files (runtime)
  The rsvg library is an efficient renderer for Scalable Vector Graphics
@@ -73,6 +72,7 @@ Description: SAX-based renderer library for SVG files (extra runtime)
 Package: librsvg2-doc
 Section: doc
 Architecture: all
+Multi-Arch: foreign
 Depends: ${misc:Depends}
 Suggests: devhelp
 Description: SAX-based renderer library for SVG files (documentation)
