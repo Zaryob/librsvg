@@ -1,6 +1,8 @@
 librsvg (2.40.20-1) UNRELEASED; urgency=medium
 
   * New upstream release
+  * Drop 20_bgo-782098-Don-t-pass-deprecated-nogtkinit-to-gtkdoc.patch:
+    Applied in new release
 
  -- Jeremy Bicha <jbicha@debian.org>  Tue, 19 Dec 2017 18:29:45 -0500
 
