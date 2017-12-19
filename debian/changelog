@@ -1,4 +1,4 @@
-librsvg (2.40.18-3) UNRELEASED; urgency=medium
+librsvg (2.40.18-3) unstable; urgency=medium
 
   * Update Vcs fields for conversion to git
   * Add debian/gbp.conf
@@ -7,7 +7,7 @@ librsvg (2.40.18-3) UNRELEASED; urgency=medium
   * Use dh_missing --fail-missing
   * Build with all hardening flags
 
- -- Jeremy Bicha <jbicha@debian.org>  Tue, 19 Dec 2017 16:43:50 -0500
+ -- Jeremy Bicha <jbicha@debian.org>  Tue, 19 Dec 2017 17:15:34 -0500
 
 librsvg (2.40.18-2) unstable; urgency=medium
 
