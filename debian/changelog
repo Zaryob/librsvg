@@ -1,3 +1,9 @@
+librsvg (2.40.20-1) UNRELEASED; urgency=medium
+
+  * New upstream release
+
+ -- Jeremy Bicha <jbicha@debian.org>  Tue, 19 Dec 2017 18:29:45 -0500
+
 librsvg (2.40.18-3) unstable; urgency=medium
 
   * Update Vcs fields for conversion to git
