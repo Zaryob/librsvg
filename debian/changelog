@@ -6,6 +6,7 @@ librsvg (2.40.20-1) UNRELEASED; urgency=medium
     Applied in new release
   * Add disable-new-failing-test.patch:
     - Disable newly introduced test that fails
+  * debian/librsvg2-2.docs: TODO is no longer provided in new version
 
  -- Jeremy Bicha <jbicha@debian.org>  Tue, 19 Dec 2017 18:29:45 -0500
 
