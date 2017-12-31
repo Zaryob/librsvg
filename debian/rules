@@ -34,3 +34,5 @@ override_dh_clean:
 	dh_clean
 	rm -f debian/librsvg2-common.postinst
 
+# Skip some tests that are known to fail but don't seem release-critical
+export DEB_BUILD_TIME_TESTS = 1

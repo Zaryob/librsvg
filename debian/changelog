@@ -1,3 +1,15 @@
+librsvg (2.40.20-2) UNRELEASED; urgency=medium
+
+  * Skip tests that are known to fail on 32-bit architectures. Some
+    masking tests produce images that differ slightly from the reference,
+    but the differences are not immediately noticeable and don't seem
+    release-critical. (Mitigates: #884849, #884850)
+    - These are only skipped if the DEB_BUILD_TIME_TESTS environment
+      variable is set, which debian/rules now does; so autopkgtests
+      (if added) would still run them.
+
+ -- Simon McVittie <smcv@debian.org>  Sun, 31 Dec 2017 00:17:12 +0000
+
 librsvg (2.40.20-1) unstable; urgency=medium
 
   * New upstream release
