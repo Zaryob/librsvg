@@ -18,7 +18,7 @@ override_dh_auto_configure:
 		--enable-gtk-doc
 
 override_dh_makeshlibs:
-	dh_makeshlibs -V -- -c4
+	dh_makeshlibs -- -c4
 
 override_dh_install:
 	find debian/tmp -name '*.a' -print -delete
