@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+<!DOCTYPE book
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
   <!ENTITY version SYSTEM "version.xml">
 ]>
-<book id="librsvg">
+<book xmlns="http://docbook.org/ns/docbook"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      version="5.1">
   <!--
     Copyright © 2009, 2010 Christian Persch
+    Copyright © 2017 Federico Mena Quintero
 
     Permission is granted to copy, distribute and/or modify this document
     under the terms of the GNU General Public License, Version 2
@@ -16,12 +18,13 @@
 
     A copy of the license is included in the COPYING file.
     -->
-  <bookinfo>
-    <title>RSVG Libary Reference Manual</title>
+  <info>
+    <title>Librsvg Reference Manual</title>
     <releaseinfo>
-      For RSVG version &version;.
+      For librsvg version &version;
+
       The latest version of this documentation can be found on-line at the
-      <ulink role="online-location" url="http://library.gnome.org/devel/rsvg/index.html">GNOME Library</ulink>.
+      <link xlink:href="http://library.gnome.org/devel/rsvg/index.html" role="online-location">GNOME Library</link>.
     </releaseinfo>
 
     <copyright>
@@ -40,6 +43,11 @@
       <holder>Christian Persch</holder>
     </copyright>
 
+    <copyright>
+      <year>2017</year>
+      <holder>Federico Mena Quintero</holder>
+    </copyright>
+
     <legalnotice>
       <para>
         Permission is granted to copy, distribute and/or modify this document
@@ -49,7 +57,7 @@
 
         You may obtain a copy of the <citetitle>GNU General Public Licence</citetitle>
         from the Free Software Foundation at
-        <ulink type="http" url="http://www.gnu.org/licences/">GNU Licences web site</ulink>
+        <link xlink:href="http://www.gnu.org/licences/">GNU Licences web site</link>
         or by writing to:
 
         <address>
@@ -60,15 +68,58 @@
         </address>
       </para>
     </legalnotice>
-  </bookinfo>
+  </info>
 
-  <part id="rsvg">
+  <part xml:id="rsvg">
     <title>API Reference</title>
     <partintro>
       <para>
-        The GNOME SVG Library (RSVG) is library for rendering SVG and SVGZ files.
+        Librsvg is a library for rendering Scalable Vector Graphics 1.1
+        files (<link
+        xlink:href="https://www.w3.org/TR/SVG/">SVG 1.1</link>).
+        Specifically, it can take non-animated, non-scripted SVG data
+        and render it into a <link
+        xlink:href="https://www.cairographics.org/">Cairo</link>
+        surface.  Normally this means an in-memory raster surface, but
+        it could also be any of the other surface types that Cairo
+        supports.
       </para>
+
+      <para>
+	Librsvg supports many of the graphic features in the <link
+	xlink:href="https://www.w3.org/TR/SVG/">SVG 1.1
+	specification</link>.  The main features of SVG 1.1 that
+	librsvg does not support are the following:
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Scripting or animation - Librsvg reads SVG data and
+	    renders it to a static image.  There is no provision to
+	    execute scripts that may control animation parameters.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Access to the DOM - Librsvg creates an internal
+	    representation of the SVG data, but it does not provide
+	    outside access to the resulting Document Object Model
+	    (DOM).
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    SVG fonts - Instead, librsvg relies on the system's fonts,
+	    particularly those that are available through Cairo/Pango.
+	  </para>
+	</listitem>
+      </itemizedlist>
     </partintro>
+
+    <xi:include href="overview.xml"/>
 
     <xi:include href="xml/rsvg-handle.xml"/>
     <xi:include href="xml/rsvg-gio.xml"/>
@@ -77,50 +128,50 @@
     <xi:include href="xml/rsvg-features.xml"/>
   </part>
 
-  <chapter id="object-tree">
+  <chapter xml:id="object-tree">
     <title>Object Hierarchy</title>
      <xi:include href="xml/tree_index.sgml"/>
   </chapter>
-  <index id="api-index-full">
+  <index xml:id="api-index-full">
     <title>API Index</title>
-    <xi:include href="xml/api-index-full.xml"><xi:fallback /></xi:include>
+    <xi:include href="xml/api-index-full.xml"/>
   </index>
-  <index id="api-index-deprecated" role="deprecated">
+  <index xml:id="api-index-deprecated" role="deprecated">
     <title>Index of deprecated symbols</title>
-    <xi:include href="xml/api-index-deprecated.xml"><xi:fallback /></xi:include>
+    <xi:include href="xml/api-index-deprecated.xml"/>
   </index>
-  <index id="api-index-2-4" role="2.4">
+  <index xml:id="api-index-2-4" role="2.4">
     <title>Index of new symbols in 2.4</title>
-    <xi:include href="xml/api-index-2.4.xml"><xi:fallback /></xi:include>
+    <xi:include href="xml/api-index-2.4.xml"/>
   </index>
-  <index id="api-index-2-8" role="2.8">
+  <index xml:id="api-index-2-8" role="2.8">
     <title>Index of new symbols in 2.8</title>
-    <xi:include href="xml/api-index-2.8.xml"><xi:fallback /></xi:include>
+    <xi:include href="xml/api-index-2.8.xml"/>
   </index>
-  <index id="api-index-2-9" role="2.9">
+  <index xml:id="api-index-2-9" role="2.9">
     <title>Index of new symbols in 2.9</title>
-    <xi:include href="xml/api-index-2.9.xml"><xi:fallback /></xi:include>
+    <xi:include href="xml/api-index-2.9.xml"/>
   </index>
-  <index id="api-index-2-14" role="2.14">
+  <index xml:id="api-index-2-14" role="2.14">
     <title>Index of new symbols in 2.14</title>
-    <xi:include href="xml/api-index-2.14.xml"><xi:fallback /></xi:include>
+    <xi:include href="xml/api-index-2.14.xml"/>
   </index>
-  <index id="api-index-2-22" role="2.22">
+  <index xml:id="api-index-2-22" role="2.22">
     <title>Index of new symbols in 2.22</title>
-    <xi:include href="xml/api-index-2.22.xml"><xi:fallback /></xi:include>
+    <xi:include href="xml/api-index-2.22.xml"/>
   </index>
-  <index id="api-index-2-32" role="2.32">
+  <index xml:id="api-index-2-32" role="2.32">
     <title>Index of new symbols in 2.32</title>
-    <xi:include href="xml/api-index-2.32.xml"><xi:fallback /></xi:include>
+    <xi:include href="xml/api-index-2.32.xml"/>
   </index>
-  <index id="api-index-2-36" role="2.36">
+  <index xml:id="api-index-2-36" role="2.36">
     <title>Index of new symbols in 2.32</title>
-    <xi:include href="xml/api-index-2.36.xml"><xi:fallback /></xi:include>
+    <xi:include href="xml/api-index-2.36.xml"/>
   </index>
 
-  <xi:include href="xml/annotation-glossary.xml"><xi:fallback /></xi:include>
+  <xi:include href="xml/annotation-glossary.xml"/>
 
-  <appendix id="licence">
+  <appendix xml:id="licence">
     <title>Licence</title>
 
     <para>
@@ -141,7 +192,7 @@
     <para>
       You may obtain a copy of the <citetitle>GNU General Public Licence</citetitle>
       from the Free Software Foundation at
-      <ulink type="http" url="http://www.gnu.org/licences/">GNU Licences web site</ulink>
+      <link xlink:href="http://www.gnu.org/licences/">GNU Licences web site</link>
       or by writing to:
 
       <address>

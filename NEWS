@@ -1,54 +1,214 @@
-Version 2.40.20
-- Except for emergencies, this will be the LAST RELEASE of the
-  librsvg-2.40.x series.  We are moving to 2.41, which is vastly
-  improved over the 2.40 series.  The API/ABI there remain unchaged,
-  so we strongly encourage you to upgrade your sources and binaries to
-  librsvg-2.41.x.
+Version 2.42.3
+- gitlab#205 - The configure script now checks for Rust 1.20.0 -
+  previously this minimum requirement was not well-defined.
+- gitlab#204 - New feature: If an SVG has an <a> link element, we now
+  generate the corresponding link when outputting to a Cairo PDF
+  surface.  If you use rsvg-convert(1) with PDF output, <a> links in
+  the SVG will work in the PDF (Dmitry Kontsevoy).
+- gitlab#108 - New feature: support font-size:larger and font-size:smaller
+  relative sizes.
+- New feature: rsvg-convert now supports SOURCE_DATE_EPOCH per
+  https://reproducible-builds.org/specs/source-date-epoch/ to generate
+  reproducible output for PDFs (Chris Lamb).
+- gitlab#197 - New requirement: We now require Freetype2 2.9.0, which
+  fixes font rendering bugs.  The test reference PNGs have been
+  regenerated with this version.  You may see changes in font
+  rendering as a result of this updated requirement.
+- gitlab#91 - Fix rendering of masks and clips when the initial
+  transformation has a translation component (Massimo).
+- gitlab#112 - Fix: apply style attributes for all SVG elements, not just
+  for the toplevel one.
+- gitlab#161 - Fix the marker angle for the last vertex of closed
+  paths (Juraj Fiala).
+- gitlab#198 - Fix: Make rsvg_pixbuf_from_file() and its derived
+  functions work again.  Now we have tests for the whole public API.
+- gitlab#143 - Minor optimizations for Gaussian blurs (Timm Bäder).
+- gitlab#201 - Minor speedups in the code to parse SVG attributes.
+- gitlab#178 - Fix some tests that failed on 32-bit machines.
+- COMPILING.md now lists our build dependencies, and has command lines
+  which you can use on openSUSE/Fedora/Debian/Ubuntu/MacOS to set up a
+  development environment for librsvg (Jordan Petridis, Brion Vibber).
+- gitlab#211 - Running the configure script on MacOS now works and
+  doesn't try to use -Bsymbolic for linking (Brion Vibber).
+- gitlab#In addtion to --enable-debug/--disable-debug to control the Rust
+  compilation, now you can use an environment variable
+  LIBRSVG_DEBUG=yes / LIBRSVG_DEBUG=no if you wish.
+- Code moved to Rust: SVG paint servers (Dmitry Kontsevoy), SVG
+  attribute parsing.
+- We now use a Cargo workspace internally, to move more things to Rust
+  (Jordan Petridis, Chun-wei Fan).
+- Special thanks in this release to Jordan Petridis for MAJOR
+  improvements to our Continuous Integration infrastructure, the
+  repository structure, and updates to the compilation documentation.
+  Also for setting up 32-bit builds for continuous integration.
+
+Version 2.42.2
+- gitlab#193 - Don't crash when feConvolveMatrix doesn't specify
+  orderx/ordery attributes.
+- gitlab#136 - Parse stroke-dasharray property correctly.  This code
+  is in Rust now; yay! (Jordan Petridis).
+- Don't render markers if they are zero-sized, per the spec.
+- Performance: eliminate a bunch of string copies during parsing.
+- Update rust-cssparser to 0.23 (Igor Gnatenko).
+
+Version 2.42.1
+- gitlab#182 - Parse the transform attribute in a faster/simpler way.
+  We now use rust-cssparser instead of lalrpop.  This is especially
+  noticeable on SVGs with lots of "transform" attributes.
+- gitlab#187 - Don't crash when setting a gradient on a zero-sized object.
+- gitlab#184 - (Windows) Don't use PangoFT2 if not available (Chun-wei Fan).
+- gitlab#181 - Inherit attributes in the <svg> element properly.
+- gitlab#160 - rsvg-convert - fix error reporting when reading from
+  stdin (Phlip Withnall).
+- gitlab#152 - Fix detection of image type in "data:" URIs when they
+  don't specify a MIME type (Andreas Smas).
+- gitlab#117 - (Windows) rsvg-convert - Set stdout to O_BINARY
+  (Bakhtiar Hasmanan).
+- gitlab#133 - More stringent parsing of path data; better tests.
+- (Windows/MSVC) Fix linking of the Rust internals library (Chun-wei Fan).
+- Fix typos and links in the .md files.
+
+Version 2.42.0
+- Fix a memory leak in rsvg_handle_new_from_file() (Lovell Fuller).
+- Optimize the xml:space normalization function (Jordan Petridis).
+- gitlab#179 - fix a runtime warning in the feMergeNode code.
+- gitlab#175 - Clarify documentation about the rsvg_*_sub() APIs.
+- Stylistic fixes from cargo-clippy (Jordan Petridis).
+- Port the Pango glue code to Rust.
+- New ARCHITECTURE.md with a description of librsvg's internals.
+
+Version 2.41.2
+- We now require glib 2.52.0.
+- bgo#787895 - Fix mis-use of libxml2.  Thanks to Nick Wellnhofer for
+  the guidance.
 - bgo#761175 - Allow masks and clips to reuse a node being drawn.
+- Fix xml:space normalization, per the spec.
 - Don't access the file system when deciding whether to load a remote
   file with a UNC path for a paint server (i.e. don't try to load it at all).
-- Vistual Studio: fixed and integrated introspection builds, so
-  introspection data is built directly from the Visual Studio project
-  (Chun-wei Fan).
+- We now support cross-compilation of the Rust code (David Michael).
+  See COMPILING.md for details.
+- Fixed bugs from Coverity runs (Philip Withnall).
+- Vastly improved README.md, new COMPILING.md, improved CONTRIBUTING.md.
+- Markers now have the correct default size per the SVG spec.
 - Visual Studio: We now use HIGHENTROPYVA linker option on x64 builds,
   to enhance the security of built binaries (Chun-wei Fan).
-- Fix generation of Vala bindings when compiling in read-only source
-  directories (Emmanuele Bassi).
+- Cargo is now verbose as well if you use "make V=1".
+- Fixed some memory leaks.
+- Don't render elements that establish a viewport if their viewBox
+  size is 0, per the spec.
+- SVG elements ported to Rust: image, clipPath, mask, character data in elements.
+- Fixed loading files one byte at a time.
+- Reference documentation is now DocBook 5.1.
+- Reference docs now have an overview of the library.
+- Distribute README.md in the tarball properly.
+- Expanded the test suite.
+- Lots of internal refactoring.
 
-Version 2.40.19
-- bgo#621088: Using text objects as clipping paths is now supported.
-- bgo#587721: Fix rendering of text elements with transformations (Massimo).
-- bgo#777833 - Fix memory leaks when an RsvgHandle is disposed before
-  being closed (Philip Withnall).
-- bgo#782098 - Don't pass deprecated options to gtk-doc (Ting-Wei Lan).
-- bgo#786372 - Fix the default for the "type" attribute of the <style> element.
-- bgo#785276 - Don't crash on single-byte files.
-- bgo#634514: Don't render unknown elements and their sub-elements.
-- bgo#777155 - Ignore patterns that have close-to-zero dimensions.
-- bgo#634324 - Fix Gaussian blurs with negative scaling.
-- Fix the <switch> element; it wasn't working at all.
-- Fix loading when rsvg_handle_write() is called one byte at a time.
-- bgo#787895 - Fix incorrect usage of libxml2.  Thanks to Nick Wellnhofer
-  for advice on this.
-- Backported the test suite machinery from the master branch (Chun-wei Fan,
-  Federico Mena).
-- We now require Pango 1.38.0 or later (released in 2015).
-- We now require libxml2 2.9.0 or later (released in 2012).
+Version 2.41.1
+- The feConvolveMatrix filter primitive wasn't being rendered at all;
+  now it works.
+- Pattern specifications can now have a fallback color, per the spec -
+  https://www.w3.org/TR/SVG/painting.html#SpecifyingPaint
+- Tests now use a very basic form of reproducible font rendering.
+  This means that "make check" should pass even if you have a custom
+  Fontconfig setup.
+- Fixed recursive fallbacks in gradients.
+- Per the spec, we now don't render elements which have invalid
+  attributes.
+- Windows build: support building with Fontconfig; support Visual
+  Studio 2017; generate .pc files upon install (Chun-wei Fan)
+- Fixed bgo#621088 - Text elements can now be used as clipping paths.
+- Fixed bgo#587721 - Fix rendering of text elements with transformations
+  (Massimo)
+- Fixed bgo#776932 - Don't crash on elements with an invalid
+  "transform" attribute.
+- Fixed bgo#777155 - Ignore patterns that have close-to-zero dimensions.
+- Fixed bgo#776297 - Don't render markers for rect / circle elements;
+  fix marker angles in some cases (Massimo).
+- Fixed bgo#777834 - Don't crash when rendering text with empty
+  extents.
+- Fixed bgo#634324 - Gaussian blur with negative-scaling
+  transformation was being rendered incorrectly.
+- Fixed bgo#783835 - Don't divide by zero in Gaussian blurs
+- Fixed division by zero in feTile filter when the input surface is
+  empty.
+- Fixed bgo#779489 - Link to pangoft2 as required.
+- Don't crash in filters when one of them yields an invalid surface
+  for an intermediate result.
+- Update for bgo#778666 - Use our own thumbnailer specification file
+  (Jeremy Bicha).
+- Fixed bgo#782098 - Don't pass deprecated options to gtkdoc-scangobj
+  (Ting-Wei Lan).
+- Fixed bgo#777833 - Various memory leaks (Philip Withnall, Federico Mena)
+- Fixed bgo#786372 - Use the correct default for the style element's
+  "type" attribute.
+- Fixed bgo#634514 - Don't render unknown elements and their children.
+- Fix parsing of "azimuth", "elevation", "limitingConeAngle" for
+  filter effects.
+- Fixed bgo#785276 - Don't crash on empty or single-byte files.
+- Made the <switch> element work; SVG feature names were being
+  tested incorrectly.
+- Fixed a few cases of uninitialized struct fields.
+- Code converted to Rust: preserveAspectRatio attribute, viewBox
+  attribute, core Node structure, path/line/rect/circle/ellipse basic
+  shapes, group/defs/switch/svg/use/symbol structural elements, pattern element
+  and pattern fallbacks, marker rendering, various parsers, error
+  propagation from parsers, gradient stops, gradient element, 
+- Added a bunch of new test cases for the new features and the
+  code converted to Rust.
+- We now require cairo-rs 0.2.0
+- We now require lalrpop 0.13.1
+- The librsvg tarball now comes with the Rust dependencies embedded
+  using "cargo vendor".  Linux distros can replace these dependencies
+  with their own versions using the infrastructure described in
+  http://doc.crates.io/source-replacement.html
 
-Version 2.40.18
-- bgo#783835 - CVE-2017-11464 - Fix division-by-zero in the Gaussian
-  blur code.
-- Fix other cases of division-by-zero on fuzzed SVG files.
-- Don't crash on invalid transformation matrices.
-- Support Visual Studio 2017; generate .pc files for Meson on Windows -
-  Chun-wei Fan.
-
-Version 2.40.17
-- bgo#778666 - Use our own thumbnailer specification file, so
-  gnome-desktop-thumbnailer can generate thumbnails outside of the
-  calling process (Jeremy Bicha).
-- Removed some redundant code.
-- Windows build fixes - Chun-wei Fan.
+Version 2.41.0
+- The big news is that parts of librsvg are now implemented in the
+  Rust programming language, instead of C.  The public API remains
+  identical.  Rust should provide us with memory safety and nicer
+  built-in abstractions for the code, as well as an easier way to do
+  unit tests.  Special thanks to all the people who sent tips on Rust
+  idioms, and to Sebastian Dröge and Hubert Figuière for the Automake bits.
+- Added an "--enable-debug" option to configure.ac - this will tell
+  the Rust compiler to generate debugging code, instead of working in
+  release mode.  Note that you must still pass CFLAGS by hand by the
+  regular means for the C code.
+- For Windows builds, only MSVC 2012 and upward are supported now.
+- Chun-wei Fan made it possible to regenerate the MSVC project files
+  when Makefile.am changes.
+- Fixed bgo#763386 - handle curveto segments where three control
+  points are coincident.  Thanks to Massimo for the detailed test cases.
+- Fixed bgo#603550 - Compute the luminance correctly when generating a
+  mask.  Thanks to Mike Lewis for the patch.
+- Fixed bgo#776297 - Only render markers in path, line, polygon,
+  polyline elements.
+- Fixed feImage filters when they reference SVG nodes; they were
+  translated incorrectly.
+- Fixed feComponentTransferFunction when there are duplicated feFuncX
+  elements.
+- Fixed bgo#761871 - handle reflection points for quadratic and cubic
+  curves correctly.
+- Fixed bgo#686953 - support the "marker" shorthand property.
+- Fixed a few minor issues pointed out by Coverity.
+- The path data parser now handles boolean values in Arc elements correctly.
+- Fixed conformance bugs in gradient inheritance.
+- Radial gradients now adjust the focus point correctly to be within
+  the gradient's radius.
+- Stroke width normalization is now conformant to the spec.
+- Viewport-relative length normalization is now conformant to the spec.
+- Added some of the official SVG 1.1 test files to our test suite.  Fixed
+  a little bunch of conformance bugs.
+- As a small optimization, we only push/pop CSS states when rendering
+  will actually happen, instead of for all (potentially invisible) nodes.
+- Code that has been converted to Rust:  marker orientations and
+  rendering, path data parser, path building, length normalization,
+  gradient inheritance, bounding boxes with affine transformations.
+- Lots of refactoring to accomodate the Rust code, and general cleanups as well.
+- Added tests/README.md with instructions on how to run the test suite
+  and update it.
+  rsvg-test can now skip files or directories that start with "ignore".
+- Improved the README.
 
 Version 2.40.16
 - Chun-wei Fan added support for building the introspection files under MSVC.

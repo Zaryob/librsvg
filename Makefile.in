@@ -19,8 +19,7 @@
 # Projects from their templates
 
 # This autotools file, from GLib, can be used in other projects
-# that have Visual Studio build support, and is copied into
-# $(srcroot)/build/.
+# that have Visual Studio build support.
 
 # * Input variables:
 #
@@ -29,17 +28,23 @@
 # * Simple tutorial
 #
 # Add this to Makefile.am where your library/program is built:
-#   include $(top_srcdir)/build/Makefile.msvcproj
+#   include <this Makefile.msvcproj>
 #   MSVCPROJS = YourProject (can be multiple projects in a single srcdir)
 #   YourProject_FILES = $(libyourlib_1_0_SOURCES)
 #   YourProject_EXCLUDES = ... # list of sources to exclude, separated by '|', wildcards allowed; use random unsed value if none
+#   (the following 3 lines if headers need to be installed)
 #   YourProject_HEADERS_DIR = $(libyourlibincludedir)
 #   YourProject_HEADERS_INST = $(libyourlib_1_0_HEADERS)
 #   YourProject_HEADERS_EXCLUDES = ... # <list of headers to exclude from installation, separated by '|', wildcards allowed; use random unsed value if none>
 #
 #   dist-hook: \ # (or add to it if it is already there, note the vs9 items will also call the vs10 items in the process)
-#   	$(top_builddir)/build/win32/vs9/YourProject.vcproj	\
-#   	$(top_builddir)/build/win32/vs9/YourProject.headers
+#   	$(top_builddir)/win32/vs9/YourProject.vcproj	\
+#   	$(top_builddir)/win32/vs9/YourProject.headers	# if headers need to be installed
+#
+#   --or, if Visual Studio 2013 or later is required--
+#   dist-hook: \ # (or add to it if it is already there, this does -not- call other vs items in the process)
+#	$(top_builddir)/win32/vs12/YourProject.vcxproj	\
+#	$(top_builddir)/win32/vs12/YourProject.vs12.headers	# if headers need to be installed
 
 # Private functions
 
@@ -47,7 +52,7 @@
 # Common autotools file for constructing the g-ir-scanner and
 # g-ir-compiler command lines for Visual Studio builds.
 
-# This is copied from $(srcroot)/build from the gobject-introspection
+# This is copied from $(srcroot)/win32 from the gobject-introspection
 # project, which may be included in projects that support both
 # Visual Studio builds and introspection.
 
@@ -63,7 +68,7 @@
 #    is required unless --headers-only is specified in
 #    YourLib_1_0_gir__MSVC_SCANNERFLAGS)
 #
-#   include $(top_srcdir)/build/Makefile.msvc-introspection
+#   include <this Makefile.msvc-introspection>
 #   MSVC_INTROSPECT_GIRS = YourLib-1.0.gir
 #   YourLib_1_0_gir_NAMESPACE = YourLib # This is optional
 #   YourLib_1_0_gir_VERSION = 1.0 # This is optional
@@ -72,7 +77,9 @@
 #   YourLib_1_0_gir_MSVC_PROGRAM = YourProgram
 #   YourLib_1_0_gir_MSVC_PACKAGES = (Dependent .pc files)
 #   YourLib_1_0_gir_MSVC_INCLUDE_GIRS = (Dependent external .gir's)
-#   YourLiv_1_0_gir_MSVC_EXPORT_PACKAGES = (Packages exported by this .gir)
+#   YourLib_1_0_gir_MSVC_EXPORT_PACKAGES = (Packages exported by this .gir)
+#   YourLib_1_0_gir_MSVC_C_INCLUDES = (List of public C headers which need to be included by
+#                                      consumers at compile time to make use of the API)
 
 # Private functions
 
@@ -171,13 +178,14 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/glibtests.m4 \
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
-	$(am__configure_deps) $(librsvginc_HEADERS) $(am__DIST_COMMON)
+	$(am__configure_deps) $(dist_doc_DATA) $(librsvginc_HEADERS) \
+	$(am__DIST_COMMON)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = librsvg-features.h librsvg-zip config.h.win32 \
-	librsvg-${RSVG_API_VERSION}.pc \
+CONFIG_CLEAN_FILES = librsvg/librsvg-features.h librsvg-zip \
+	config.h.win32 librsvg-${RSVG_API_VERSION}.pc \
 	librsvg-${RSVG_API_VERSION}-uninstalled.pc
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
@@ -208,41 +216,34 @@ am__uninstall_files_from_dir = { \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" \
-	"$(DESTDIR)$(man1dir)" "$(DESTDIR)$(girdir)" \
-	"$(DESTDIR)$(typelibsdir)" "$(DESTDIR)$(pkgconfigdir)" \
-	"$(DESTDIR)$(vapidir)" "$(DESTDIR)$(librsvgincdir)"
+	"$(DESTDIR)$(man1dir)" "$(DESTDIR)$(docdir)" \
+	"$(DESTDIR)$(girdir)" "$(DESTDIR)$(typelibsdir)" \
+	"$(DESTDIR)$(pkgconfigdir)" "$(DESTDIR)$(vapidir)" \
+	"$(DESTDIR)$(librsvgincdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 librsvg_@RSVG_API_MAJOR_VERSION@_la_DEPENDENCIES =  \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) $(RUST_LIB)
+am__dirstamp = $(am__leading_dot)dirstamp
 am__objects_1 =
-am_librsvg_@RSVG_API_MAJOR_VERSION@_la_OBJECTS =  \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-features.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-css.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-defs.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-image.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-io.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-paint-server.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-path.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base-file-util.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-filter.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-marker.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-mask.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-shapes.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-structure.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-styles.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-text.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cond.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-enum-types.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-draw.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-render.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-clip.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-gobject.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-file-util.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-size-callback.lo \
-	librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-xml.lo \
+am_librsvg_@RSVG_API_MAJOR_VERSION@_la_OBJECTS = librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-enum-types.lo \
+	librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-features.lo \
+	librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base-file-util.lo \
+	librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base.lo \
+	librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-clip.lo \
+	librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-draw.lo \
+	librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-render.lo \
+	librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cond.lo \
+	librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-css.lo \
+	librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-defs.lo \
+	librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-file-util.lo \
+	librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-filter.lo \
+	librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-handle.lo \
+	librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-io.lo \
+	librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-size-callback.lo \
+	librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-styles.lo \
+	librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-text.lo \
+	librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-xml.lo \
 	$(am__objects_1)
 librsvg_@RSVG_API_MAJOR_VERSION@_la_OBJECTS =  \
 	$(am_librsvg_@RSVG_API_MAJOR_VERSION@_la_OBJECTS)
@@ -258,7 +259,8 @@ librsvg_@RSVG_API_MAJOR_VERSION@_la_LINK = $(LIBTOOL) $(AM_V_lt) \
 @HAVE_GTK_3_TRUE@am__EXEEXT_1 = rsvg-view-3$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 am_rsvg_convert_OBJECTS = rsvg_convert-rsvg-convert.$(OBJEXT) \
-	rsvg_convert-rsvg-size-callback.$(OBJEXT) $(am__objects_1)
+	librsvg/rsvg_convert-rsvg-size-callback.$(OBJEXT) \
+	$(am__objects_1)
 rsvg_convert_OBJECTS = $(am_rsvg_convert_OBJECTS)
 rsvg_convert_DEPENDENCIES =  \
 	$(top_builddir)/librsvg-@RSVG_API_MAJOR_VERSION@.la \
@@ -266,7 +268,7 @@ rsvg_convert_DEPENDENCIES =  \
 rsvg_convert_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(rsvg_convert_CFLAGS) \
 	$(CFLAGS) $(rsvg_convert_LDFLAGS) $(LDFLAGS) -o $@
-am_rsvg_view_3_OBJECTS = rsvg_view_3-test-display.$(OBJEXT)
+am_rsvg_view_3_OBJECTS = rsvg_view_3-rsvg-view.$(OBJEXT)
 rsvg_view_3_OBJECTS = $(am_rsvg_view_3_OBJECTS)
 rsvg_view_3_DEPENDENCIES =  \
 	$(top_builddir)/librsvg-@RSVG_API_MAJOR_VERSION@.la \
@@ -329,8 +331,8 @@ am__can_run_installinfo = \
 man1dir = $(mandir)/man1
 NROFF = nroff
 MANS = $(dist_man_MANS)
-DATA = $(nodist_gir_DATA) $(nodist_typelibs_DATA) $(pkgconfig_DATA) \
-	$(vapi_DATA)
+DATA = $(dist_doc_DATA) $(nodist_gir_DATA) $(nodist_typelibs_DATA) \
+	$(pkgconfig_DATA) $(vapi_DATA)
 HEADERS = $(librsvginc_HEADERS)
 RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
@@ -364,12 +366,12 @@ CSCOPE = cscope
 DIST_SUBDIRS = $(SUBDIRS)
 am__DIST_COMMON = $(dist_man_MANS) $(srcdir)/Makefile.in \
 	$(srcdir)/config.h.in $(srcdir)/config.h.win32.in \
-	$(srcdir)/librsvg-features.h.in \
 	$(srcdir)/librsvg-uninstalled.pc.in $(srcdir)/librsvg-zip.in \
 	$(srcdir)/librsvg.pc.in \
-	$(top_srcdir)/build/Makefile.msvc-introspection \
-	$(top_srcdir)/build/Makefile.msvcproj AUTHORS COPYING \
-	COPYING.LIB ChangeLog INSTALL NEWS README compile config.guess \
+	$(top_srcdir)/librsvg/librsvg-features.h.in \
+	$(top_srcdir)/win32/Makefile.msvc-introspection \
+	$(top_srcdir)/win32/Makefile.msvcproj AUTHORS COPYING \
+	COPYING.LIB ChangeLog INSTALL NEWS compile config.guess \
 	config.sub depcomp install-sh ltmain.sh missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
@@ -427,6 +429,7 @@ AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 BSYMBOLIC_LDFLAG = @BSYMBOLIC_LDFLAG@
 CAIRO_PREFIX = @CAIRO_PREFIX@
+CARGO = @CARGO@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -527,6 +530,8 @@ RSVG_API_VERSION_U = @RSVG_API_VERSION_U@
 RSVG_CONVERT_CFLAGS = @RSVG_CONVERT_CFLAGS@
 RSVG_CONVERT_LIBS = @RSVG_CONVERT_LIBS@
 RSVG_LT_VERSION_INFO = @RSVG_LT_VERSION_INFO@
+RUSTC = @RUSTC@
+RUST_TARGET_SUBDIR = @RUST_TARGET_SUBDIR@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -593,71 +598,116 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = . gdk-pixbuf-loader tests tools doc build
+SUBDIRS = . gdk-pixbuf-loader tests tools doc win32
 NULL = 
 BUILT_SOURCES = $(enum_sources)
 lib_LTLIBRARIES = librsvg-@RSVG_API_MAJOR_VERSION@.la
 headers = \
-	rsvg.h	\
-	rsvg-cairo.h
+	librsvg/rsvg.h		\
+	librsvg/rsvg-cairo.h
 
 enum_sources = \
-	librsvg-enum-types.h	\
-	librsvg-enum-types.c
+	librsvg/librsvg-enum-types.h	\
+	librsvg/librsvg-enum-types.c
 
 librsvg_@RSVG_API_MAJOR_VERSION@_la_SOURCES = \
-	librsvg-features.c 	\
-	rsvg-css.c 		\
-	rsvg-css.h 		\
-	rsvg-compat.h		\
-	rsvg-defs.c 		\
-	rsvg-defs.h 		\
-	rsvg-image.c		\
-	rsvg-image.h		\
-	rsvg-io.c		\
-	rsvg-io.h		\
-	rsvg-paint-server.c 	\
-	rsvg-paint-server.h 	\
-	rsvg-path.c 		\
-	rsvg-path.h 		\
-	rsvg-private.h 		\
-	rsvg-base-file-util.c 	\
-	rsvg-filter.c		\
-	rsvg-filter.h		\
-	rsvg-marker.c		\
-	rsvg-marker.h		\
-	rsvg-mask.c		\
-	rsvg-mask.h		\
-	rsvg-shapes.c		\
-	rsvg-shapes.h		\
-	rsvg-structure.c	\
-	rsvg-structure.h	\
-	rsvg-styles.c		\
-	rsvg-styles.h		\
-	rsvg-text.c		\
-	rsvg-text.h		\
-	rsvg-cond.c		\
-	rsvg-base.c		\
-	librsvg-enum-types.c	\
-	rsvg-cairo-draw.c	\
-	rsvg-cairo-draw.h	\
-	rsvg-cairo-render.c	\
-	rsvg-cairo-render.h	\
-	rsvg-cairo-clip.h	\
-	rsvg-cairo-clip.c	\
-	rsvg.c			\
-	rsvg-gobject.c		\
-	rsvg-file-util.c	\
-	rsvg-size-callback.c	\
-	rsvg-size-callback.h	\
-	rsvg-xml.c		\
-	rsvg-xml.h		\
-	rsvg.h			\
-	rsvg-cairo.h		\
-	librsvg-features.h 	\
-	librsvg-enum-types.h	\
+	librsvg/librsvg-enum-types.c		\
+	librsvg/librsvg-enum-types.h		\
+	librsvg/librsvg-features.c 		\
+	librsvg/librsvg-features.h 		\
+	librsvg/rsvg-attributes.h		\
+	librsvg/rsvg-base-file-util.c 		\
+	librsvg/rsvg-base.c			\
+	librsvg/rsvg-cairo-clip.c		\
+	librsvg/rsvg-cairo-clip.h		\
+	librsvg/rsvg-cairo-draw.c		\
+	librsvg/rsvg-cairo-draw.h		\
+	librsvg/rsvg-cairo-render.c		\
+	librsvg/rsvg-cairo-render.h		\
+	librsvg/rsvg-cairo.h			\
+	librsvg/rsvg-cond.c			\
+	librsvg/rsvg-css.c 			\
+	librsvg/rsvg-css.h 			\
+	librsvg/rsvg-defs.c 			\
+	librsvg/rsvg-defs.h 			\
+	librsvg/rsvg-file-util.c		\
+	librsvg/rsvg-filter.c			\
+	librsvg/rsvg-filter.h			\
+	librsvg/rsvg-handle.c			\
+	librsvg/rsvg-io.c			\
+	librsvg/rsvg-io.h			\
+	librsvg/rsvg-marker.h			\
+	librsvg/rsvg-mask.h			\
+	librsvg/rsvg-paint-server.h 		\
+	librsvg/rsvg-path-builder.h		\
+	librsvg/rsvg-private.h 			\
+	librsvg/rsvg-shapes.h			\
+	librsvg/rsvg-size-callback.c		\
+	librsvg/rsvg-size-callback.h		\
+	librsvg/rsvg-structure.h		\
+	librsvg/rsvg-styles.c			\
+	librsvg/rsvg-styles.h			\
+	librsvg/rsvg-text.c			\
+	librsvg/rsvg-text.h			\
+	librsvg/rsvg-xml.c			\
+	librsvg/rsvg-xml.h			\
+	librsvg/rsvg.h				\
 	$(NULL)
 
+RUST_SRC = \
+	Cargo.toml				\
+	rsvg_internals/Cargo.toml		\
+	rsvg_internals/build.rs			\
+	rsvg_internals/src/aspect_ratio.rs	\
+	rsvg_internals/src/attributes.rs	\
+	rsvg_internals/src/bbox.rs		\
+	rsvg_internals/src/chars.rs		\
+	rsvg_internals/src/clip_path.rs		\
+	rsvg_internals/src/cnode.rs		\
+	rsvg_internals/src/color.rs		\
+	rsvg_internals/src/coord_units.rs	\
+	rsvg_internals/src/drawing_ctx.rs	\
+	rsvg_internals/src/error.rs		\
+	rsvg_internals/src/gradient.rs		\
+	rsvg_internals/src/handle.rs		\
+	rsvg_internals/src/image.rs		\
+	rsvg_internals/src/length.rs		\
+	rsvg_internals/src/lib.rs		\
+	rsvg_internals/src/link.rs		\
+	rsvg_internals/src/marker.rs		\
+	rsvg_internals/src/mask.rs		\
+	rsvg_internals/src/node.rs		\
+	rsvg_internals/src/opacity.rs		\
+	rsvg_internals/src/paint_server.rs	\
+	rsvg_internals/src/parsers.rs		\
+	rsvg_internals/src/path_builder.rs	\
+	rsvg_internals/src/path_parser.rs	\
+	rsvg_internals/src/pattern.rs		\
+	rsvg_internals/src/property_bag.rs	\
+	rsvg_internals/src/shapes.rs		\
+	rsvg_internals/src/space.rs		\
+	rsvg_internals/src/state.rs		\
+	rsvg_internals/src/stop.rs		\
+	rsvg_internals/src/structure.rs		\
+	rsvg_internals/src/text.rs		\
+	rsvg_internals/src/transform.rs		\
+	rsvg_internals/src/util.rs		\
+	rsvg_internals/src/viewbox.rs		\
+	rsvg_internals/src/viewport.rs
+
+RUST_EXTRA = \
+	Cargo.lock				\
+	cargo-vendor-config
+
+@DEBUG_RELEASE_FALSE@CARGO_RELEASE_ARGS = --release
+@DEBUG_RELEASE_TRUE@CARGO_RELEASE_ARGS = 
+@CROSS_COMPILING_TRUE@CARGO_TARGET_ARGS = --target=$(host)
+CARGO_VERBOSE = $(cargo_verbose_$(V))
+cargo_verbose_ = $(cargo_verbose_$(AM_DEFAULT_VERBOSITY))
+cargo_verbose_0 = 
+cargo_verbose_1 = --verbose
+RUST_LIB = @abs_top_builddir@/target/@RUST_TARGET_SUBDIR@/librsvg_internals.a
+CARGO_TARGET_DIR = @abs_top_builddir@/target
 librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS = \
 	-I$(top_srcdir) 			\
 	-I$(top_builddir) 			\
@@ -682,19 +732,20 @@ librsvg_@RSVG_API_MAJOR_VERSION@_la_LDFLAGS = \
 
 librsvg_@RSVG_API_MAJOR_VERSION@_la_LIBADD = \
 	$(LIBRSVG_LIBS) 	\
-	$(LIBM)
+	$(LIBM)			\
+	$(RUST_LIB)
 
 librsvgincdir = $(includedir)/librsvg-$(RSVG_API_VERSION)/librsvg
 librsvginc_HEADERS = \
-	$(headers)	\
-	librsvg-features.h \
-	librsvg-enum-types.h
+	$(headers)			\
+	librsvg/librsvg-features.h	\
+	librsvg/librsvg-enum-types.h
 
 dist_man_MANS = rsvg-convert.1
 rsvg_convert_SOURCES = \
-	rsvg-convert.c \
-	rsvg-size-callback.c \
-	rsvg-size-callback.h \
+	rsvg-convert.c			\
+	librsvg/rsvg-size-callback.c	\
+	librsvg/rsvg-size-callback.h	\
 	$(NULL)
 
 rsvg_convert_CPPFLAGS = \
@@ -714,8 +765,8 @@ rsvg_convert_LDADD = \
 	$(LIBM)
 
 rsvg_view_3_SOURCES = \
-	test-display.c \
-	rsvg-size-callback.h
+	rsvg-view.c			\
+	librsvg/rsvg-size-callback.h
 
 rsvg_view_3_CPPFLAGS = \
 	-I$(top_srcdir) 			\
@@ -736,10 +787,17 @@ rsvg_view_3_LDADD = \
 	$(GTHREAD_LIBS)		\
 	$(LIBM)
 
-EXTRA_DIST = librsvg.doap AUTHORS NEWS COPYING.LIB librsvg-zip.in \
-	gtk-doc.make Rsvg-2.0-custom.vala Rsvg-2.0.metadata \
-	config.h.win32.in config.h.win32 rsvg.symbols glib-tap.mk \
-	tap-driver.sh tap-test $(MSVCPROJ_GENERATED)
+dist_doc_DATA = \
+	COMPILING.md			\
+	CONTRIBUTING.md			\
+	README.md			\
+	code-of-conduct.md
+
+EXTRA_DIST = $(RUST_SRC) $(RUST_EXTRA) librsvg.doap AUTHORS NEWS \
+	COPYING.LIB librsvg-zip.in gtk-doc.make Rsvg-2.0-custom.vala \
+	Rsvg-2.0.metadata config.h.win32.in config.h.win32 \
+	rsvg.symbols glib-tap.mk tap-driver.sh tap-test \
+	$(MSVCPROJ_GENERATED)
 CLEANFILES = $(enum_sources) s-enum-types-h s-enum-types-c \
 	$(am__append_3) $(am__append_4)
 pkgconfigdir = $(libdir)/pkgconfig
@@ -777,8 +835,8 @@ DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
 @HAVE_INTROSPECTION_TRUE@nodist_typelibs_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
 @ENABLE_VAPIGEN_TRUE@@HAVE_INTROSPECTION_TRUE@VAPIGEN_VAPIS = librsvg-$(RSVG_API_VERSION).vapi
 @ENABLE_VAPIGEN_TRUE@@HAVE_INTROSPECTION_TRUE@librsvg_@RSVG_API_VERSION_U@_vapi_DEPS = gio-2.0 cairo
-@ENABLE_VAPIGEN_TRUE@@HAVE_INTROSPECTION_TRUE@librsvg_@RSVG_API_VERSION_U@_vapi_METADATADIRS = $(top_srcdir)
-@ENABLE_VAPIGEN_TRUE@@HAVE_INTROSPECTION_TRUE@librsvg_@RSVG_API_VERSION_U@_vapi_FILES = $(top_builddir)/Rsvg-$(RSVG_API_VERSION).gir $(top_srcdir)/Rsvg-$(RSVG_API_VERSION)-custom.vala
+@ENABLE_VAPIGEN_TRUE@@HAVE_INTROSPECTION_TRUE@librsvg_@RSVG_API_VERSION_U@_vapi_METADATADIRS = $(srcdir)
+@ENABLE_VAPIGEN_TRUE@@HAVE_INTROSPECTION_TRUE@librsvg_@RSVG_API_VERSION_U@_vapi_FILES = Rsvg-$(RSVG_API_VERSION).gir Rsvg-$(RSVG_API_VERSION)-custom.vala
 @ENABLE_VAPIGEN_TRUE@@HAVE_INTROSPECTION_TRUE@vapidir = $(datadir)/vala/vapi
 @ENABLE_VAPIGEN_TRUE@@HAVE_INTROSPECTION_TRUE@vapi_DATA = $(VAPIGEN_VAPIS)
 
@@ -786,7 +844,7 @@ DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
 MSVCPROJS = rsvg rsvg-convert
 rsvg_FILES = $(librsvg_@RSVG_API_MAJOR_VERSION@_la_SOURCES)
 rsvg_EXCLUDES = dummy
-rsvg_HEADERS_DIR = $(librsvgincdir)
+rsvg_HEADERS_DIR = $(includedir)/librsvg-$(RSVG_API_VERSION)
 rsvg_HEADERS_INST = $(librsvginc_HEADERS)
 rsvg_HEADERS_EXCLUDES = dummy
 rsvg_convert_FILES = $(rsvg_convert_SOURCES)
@@ -806,20 +864,20 @@ _headers_dest_posix = $(subst $(includedir),,$($(_proj_name)_HEADERS_DIR))
 _headers_destdir = $(subst /,\\,$(_headers_dest_posix))
 
 # autotools: Why must we do this instead of dist-hook?
-MSVCPROJ_GENERATED = $(top_builddir)/build/win32/vs9/rsvg.vcproj \
-	$(top_builddir)/build/win32/vs9/rsvg-convert.vcproj \
+MSVCPROJ_GENERATED = $(top_builddir)/win32/vs12/rsvg.vcxproj \
+	$(top_builddir)/win32/vs12/rsvg-convert.vcxproj \
 	$(am__append_5)
 @HAVE_INTROSPECTION_TRUE@MSVC_INTROSPECT_GIRS = $(INTROSPECTION_GIRS)
 @HAVE_INTROSPECTION_TRUE@INTROSPECTION_INTERMEDIATE_ITEMS = \
-@HAVE_INTROSPECTION_TRUE@	$(top_builddir)/build/win32/Rsvg-@RSVG_API_VERSION@.gir.msvc.introspect		\
-@HAVE_INTROSPECTION_TRUE@	$(top_builddir)/build/win32/Rsvg_@RSVG_API_VERSION_U@_gir_list
+@HAVE_INTROSPECTION_TRUE@	$(top_builddir)/win32/Rsvg-@RSVG_API_VERSION@.gir.msvc.introspect		\
+@HAVE_INTROSPECTION_TRUE@	$(top_builddir)/win32/Rsvg_@RSVG_API_VERSION_U@_gir_list
 
 @HAVE_INTROSPECTION_TRUE@Rsvg_@RSVG_API_VERSION_U@_gir_MSVC_FILES = $(Rsvg_@RSVG_API_VERSION_U@_gir_FILES)
 @HAVE_INTROSPECTION_TRUE@Rsvg_@RSVG_API_VERSION_U@_gir_MSVC_PACKAGES = $(Rsvg_@RSVG_API_VERSION_U@_gir_PACKAGES)
 @HAVE_INTROSPECTION_TRUE@Rsvg_@RSVG_API_VERSION_U@_gir_MSVC_EXPORT_PACKAGES = $(Rsvg_@RSVG_API_VERSION_U@_gir_EXPORT_PACKAGES)
 @HAVE_INTROSPECTION_TRUE@Rsvg_@RSVG_API_VERSION_U@_gir_MSVC_INCLUDE_GIRS = $(Rsvg_@RSVG_API_VERSION_U@_gir_INCLUDES)
 @HAVE_INTROSPECTION_TRUE@Rsvg_@RSVG_API_VERSION_U@_gir_MSVC_LIBS = rsvg-@RSVG_API_VERSION@
-@HAVE_INTROSPECTION_TRUE@Rsvg_@RSVG_API_VERSION_U@_gir_MSVC_CFLAGS = -I../.. -DRSVG_COMPILATION
+@HAVE_INTROSPECTION_TRUE@Rsvg_@RSVG_API_VERSION_U@_gir_MSVC_CFLAGS = -I.. -DRSVG_COMPILATION
 @HAVE_INTROSPECTION_TRUE@Rsvg_@RSVG_API_VERSION_U@_gir_MSVC_SCANNERFLAGS = $(Rsvg_@RSVG_API_VERSION_U@_gir_SCANNERFLAGS)
 @HAVE_INTROSPECTION_TRUE@_gir_name = $(subst /,_,$(subst -,_,$(subst .,_,$(1))))
 
@@ -849,6 +907,7 @@ MSVCPROJ_GENERATED = $(top_builddir)/build/win32/vs9/rsvg.vcproj \
 @HAVE_INTROSPECTION_TRUE@_gir_packages_msvc = $(foreach pkg,$($(_gir_name)_MSVC_PACKAGES),--pkg=$(pkg))
 @HAVE_INTROSPECTION_TRUE@_gir_includes_msvc = $(foreach include,$($(_gir_name)_MSVC_INCLUDE_GIRS),--include=$(include))
 @HAVE_INTROSPECTION_TRUE@_gir_export_packages_msvc = $(foreach pkg,$($(_gir_name)_MSVC_EXPORT_PACKAGES),--pkg-export=$(pkg))
+@HAVE_INTROSPECTION_TRUE@_gir_c_includes_msvc = $(foreach include,$($(_gir_name)_MSVC_C_INCLUDES),--c-include=$(include))
 all: $(BUILT_SOURCES) config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -856,7 +915,7 @@ all: $(BUILT_SOURCES) config.h
 .SUFFIXES: .c .lo .o .obj
 am--refresh: Makefile
 	@:
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(top_srcdir)/build/Makefile.msvcproj $(top_srcdir)/build/Makefile.msvc-introspection $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(top_srcdir)/win32/Makefile.msvcproj $(top_srcdir)/win32/Makefile.msvc-introspection $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -878,7 +937,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe);; \
 	esac;
-$(top_srcdir)/build/Makefile.msvcproj $(top_srcdir)/build/Makefile.msvc-introspection $(am__empty):
+$(top_srcdir)/win32/Makefile.msvcproj $(top_srcdir)/win32/Makefile.msvc-introspection $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	$(SHELL) ./config.status --recheck
@@ -903,7 +962,7 @@ $(srcdir)/config.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config.h stamp-h1
-librsvg-features.h: $(top_builddir)/config.status $(srcdir)/librsvg-features.h.in
+librsvg/librsvg-features.h: $(top_builddir)/config.status $(top_srcdir)/librsvg/librsvg-features.h.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 librsvg-zip: $(top_builddir)/config.status $(srcdir)/librsvg-zip.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
@@ -948,6 +1007,48 @@ clean-libLTLIBRARIES:
 	  echo rm -f $${locs}; \
 	  rm -f $${locs}; \
 	}
+librsvg/$(am__dirstamp):
+	@$(MKDIR_P) librsvg
+	@: > librsvg/$(am__dirstamp)
+librsvg/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) librsvg/$(DEPDIR)
+	@: > librsvg/$(DEPDIR)/$(am__dirstamp)
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-enum-types.lo:  \
+	librsvg/$(am__dirstamp) librsvg/$(DEPDIR)/$(am__dirstamp)
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-features.lo:  \
+	librsvg/$(am__dirstamp) librsvg/$(DEPDIR)/$(am__dirstamp)
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base-file-util.lo:  \
+	librsvg/$(am__dirstamp) librsvg/$(DEPDIR)/$(am__dirstamp)
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base.lo:  \
+	librsvg/$(am__dirstamp) librsvg/$(DEPDIR)/$(am__dirstamp)
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-clip.lo:  \
+	librsvg/$(am__dirstamp) librsvg/$(DEPDIR)/$(am__dirstamp)
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-draw.lo:  \
+	librsvg/$(am__dirstamp) librsvg/$(DEPDIR)/$(am__dirstamp)
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-render.lo:  \
+	librsvg/$(am__dirstamp) librsvg/$(DEPDIR)/$(am__dirstamp)
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cond.lo:  \
+	librsvg/$(am__dirstamp) librsvg/$(DEPDIR)/$(am__dirstamp)
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-css.lo:  \
+	librsvg/$(am__dirstamp) librsvg/$(DEPDIR)/$(am__dirstamp)
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-defs.lo:  \
+	librsvg/$(am__dirstamp) librsvg/$(DEPDIR)/$(am__dirstamp)
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-file-util.lo:  \
+	librsvg/$(am__dirstamp) librsvg/$(DEPDIR)/$(am__dirstamp)
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-filter.lo:  \
+	librsvg/$(am__dirstamp) librsvg/$(DEPDIR)/$(am__dirstamp)
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-handle.lo:  \
+	librsvg/$(am__dirstamp) librsvg/$(DEPDIR)/$(am__dirstamp)
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-io.lo:  \
+	librsvg/$(am__dirstamp) librsvg/$(DEPDIR)/$(am__dirstamp)
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-size-callback.lo:  \
+	librsvg/$(am__dirstamp) librsvg/$(DEPDIR)/$(am__dirstamp)
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-styles.lo:  \
+	librsvg/$(am__dirstamp) librsvg/$(DEPDIR)/$(am__dirstamp)
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-text.lo:  \
+	librsvg/$(am__dirstamp) librsvg/$(DEPDIR)/$(am__dirstamp)
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-xml.lo:  \
+	librsvg/$(am__dirstamp) librsvg/$(DEPDIR)/$(am__dirstamp)
 
 librsvg-@RSVG_API_MAJOR_VERSION@.la: $(librsvg_@RSVG_API_MAJOR_VERSION@_la_OBJECTS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_DEPENDENCIES) $(EXTRA_librsvg_@RSVG_API_MAJOR_VERSION@_la_DEPENDENCIES) 
 	$(AM_V_CCLD)$(librsvg_@RSVG_API_MAJOR_VERSION@_la_LINK) -rpath $(libdir) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_OBJECTS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_LIBADD) $(LIBS)
@@ -1000,6 +1101,8 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+librsvg/rsvg_convert-rsvg-size-callback.$(OBJEXT):  \
+	librsvg/$(am__dirstamp) librsvg/$(DEPDIR)/$(am__dirstamp)
 
 rsvg-convert$(EXEEXT): $(rsvg_convert_OBJECTS) $(rsvg_convert_DEPENDENCIES) $(EXTRA_rsvg_convert_DEPENDENCIES) 
 	@rm -f rsvg-convert$(EXEEXT)
@@ -1011,242 +1114,183 @@ rsvg-view-3$(EXEEXT): $(rsvg_view_3_OBJECTS) $(rsvg_view_3_DEPENDENCIES) $(EXTRA
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f librsvg/*.$(OBJEXT)
+	-rm -f librsvg/*.lo
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-enum-types.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-features.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base-file-util.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-clip.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-draw.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-render.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cond.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-css.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-defs.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-file-util.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-filter.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-gobject.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-image.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-io.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-marker.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-mask.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-paint-server.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-path.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-shapes.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-size-callback.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-structure.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-styles.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-text.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-xml.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rsvg_convert-rsvg-convert.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rsvg_convert-rsvg-size-callback.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rsvg_view_3-test-display.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rsvg_view_3-rsvg-view.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-enum-types.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-features.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base-file-util.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-clip.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-draw.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-render.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cond.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-css.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-defs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-file-util.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-filter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-handle.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-io.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-size-callback.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-styles.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-text.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-xml.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@librsvg/$(DEPDIR)/rsvg_convert-rsvg-size-callback.Po@am__quote@
 
 .c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
 
 .c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .c.lo:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-features.lo: librsvg-features.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-features.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-features.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-features.lo `test -f 'librsvg-features.c' || echo '$(srcdir)/'`librsvg-features.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-features.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-features.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='librsvg-features.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-features.lo' libtool=yes @AMDEPBACKSLASH@
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-enum-types.lo: librsvg/librsvg-enum-types.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-enum-types.lo -MD -MP -MF librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-enum-types.Tpo -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-enum-types.lo `test -f 'librsvg/librsvg-enum-types.c' || echo '$(srcdir)/'`librsvg/librsvg-enum-types.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-enum-types.Tpo librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-enum-types.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='librsvg/librsvg-enum-types.c' object='librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-enum-types.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-features.lo `test -f 'librsvg-features.c' || echo '$(srcdir)/'`librsvg-features.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-enum-types.lo `test -f 'librsvg/librsvg-enum-types.c' || echo '$(srcdir)/'`librsvg/librsvg-enum-types.c
 
-librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-css.lo: rsvg-css.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-css.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-css.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-css.lo `test -f 'rsvg-css.c' || echo '$(srcdir)/'`rsvg-css.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-css.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-css.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-css.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-css.lo' libtool=yes @AMDEPBACKSLASH@
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-features.lo: librsvg/librsvg-features.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-features.lo -MD -MP -MF librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-features.Tpo -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-features.lo `test -f 'librsvg/librsvg-features.c' || echo '$(srcdir)/'`librsvg/librsvg-features.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-features.Tpo librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-features.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='librsvg/librsvg-features.c' object='librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-features.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-css.lo `test -f 'rsvg-css.c' || echo '$(srcdir)/'`rsvg-css.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-features.lo `test -f 'librsvg/librsvg-features.c' || echo '$(srcdir)/'`librsvg/librsvg-features.c
 
-librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-defs.lo: rsvg-defs.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-defs.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-defs.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-defs.lo `test -f 'rsvg-defs.c' || echo '$(srcdir)/'`rsvg-defs.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-defs.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-defs.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-defs.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-defs.lo' libtool=yes @AMDEPBACKSLASH@
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base-file-util.lo: librsvg/rsvg-base-file-util.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base-file-util.lo -MD -MP -MF librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base-file-util.Tpo -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base-file-util.lo `test -f 'librsvg/rsvg-base-file-util.c' || echo '$(srcdir)/'`librsvg/rsvg-base-file-util.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base-file-util.Tpo librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base-file-util.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='librsvg/rsvg-base-file-util.c' object='librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base-file-util.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-defs.lo `test -f 'rsvg-defs.c' || echo '$(srcdir)/'`rsvg-defs.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base-file-util.lo `test -f 'librsvg/rsvg-base-file-util.c' || echo '$(srcdir)/'`librsvg/rsvg-base-file-util.c
 
-librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-image.lo: rsvg-image.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-image.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-image.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-image.lo `test -f 'rsvg-image.c' || echo '$(srcdir)/'`rsvg-image.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-image.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-image.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-image.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-image.lo' libtool=yes @AMDEPBACKSLASH@
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base.lo: librsvg/rsvg-base.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base.lo -MD -MP -MF librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base.Tpo -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base.lo `test -f 'librsvg/rsvg-base.c' || echo '$(srcdir)/'`librsvg/rsvg-base.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base.Tpo librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='librsvg/rsvg-base.c' object='librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-image.lo `test -f 'rsvg-image.c' || echo '$(srcdir)/'`rsvg-image.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base.lo `test -f 'librsvg/rsvg-base.c' || echo '$(srcdir)/'`librsvg/rsvg-base.c
 
-librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-io.lo: rsvg-io.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-io.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-io.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-io.lo `test -f 'rsvg-io.c' || echo '$(srcdir)/'`rsvg-io.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-io.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-io.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-io.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-io.lo' libtool=yes @AMDEPBACKSLASH@
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-clip.lo: librsvg/rsvg-cairo-clip.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-clip.lo -MD -MP -MF librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-clip.Tpo -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-clip.lo `test -f 'librsvg/rsvg-cairo-clip.c' || echo '$(srcdir)/'`librsvg/rsvg-cairo-clip.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-clip.Tpo librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-clip.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='librsvg/rsvg-cairo-clip.c' object='librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-clip.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-io.lo `test -f 'rsvg-io.c' || echo '$(srcdir)/'`rsvg-io.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-clip.lo `test -f 'librsvg/rsvg-cairo-clip.c' || echo '$(srcdir)/'`librsvg/rsvg-cairo-clip.c
 
-librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-paint-server.lo: rsvg-paint-server.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-paint-server.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-paint-server.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-paint-server.lo `test -f 'rsvg-paint-server.c' || echo '$(srcdir)/'`rsvg-paint-server.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-paint-server.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-paint-server.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-paint-server.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-paint-server.lo' libtool=yes @AMDEPBACKSLASH@
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-draw.lo: librsvg/rsvg-cairo-draw.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-draw.lo -MD -MP -MF librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-draw.Tpo -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-draw.lo `test -f 'librsvg/rsvg-cairo-draw.c' || echo '$(srcdir)/'`librsvg/rsvg-cairo-draw.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-draw.Tpo librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-draw.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='librsvg/rsvg-cairo-draw.c' object='librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-draw.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-paint-server.lo `test -f 'rsvg-paint-server.c' || echo '$(srcdir)/'`rsvg-paint-server.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-draw.lo `test -f 'librsvg/rsvg-cairo-draw.c' || echo '$(srcdir)/'`librsvg/rsvg-cairo-draw.c
 
-librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-path.lo: rsvg-path.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-path.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-path.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-path.lo `test -f 'rsvg-path.c' || echo '$(srcdir)/'`rsvg-path.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-path.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-path.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-path.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-path.lo' libtool=yes @AMDEPBACKSLASH@
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-render.lo: librsvg/rsvg-cairo-render.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-render.lo -MD -MP -MF librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-render.Tpo -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-render.lo `test -f 'librsvg/rsvg-cairo-render.c' || echo '$(srcdir)/'`librsvg/rsvg-cairo-render.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-render.Tpo librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-render.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='librsvg/rsvg-cairo-render.c' object='librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-render.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-path.lo `test -f 'rsvg-path.c' || echo '$(srcdir)/'`rsvg-path.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-render.lo `test -f 'librsvg/rsvg-cairo-render.c' || echo '$(srcdir)/'`librsvg/rsvg-cairo-render.c
 
-librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base-file-util.lo: rsvg-base-file-util.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base-file-util.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base-file-util.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base-file-util.lo `test -f 'rsvg-base-file-util.c' || echo '$(srcdir)/'`rsvg-base-file-util.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base-file-util.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base-file-util.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-base-file-util.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base-file-util.lo' libtool=yes @AMDEPBACKSLASH@
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cond.lo: librsvg/rsvg-cond.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cond.lo -MD -MP -MF librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cond.Tpo -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cond.lo `test -f 'librsvg/rsvg-cond.c' || echo '$(srcdir)/'`librsvg/rsvg-cond.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cond.Tpo librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cond.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='librsvg/rsvg-cond.c' object='librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cond.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base-file-util.lo `test -f 'rsvg-base-file-util.c' || echo '$(srcdir)/'`rsvg-base-file-util.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cond.lo `test -f 'librsvg/rsvg-cond.c' || echo '$(srcdir)/'`librsvg/rsvg-cond.c
 
-librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-filter.lo: rsvg-filter.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-filter.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-filter.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-filter.lo `test -f 'rsvg-filter.c' || echo '$(srcdir)/'`rsvg-filter.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-filter.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-filter.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-filter.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-filter.lo' libtool=yes @AMDEPBACKSLASH@
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-css.lo: librsvg/rsvg-css.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-css.lo -MD -MP -MF librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-css.Tpo -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-css.lo `test -f 'librsvg/rsvg-css.c' || echo '$(srcdir)/'`librsvg/rsvg-css.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-css.Tpo librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-css.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='librsvg/rsvg-css.c' object='librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-css.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-filter.lo `test -f 'rsvg-filter.c' || echo '$(srcdir)/'`rsvg-filter.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-css.lo `test -f 'librsvg/rsvg-css.c' || echo '$(srcdir)/'`librsvg/rsvg-css.c
 
-librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-marker.lo: rsvg-marker.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-marker.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-marker.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-marker.lo `test -f 'rsvg-marker.c' || echo '$(srcdir)/'`rsvg-marker.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-marker.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-marker.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-marker.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-marker.lo' libtool=yes @AMDEPBACKSLASH@
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-defs.lo: librsvg/rsvg-defs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-defs.lo -MD -MP -MF librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-defs.Tpo -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-defs.lo `test -f 'librsvg/rsvg-defs.c' || echo '$(srcdir)/'`librsvg/rsvg-defs.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-defs.Tpo librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-defs.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='librsvg/rsvg-defs.c' object='librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-defs.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-marker.lo `test -f 'rsvg-marker.c' || echo '$(srcdir)/'`rsvg-marker.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-defs.lo `test -f 'librsvg/rsvg-defs.c' || echo '$(srcdir)/'`librsvg/rsvg-defs.c
 
-librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-mask.lo: rsvg-mask.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-mask.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-mask.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-mask.lo `test -f 'rsvg-mask.c' || echo '$(srcdir)/'`rsvg-mask.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-mask.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-mask.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-mask.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-mask.lo' libtool=yes @AMDEPBACKSLASH@
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-file-util.lo: librsvg/rsvg-file-util.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-file-util.lo -MD -MP -MF librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-file-util.Tpo -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-file-util.lo `test -f 'librsvg/rsvg-file-util.c' || echo '$(srcdir)/'`librsvg/rsvg-file-util.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-file-util.Tpo librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-file-util.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='librsvg/rsvg-file-util.c' object='librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-file-util.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-mask.lo `test -f 'rsvg-mask.c' || echo '$(srcdir)/'`rsvg-mask.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-file-util.lo `test -f 'librsvg/rsvg-file-util.c' || echo '$(srcdir)/'`librsvg/rsvg-file-util.c
 
-librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-shapes.lo: rsvg-shapes.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-shapes.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-shapes.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-shapes.lo `test -f 'rsvg-shapes.c' || echo '$(srcdir)/'`rsvg-shapes.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-shapes.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-shapes.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-shapes.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-shapes.lo' libtool=yes @AMDEPBACKSLASH@
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-filter.lo: librsvg/rsvg-filter.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-filter.lo -MD -MP -MF librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-filter.Tpo -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-filter.lo `test -f 'librsvg/rsvg-filter.c' || echo '$(srcdir)/'`librsvg/rsvg-filter.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-filter.Tpo librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-filter.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='librsvg/rsvg-filter.c' object='librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-filter.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-shapes.lo `test -f 'rsvg-shapes.c' || echo '$(srcdir)/'`rsvg-shapes.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-filter.lo `test -f 'librsvg/rsvg-filter.c' || echo '$(srcdir)/'`librsvg/rsvg-filter.c
 
-librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-structure.lo: rsvg-structure.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-structure.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-structure.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-structure.lo `test -f 'rsvg-structure.c' || echo '$(srcdir)/'`rsvg-structure.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-structure.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-structure.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-structure.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-structure.lo' libtool=yes @AMDEPBACKSLASH@
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-handle.lo: librsvg/rsvg-handle.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-handle.lo -MD -MP -MF librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-handle.Tpo -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-handle.lo `test -f 'librsvg/rsvg-handle.c' || echo '$(srcdir)/'`librsvg/rsvg-handle.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-handle.Tpo librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-handle.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='librsvg/rsvg-handle.c' object='librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-handle.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-structure.lo `test -f 'rsvg-structure.c' || echo '$(srcdir)/'`rsvg-structure.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-handle.lo `test -f 'librsvg/rsvg-handle.c' || echo '$(srcdir)/'`librsvg/rsvg-handle.c
 
-librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-styles.lo: rsvg-styles.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-styles.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-styles.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-styles.lo `test -f 'rsvg-styles.c' || echo '$(srcdir)/'`rsvg-styles.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-styles.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-styles.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-styles.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-styles.lo' libtool=yes @AMDEPBACKSLASH@
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-io.lo: librsvg/rsvg-io.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-io.lo -MD -MP -MF librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-io.Tpo -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-io.lo `test -f 'librsvg/rsvg-io.c' || echo '$(srcdir)/'`librsvg/rsvg-io.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-io.Tpo librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-io.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='librsvg/rsvg-io.c' object='librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-io.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-styles.lo `test -f 'rsvg-styles.c' || echo '$(srcdir)/'`rsvg-styles.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-io.lo `test -f 'librsvg/rsvg-io.c' || echo '$(srcdir)/'`librsvg/rsvg-io.c
 
-librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-text.lo: rsvg-text.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-text.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-text.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-text.lo `test -f 'rsvg-text.c' || echo '$(srcdir)/'`rsvg-text.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-text.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-text.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-text.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-text.lo' libtool=yes @AMDEPBACKSLASH@
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-size-callback.lo: librsvg/rsvg-size-callback.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-size-callback.lo -MD -MP -MF librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-size-callback.Tpo -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-size-callback.lo `test -f 'librsvg/rsvg-size-callback.c' || echo '$(srcdir)/'`librsvg/rsvg-size-callback.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-size-callback.Tpo librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-size-callback.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='librsvg/rsvg-size-callback.c' object='librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-size-callback.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-text.lo `test -f 'rsvg-text.c' || echo '$(srcdir)/'`rsvg-text.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-size-callback.lo `test -f 'librsvg/rsvg-size-callback.c' || echo '$(srcdir)/'`librsvg/rsvg-size-callback.c
 
-librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cond.lo: rsvg-cond.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cond.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cond.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cond.lo `test -f 'rsvg-cond.c' || echo '$(srcdir)/'`rsvg-cond.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cond.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cond.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-cond.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cond.lo' libtool=yes @AMDEPBACKSLASH@
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-styles.lo: librsvg/rsvg-styles.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-styles.lo -MD -MP -MF librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-styles.Tpo -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-styles.lo `test -f 'librsvg/rsvg-styles.c' || echo '$(srcdir)/'`librsvg/rsvg-styles.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-styles.Tpo librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-styles.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='librsvg/rsvg-styles.c' object='librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-styles.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cond.lo `test -f 'rsvg-cond.c' || echo '$(srcdir)/'`rsvg-cond.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-styles.lo `test -f 'librsvg/rsvg-styles.c' || echo '$(srcdir)/'`librsvg/rsvg-styles.c
 
-librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base.lo: rsvg-base.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base.lo `test -f 'rsvg-base.c' || echo '$(srcdir)/'`rsvg-base.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-base.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base.lo' libtool=yes @AMDEPBACKSLASH@
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-text.lo: librsvg/rsvg-text.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-text.lo -MD -MP -MF librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-text.Tpo -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-text.lo `test -f 'librsvg/rsvg-text.c' || echo '$(srcdir)/'`librsvg/rsvg-text.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-text.Tpo librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-text.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='librsvg/rsvg-text.c' object='librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-text.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-base.lo `test -f 'rsvg-base.c' || echo '$(srcdir)/'`rsvg-base.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-text.lo `test -f 'librsvg/rsvg-text.c' || echo '$(srcdir)/'`librsvg/rsvg-text.c
 
-librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-enum-types.lo: librsvg-enum-types.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-enum-types.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-enum-types.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-enum-types.lo `test -f 'librsvg-enum-types.c' || echo '$(srcdir)/'`librsvg-enum-types.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-enum-types.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-enum-types.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='librsvg-enum-types.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-enum-types.lo' libtool=yes @AMDEPBACKSLASH@
+librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-xml.lo: librsvg/rsvg-xml.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-xml.lo -MD -MP -MF librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-xml.Tpo -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-xml.lo `test -f 'librsvg/rsvg-xml.c' || echo '$(srcdir)/'`librsvg/rsvg-xml.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-xml.Tpo librsvg/$(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-xml.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='librsvg/rsvg-xml.c' object='librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-xml.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-librsvg-enum-types.lo `test -f 'librsvg-enum-types.c' || echo '$(srcdir)/'`librsvg-enum-types.c
-
-librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-draw.lo: rsvg-cairo-draw.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-draw.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-draw.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-draw.lo `test -f 'rsvg-cairo-draw.c' || echo '$(srcdir)/'`rsvg-cairo-draw.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-draw.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-draw.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-cairo-draw.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-draw.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-draw.lo `test -f 'rsvg-cairo-draw.c' || echo '$(srcdir)/'`rsvg-cairo-draw.c
-
-librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-render.lo: rsvg-cairo-render.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-render.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-render.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-render.lo `test -f 'rsvg-cairo-render.c' || echo '$(srcdir)/'`rsvg-cairo-render.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-render.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-render.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-cairo-render.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-render.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-render.lo `test -f 'rsvg-cairo-render.c' || echo '$(srcdir)/'`rsvg-cairo-render.c
-
-librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-clip.lo: rsvg-cairo-clip.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-clip.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-clip.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-clip.lo `test -f 'rsvg-cairo-clip.c' || echo '$(srcdir)/'`rsvg-cairo-clip.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-clip.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-clip.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-cairo-clip.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-clip.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-cairo-clip.lo `test -f 'rsvg-cairo-clip.c' || echo '$(srcdir)/'`rsvg-cairo-clip.c
-
-librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg.lo: rsvg.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg.lo `test -f 'rsvg.c' || echo '$(srcdir)/'`rsvg.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg.lo `test -f 'rsvg.c' || echo '$(srcdir)/'`rsvg.c
-
-librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-gobject.lo: rsvg-gobject.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-gobject.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-gobject.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-gobject.lo `test -f 'rsvg-gobject.c' || echo '$(srcdir)/'`rsvg-gobject.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-gobject.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-gobject.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-gobject.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-gobject.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-gobject.lo `test -f 'rsvg-gobject.c' || echo '$(srcdir)/'`rsvg-gobject.c
-
-librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-file-util.lo: rsvg-file-util.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-file-util.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-file-util.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-file-util.lo `test -f 'rsvg-file-util.c' || echo '$(srcdir)/'`rsvg-file-util.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-file-util.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-file-util.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-file-util.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-file-util.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-file-util.lo `test -f 'rsvg-file-util.c' || echo '$(srcdir)/'`rsvg-file-util.c
-
-librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-size-callback.lo: rsvg-size-callback.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-size-callback.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-size-callback.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-size-callback.lo `test -f 'rsvg-size-callback.c' || echo '$(srcdir)/'`rsvg-size-callback.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-size-callback.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-size-callback.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-size-callback.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-size-callback.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-size-callback.lo `test -f 'rsvg-size-callback.c' || echo '$(srcdir)/'`rsvg-size-callback.c
-
-librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-xml.lo: rsvg-xml.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -MT librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-xml.lo -MD -MP -MF $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-xml.Tpo -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-xml.lo `test -f 'rsvg-xml.c' || echo '$(srcdir)/'`rsvg-xml.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-xml.Tpo $(DEPDIR)/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-xml.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-xml.c' object='librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-xml.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-xml.lo `test -f 'rsvg-xml.c' || echo '$(srcdir)/'`rsvg-xml.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS) $(CPPFLAGS) $(librsvg_@RSVG_API_MAJOR_VERSION@_la_CFLAGS) $(CFLAGS) -c -o librsvg/librsvg_@RSVG_API_MAJOR_VERSION@_la-rsvg-xml.lo `test -f 'librsvg/rsvg-xml.c' || echo '$(srcdir)/'`librsvg/rsvg-xml.c
 
 rsvg_convert-rsvg-convert.o: rsvg-convert.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rsvg_convert_CPPFLAGS) $(CPPFLAGS) $(rsvg_convert_CFLAGS) $(CFLAGS) -MT rsvg_convert-rsvg-convert.o -MD -MP -MF $(DEPDIR)/rsvg_convert-rsvg-convert.Tpo -c -o rsvg_convert-rsvg-convert.o `test -f 'rsvg-convert.c' || echo '$(srcdir)/'`rsvg-convert.c
@@ -1262,39 +1306,40 @@ rsvg_convert-rsvg-convert.obj: rsvg-convert.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rsvg_convert_CPPFLAGS) $(CPPFLAGS) $(rsvg_convert_CFLAGS) $(CFLAGS) -c -o rsvg_convert-rsvg-convert.obj `if test -f 'rsvg-convert.c'; then $(CYGPATH_W) 'rsvg-convert.c'; else $(CYGPATH_W) '$(srcdir)/rsvg-convert.c'; fi`
 
-rsvg_convert-rsvg-size-callback.o: rsvg-size-callback.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rsvg_convert_CPPFLAGS) $(CPPFLAGS) $(rsvg_convert_CFLAGS) $(CFLAGS) -MT rsvg_convert-rsvg-size-callback.o -MD -MP -MF $(DEPDIR)/rsvg_convert-rsvg-size-callback.Tpo -c -o rsvg_convert-rsvg-size-callback.o `test -f 'rsvg-size-callback.c' || echo '$(srcdir)/'`rsvg-size-callback.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/rsvg_convert-rsvg-size-callback.Tpo $(DEPDIR)/rsvg_convert-rsvg-size-callback.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-size-callback.c' object='rsvg_convert-rsvg-size-callback.o' libtool=no @AMDEPBACKSLASH@
+librsvg/rsvg_convert-rsvg-size-callback.o: librsvg/rsvg-size-callback.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rsvg_convert_CPPFLAGS) $(CPPFLAGS) $(rsvg_convert_CFLAGS) $(CFLAGS) -MT librsvg/rsvg_convert-rsvg-size-callback.o -MD -MP -MF librsvg/$(DEPDIR)/rsvg_convert-rsvg-size-callback.Tpo -c -o librsvg/rsvg_convert-rsvg-size-callback.o `test -f 'librsvg/rsvg-size-callback.c' || echo '$(srcdir)/'`librsvg/rsvg-size-callback.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) librsvg/$(DEPDIR)/rsvg_convert-rsvg-size-callback.Tpo librsvg/$(DEPDIR)/rsvg_convert-rsvg-size-callback.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='librsvg/rsvg-size-callback.c' object='librsvg/rsvg_convert-rsvg-size-callback.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rsvg_convert_CPPFLAGS) $(CPPFLAGS) $(rsvg_convert_CFLAGS) $(CFLAGS) -c -o rsvg_convert-rsvg-size-callback.o `test -f 'rsvg-size-callback.c' || echo '$(srcdir)/'`rsvg-size-callback.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rsvg_convert_CPPFLAGS) $(CPPFLAGS) $(rsvg_convert_CFLAGS) $(CFLAGS) -c -o librsvg/rsvg_convert-rsvg-size-callback.o `test -f 'librsvg/rsvg-size-callback.c' || echo '$(srcdir)/'`librsvg/rsvg-size-callback.c
 
-rsvg_convert-rsvg-size-callback.obj: rsvg-size-callback.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rsvg_convert_CPPFLAGS) $(CPPFLAGS) $(rsvg_convert_CFLAGS) $(CFLAGS) -MT rsvg_convert-rsvg-size-callback.obj -MD -MP -MF $(DEPDIR)/rsvg_convert-rsvg-size-callback.Tpo -c -o rsvg_convert-rsvg-size-callback.obj `if test -f 'rsvg-size-callback.c'; then $(CYGPATH_W) 'rsvg-size-callback.c'; else $(CYGPATH_W) '$(srcdir)/rsvg-size-callback.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/rsvg_convert-rsvg-size-callback.Tpo $(DEPDIR)/rsvg_convert-rsvg-size-callback.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-size-callback.c' object='rsvg_convert-rsvg-size-callback.obj' libtool=no @AMDEPBACKSLASH@
+librsvg/rsvg_convert-rsvg-size-callback.obj: librsvg/rsvg-size-callback.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rsvg_convert_CPPFLAGS) $(CPPFLAGS) $(rsvg_convert_CFLAGS) $(CFLAGS) -MT librsvg/rsvg_convert-rsvg-size-callback.obj -MD -MP -MF librsvg/$(DEPDIR)/rsvg_convert-rsvg-size-callback.Tpo -c -o librsvg/rsvg_convert-rsvg-size-callback.obj `if test -f 'librsvg/rsvg-size-callback.c'; then $(CYGPATH_W) 'librsvg/rsvg-size-callback.c'; else $(CYGPATH_W) '$(srcdir)/librsvg/rsvg-size-callback.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) librsvg/$(DEPDIR)/rsvg_convert-rsvg-size-callback.Tpo librsvg/$(DEPDIR)/rsvg_convert-rsvg-size-callback.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='librsvg/rsvg-size-callback.c' object='librsvg/rsvg_convert-rsvg-size-callback.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rsvg_convert_CPPFLAGS) $(CPPFLAGS) $(rsvg_convert_CFLAGS) $(CFLAGS) -c -o rsvg_convert-rsvg-size-callback.obj `if test -f 'rsvg-size-callback.c'; then $(CYGPATH_W) 'rsvg-size-callback.c'; else $(CYGPATH_W) '$(srcdir)/rsvg-size-callback.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rsvg_convert_CPPFLAGS) $(CPPFLAGS) $(rsvg_convert_CFLAGS) $(CFLAGS) -c -o librsvg/rsvg_convert-rsvg-size-callback.obj `if test -f 'librsvg/rsvg-size-callback.c'; then $(CYGPATH_W) 'librsvg/rsvg-size-callback.c'; else $(CYGPATH_W) '$(srcdir)/librsvg/rsvg-size-callback.c'; fi`
 
-rsvg_view_3-test-display.o: test-display.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rsvg_view_3_CPPFLAGS) $(CPPFLAGS) $(rsvg_view_3_CFLAGS) $(CFLAGS) -MT rsvg_view_3-test-display.o -MD -MP -MF $(DEPDIR)/rsvg_view_3-test-display.Tpo -c -o rsvg_view_3-test-display.o `test -f 'test-display.c' || echo '$(srcdir)/'`test-display.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/rsvg_view_3-test-display.Tpo $(DEPDIR)/rsvg_view_3-test-display.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-display.c' object='rsvg_view_3-test-display.o' libtool=no @AMDEPBACKSLASH@
+rsvg_view_3-rsvg-view.o: rsvg-view.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rsvg_view_3_CPPFLAGS) $(CPPFLAGS) $(rsvg_view_3_CFLAGS) $(CFLAGS) -MT rsvg_view_3-rsvg-view.o -MD -MP -MF $(DEPDIR)/rsvg_view_3-rsvg-view.Tpo -c -o rsvg_view_3-rsvg-view.o `test -f 'rsvg-view.c' || echo '$(srcdir)/'`rsvg-view.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/rsvg_view_3-rsvg-view.Tpo $(DEPDIR)/rsvg_view_3-rsvg-view.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-view.c' object='rsvg_view_3-rsvg-view.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rsvg_view_3_CPPFLAGS) $(CPPFLAGS) $(rsvg_view_3_CFLAGS) $(CFLAGS) -c -o rsvg_view_3-test-display.o `test -f 'test-display.c' || echo '$(srcdir)/'`test-display.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rsvg_view_3_CPPFLAGS) $(CPPFLAGS) $(rsvg_view_3_CFLAGS) $(CFLAGS) -c -o rsvg_view_3-rsvg-view.o `test -f 'rsvg-view.c' || echo '$(srcdir)/'`rsvg-view.c
 
-rsvg_view_3-test-display.obj: test-display.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rsvg_view_3_CPPFLAGS) $(CPPFLAGS) $(rsvg_view_3_CFLAGS) $(CFLAGS) -MT rsvg_view_3-test-display.obj -MD -MP -MF $(DEPDIR)/rsvg_view_3-test-display.Tpo -c -o rsvg_view_3-test-display.obj `if test -f 'test-display.c'; then $(CYGPATH_W) 'test-display.c'; else $(CYGPATH_W) '$(srcdir)/test-display.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/rsvg_view_3-test-display.Tpo $(DEPDIR)/rsvg_view_3-test-display.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-display.c' object='rsvg_view_3-test-display.obj' libtool=no @AMDEPBACKSLASH@
+rsvg_view_3-rsvg-view.obj: rsvg-view.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rsvg_view_3_CPPFLAGS) $(CPPFLAGS) $(rsvg_view_3_CFLAGS) $(CFLAGS) -MT rsvg_view_3-rsvg-view.obj -MD -MP -MF $(DEPDIR)/rsvg_view_3-rsvg-view.Tpo -c -o rsvg_view_3-rsvg-view.obj `if test -f 'rsvg-view.c'; then $(CYGPATH_W) 'rsvg-view.c'; else $(CYGPATH_W) '$(srcdir)/rsvg-view.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/rsvg_view_3-rsvg-view.Tpo $(DEPDIR)/rsvg_view_3-rsvg-view.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rsvg-view.c' object='rsvg_view_3-rsvg-view.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rsvg_view_3_CPPFLAGS) $(CPPFLAGS) $(rsvg_view_3_CFLAGS) $(CFLAGS) -c -o rsvg_view_3-test-display.obj `if test -f 'test-display.c'; then $(CYGPATH_W) 'test-display.c'; else $(CYGPATH_W) '$(srcdir)/test-display.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(rsvg_view_3_CPPFLAGS) $(CPPFLAGS) $(rsvg_view_3_CFLAGS) $(CFLAGS) -c -o rsvg_view_3-rsvg-view.obj `if test -f 'rsvg-view.c'; then $(CYGPATH_W) 'rsvg-view.c'; else $(CYGPATH_W) '$(srcdir)/rsvg-view.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
 
 clean-libtool:
 	-rm -rf .libs _libs
+	-rm -rf librsvg/.libs librsvg/_libs
 
 distclean-libtool:
 	-rm -f libtool config.lt
@@ -1341,6 +1386,27 @@ uninstall-man1:
 	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
 	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
 	dir='$(DESTDIR)$(man1dir)'; $(am__uninstall_files_from_dir)
+install-dist_docDATA: $(dist_doc_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(dist_doc_DATA)'; test -n "$(docdir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(docdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(docdir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(docdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(docdir)" || exit $$?; \
+	done
+
+uninstall-dist_docDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(dist_doc_DATA)'; test -n "$(docdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(docdir)'; $(am__uninstall_files_from_dir)
 install-nodist_girDATA: $(nodist_gir_DATA)
 	@$(NORMAL_INSTALL)
 	@list='$(nodist_gir_DATA)'; test -n "$(girdir)" || list=; \
@@ -1610,6 +1676,9 @@ distdir: $(DISTFILES)
 	      || exit 1; \
 	  fi; \
 	done
+	$(MAKE) $(AM_MAKEFLAGS) \
+	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
+	  dist-hook
 	-test -n "$(am__skip_mode_fix)" \
 	|| find "$(distdir)" -type d ! -perm -755 \
 		-exec chmod u+rwx,go+rx {} \; -o \
@@ -1741,6 +1810,7 @@ distcleancheck: distclean
 	       $(distcleancheck_listfiles) ; \
 	       exit 1; } >&2
 check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) check-local
 check: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) check-recursive
 all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(MANS) $(DATA) $(HEADERS) \
@@ -1749,7 +1819,7 @@ install-binPROGRAMS: install-libLTLIBRARIES
 
 installdirs: installdirs-recursive
 installdirs-am:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(girdir)" "$(DESTDIR)$(typelibsdir)" "$(DESTDIR)$(pkgconfigdir)" "$(DESTDIR)$(vapidir)" "$(DESTDIR)$(librsvgincdir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(docdir)" "$(DESTDIR)$(girdir)" "$(DESTDIR)$(typelibsdir)" "$(DESTDIR)$(pkgconfigdir)" "$(DESTDIR)$(vapidir)" "$(DESTDIR)$(librsvgincdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: $(BUILT_SOURCES)
@@ -1780,6 +1850,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f librsvg/$(DEPDIR)/$(am__dirstamp)
+	-rm -f librsvg/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -1788,11 +1860,11 @@ maintainer-clean-generic:
 clean: clean-recursive
 
 clean-am: clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
-	clean-libtool mostlyclean-am
+	clean-libtool clean-local mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR) librsvg/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-hdr distclean-libtool distclean-tags
@@ -1809,8 +1881,8 @@ info: info-recursive
 
 info-am:
 
-install-data-am: install-librsvgincHEADERS install-man \
-	install-nodist_girDATA install-nodist_typelibsDATA \
+install-data-am: install-dist_docDATA install-librsvgincHEADERS \
+	install-man install-nodist_girDATA install-nodist_typelibsDATA \
 	install-pkgconfigDATA install-vapiDATA
 
 install-dvi: install-dvi-recursive
@@ -1842,7 +1914,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR) librsvg/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -1859,26 +1931,28 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-libLTLIBRARIES \
-	uninstall-librsvgincHEADERS uninstall-man \
-	uninstall-nodist_girDATA uninstall-nodist_typelibsDATA \
-	uninstall-pkgconfigDATA uninstall-vapiDATA
+uninstall-am: uninstall-binPROGRAMS uninstall-dist_docDATA \
+	uninstall-libLTLIBRARIES uninstall-librsvgincHEADERS \
+	uninstall-man uninstall-nodist_girDATA \
+	uninstall-nodist_typelibsDATA uninstall-pkgconfigDATA \
+	uninstall-vapiDATA
 
 uninstall-man: uninstall-man1
 
-.MAKE: $(am__recursive_targets) all check install install-am \
+.MAKE: $(am__recursive_targets) all check check-am install install-am \
 	install-strip
 
 .PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am \
-	am--refresh check check-am clean clean-binPROGRAMS \
+	am--refresh check check-am check-local clean clean-binPROGRAMS \
 	clean-cscope clean-generic clean-libLTLIBRARIES clean-libtool \
-	cscope cscopelist-am ctags ctags-am dist dist-all dist-bzip2 \
-	dist-gzip dist-lzip dist-shar dist-tarZ dist-xz dist-zip \
-	distcheck distclean distclean-compile distclean-generic \
-	distclean-hdr distclean-libtool distclean-tags distcleancheck \
-	distdir distuninstallcheck dvi dvi-am html html-am info \
-	info-am install install-am install-binPROGRAMS install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
+	clean-local cscope cscopelist-am ctags ctags-am dist dist-all \
+	dist-bzip2 dist-gzip dist-hook dist-lzip dist-shar dist-tarZ \
+	dist-xz dist-zip distcheck distclean distclean-compile \
+	distclean-generic distclean-hdr distclean-libtool \
+	distclean-tags distcleancheck distdir distuninstallcheck dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-binPROGRAMS install-data install-data-am \
+	install-dist_docDATA install-dvi install-dvi-am install-exec \
 	install-exec-am install-html install-html-am install-info \
 	install-info-am install-libLTLIBRARIES \
 	install-librsvgincHEADERS install-man install-man1 \
@@ -1889,41 +1963,62 @@ uninstall-man: uninstall-man1
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags tags-am uninstall uninstall-am uninstall-binPROGRAMS \
-	uninstall-libLTLIBRARIES uninstall-librsvgincHEADERS \
-	uninstall-man uninstall-man1 uninstall-nodist_girDATA \
-	uninstall-nodist_typelibsDATA uninstall-pkgconfigDATA \
-	uninstall-vapiDATA
+	uninstall-dist_docDATA uninstall-libLTLIBRARIES \
+	uninstall-librsvgincHEADERS uninstall-man uninstall-man1 \
+	uninstall-nodist_girDATA uninstall-nodist_typelibsDATA \
+	uninstall-pkgconfigDATA uninstall-vapiDATA
 
 .PRECIOUS: Makefile
 
 
-librsvg-enum-types.h: s-enum-types-h
+check-local:
+	cd $(srcdir) && \
+	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) cargo test
+
+clean-local:
+	cd $(top_srcdir) && \
+	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) cargo clean
+
+dist-hook:
+	(cd $(distdir) && \
+	cargo vendor -q && \
+	mkdir .cargo && \
+	cp cargo-vendor-config .cargo/config)
+
+$(RUST_LIB): $(RUST_SRC)
+	+cd $(top_srcdir)/rsvg_internals &&					\
+	PKG_CONFIG_ALLOW_CROSS=1						\
+	PKG_CONFIG='$(PKG_CONFIG)'						\
+	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR)					\
+	cargo build $(CARGO_VERBOSE) $(CARGO_TARGET_ARGS) $(CARGO_RELEASE_ARGS)
+
+librsvg/librsvg-enum-types.h: librsvg/s-enum-types-h
 	@true
 
-s-enum-types-h: $(headers) Makefile
+librsvg/s-enum-types-h: $(headers) Makefile
 	$(AM_V_GEN) ( cd $(srcdir) && $(GLIB_MKENUMS) \
 			--fhead "#if !defined (__RSVG_RSVG_H_INSIDE__) && !defined (RSVG_COMPILATION)\n#warning \"Including <librsvg/librsvg-enum-types.h> directly is deprecated.\"\n#endif\n\n#ifndef __LIBRSVG_ENUM_TYPES_H__\n#define __LIBRSVG_ENUM_TYPES_H__\n\n#include <glib-object.h>\n\nG_BEGIN_DECLS\n" \
 			--fprod "/* enumerations from \"@filename@\" */\n" \
 			--vhead "GType @enum_name@_get_type (void);\n#define RSVG_TYPE_@ENUMSHORT@ (@enum_name@_get_type())\n" 	\
 			--ftail "G_END_DECLS\n\n#endif /* __LIBRSVG_ENUM_TYPES_H__ */" \
-		$(headers) ) > tmp-librsvg-enum-types.h \
-	&& (cmp -s tmp-librsvg-enum-types.h librsvg-enum-types.h || cp tmp-librsvg-enum-types.h librsvg-enum-types.h ) \
-	&& rm -f tmp-librsvg-enum-types.h	\
+		$(headers) ) > librsvg/tmp-librsvg-enum-types.h \
+	&& (cmp -s librsvg/tmp-librsvg-enum-types.h librsvg/librsvg-enum-types.h || cp librsvg/tmp-librsvg-enum-types.h librsvg/librsvg-enum-types.h ) \
+	&& rm -f librsvg/tmp-librsvg-enum-types.h	\
 	&& echo timestamp > $(@F)
 
-librsvg-enum-types.c: s-enum-types-c librsvg-enum-types.h
+librsvg/librsvg-enum-types.c: librsvg/s-enum-types-c librsvg/librsvg-enum-types.h
 	@true
 
-s-enum-types-c: $(headers) Makefile
+librsvg/s-enum-types-c: $(headers) Makefile
 	$(AM_V_GEN) ( cd $(srcdir) && $(GLIB_MKENUMS) \
-			--fhead "#include \"rsvg.h\"" \
+			--fhead "#include \"librsvg/rsvg.h\"" \
 			--fprod "\n/* enumerations from \"@filename@\" */" \
 			--vhead "GType\n@enum_name@_get_type (void)\n{\n  static GType etype = 0;\n  if (etype == 0) {\n    static const G@Type@Value values[] = {" 	\
 			--vprod "      { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
 			--vtail "      { 0, NULL, NULL }\n    };\n    etype = g_@type@_register_static (\"@EnumName@\", values);\n  }\n  return etype;\n}\n" \
-		$(headers) ) > tmp-librsvg-enum-types.c \
-	&& (cmp -s tmp-librsvg-enum-types.c librsvg-enum-types.c || cp tmp-librsvg-enum-types.c librsvg-enum-types.c ) \
-	&& rm -f tmp-librsvg-enum-types.c \
+		$(headers) ) > librsvg/tmp-librsvg-enum-types.c \
+	&& (cmp -s librsvg/tmp-librsvg-enum-types.c librsvg/librsvg-enum-types.c || cp librsvg/tmp-librsvg-enum-types.c librsvg/librsvg-enum-types.c ) \
+	&& rm -f librsvg/tmp-librsvg-enum-types.c \
 	&& echo timestamp > $(@F)
 
 @HAVE_INTROSPECTION_TRUE@-include $(INTROSPECTION_MAKEFILE)
@@ -1941,57 +2036,90 @@ s-enum-types-c: $(headers) Makefile
 
 define msvcproj-builder
 
-$(top_builddir)/build/win32/vs10/$(1).vcxproj: $(top_builddir)/build/win32/vs9/$(1).vcproj
-$(top_builddir)/build/win32/vs10/$(1).vcxproj.filters: $(top_builddir)/build/win32/vs9/$(1).vcproj
-$(1).sourcefiles: $(top_builddir)/build/win32/vs9/$(1).vcproj
-$(1).vs10.sourcefiles: $(top_builddir)/build/win32/vs9/$(1).vcproj
-$(1).vs10.sourcefiles.filters: $(top_builddir)/build/win32/vs9/$(1).vcproj
+$(top_builddir)/win32/vs10/$(1).vcxproj: $(top_builddir)/win32/vs9/$(1).vcproj
+$(top_builddir)/win32/vs10/$(1).vcxproj.filters: $(top_builddir)/win32/vs9/$(1).vcproj
+$(1).sourcefiles: $(top_builddir)/win32/vs9/$(1).vcproj
+$(1).vs10.sourcefiles: $(top_builddir)/win32/vs9/$(1).vcproj
+$(1).vs10.sourcefiles.filters: $(top_builddir)/win32/vs9/$(1).vcproj
 
-$(top_builddir)/build/win32/vs9/$(1).vcproj: Makefile
-	-$(RM) $(top_builddir)/build/win32/vs9/$(1).vcproj
-	-$(RM) $(top_builddir)/build/win32/vs10/$(1).vcxproj
-	-$(RM) $(top_builddir)/build/win32/vs10/$(1).vcxproj.filters
-	-$(RM) $(top_builddir)/build/win32/vs11/$(1).vcxproj
-	-$(RM) $(top_builddir)/build/win32/vs11/$(1).vcxproj.filters
-	-$(RM) $(top_builddir)/build/win32/vs12/$(1).vcxproj
-	-$(RM) $(top_builddir)/build/win32/vs12/$(1).vcxproj.filters
-	-$(RM) $(top_builddir)/build/win32/vs14/$(1).vcxproj
-	-$(RM) $(top_builddir)/build/win32/vs14/$(1).vcxproj.filters
-	-$(RM) $(top_builddir)/build/win32/vs15/$(1).vcxproj
-	-$(RM) $(top_builddir)/build/win32/vs15/$(1).vcxproj.filters
+$(top_builddir)/win32/vs9/$(1).vcproj: Makefile
+	-$(RM) $(top_builddir)/win32/vs9/$(1).vcproj
+	-$(RM) $(top_builddir)/win32/vs10/$(1).vcxproj
+	-$(RM) $(top_builddir)/win32/vs10/$(1).vcxproj.filters
+	-$(RM) $(top_builddir)/win32/vs11/$(1).vcxproj
+	-$(RM) $(top_builddir)/win32/vs11/$(1).vcxproj.filters
+	-$(RM) $(top_builddir)/win32/vs12/$(1).vcxproj
+	-$(RM) $(top_builddir)/win32/vs12/$(1).vcxproj.filters
+	-$(RM) $(top_builddir)/win32/vs14/$(1).vcxproj
+	-$(RM) $(top_builddir)/win32/vs14/$(1).vcxproj.filters
 
 	for F in $(_proj_files); do \
 		case $$$$F in \
 		$(_proj_filters)) \
 			;; \
 		*.c|*.cpp|*.cc|*.cxx) \
-			echo '   <File RelativePath="..\..\..'$(_proj_subdir)$$$$F'" />' >>$(1).sourcefiles && \
-			echo '   <ClCompile Include="..\..\..'$(_proj_subdir)$$$$F'" />' >>$(1).vs10.sourcefiles && \
-			echo '   <ClCompile Include="..\..\..'$(_proj_subdir)$$$$F'"><Filter>Source Files</Filter></ClCompile>' >>$(1).vs10.sourcefiles.filters \
+			echo '   <File RelativePath="..\..'$(_proj_subdir)$$$$F'" />' >>$(1).sourcefiles && \
+			echo '   <ClCompile Include="..\..'$(_proj_subdir)$$$$F'" />' >>$(1).vs10.sourcefiles && \
+			echo '   <ClCompile Include="..\..'$(_proj_subdir)$$$$F'"><Filter>Source Files</Filter></ClCompile>' >>$(1).vs10.sourcefiles.filters \
 			;; \
 		esac;	\
 	done
 
-	$(CPP) -P - <$(top_srcdir)/build/win32/vs9/$(1).vcprojin >$(top_builddir)/build/win32/vs9/$(1).vcproj
-	$(CPP) -P - <$(top_srcdir)/build/win32/vs10/$(1).vcxprojin >$(top_builddir)/build/win32/vs10/$(1).vcxproj
-	$(CPP) -P - <$(top_srcdir)/build/win32/vs10/$(1).vcxproj.filtersin >$(top_builddir)/build/win32/vs10/$(1).vcxproj.filters
+	$(CPP) -P - <$(top_srcdir)/win32/vs9/$(1).vcprojin >$(top_builddir)/win32/vs9/$(1).vcproj
+	$(CPP) -P - <$(top_srcdir)/win32/vs10/$(1).vcxprojin >$(top_builddir)/win32/vs10/$(1).vcxproj
+	$(CPP) -P - <$(top_srcdir)/win32/vs10/$(1).vcxproj.filtersin >$(top_builddir)/win32/vs10/$(1).vcxproj.filters
 	$(RM) $(1).sourcefiles
 	$(RM) $(1).vs10.sourcefiles
 	$(RM) $(1).vs10.sourcefiles.filters
 
-$(top_builddir)/build/win32/vs10/$(1).vs10.headers: $(top_builddir)/build/win32/vs9/$(1).headers
+$(top_builddir)/win32/vs10/$(1).vs10.headers: $(top_builddir)/win32/vs9/$(1).headers
 
-$(top_builddir)/build/win32/vs9/$(1).headers: Makefile
-	-$(RM) $(top_builddir)/build/win32/vs9/$(1).headers
-	-$(RM) $(top_builddir)/build/win32/vs10/$(1).vs10.headers
+$(top_builddir)/win32/vs9/$(1).headers: Makefile
+	-$(RM) $(top_builddir)/win32/vs9/$(1).headers
+	-$(RM) $(top_builddir)/win32/vs10/$(1).vs10.headers
 
 	for F in $(_proj_headers); do \
 		case $$$$F in \
 		$(_proj_headers_excludes)) \
 			;; \
 		*.h|*.hpp|*.hh|*.hxx) \
-			echo 'copy ..\..\..'$(_proj_subdir)$$$$F' $$$$(CopyDir)\include'$(_headers_destdir)'\'$$$$F'&#x0D;&#x0A;' >>$(top_builddir)/build/win32/vs9/$(1).headers && \
-			echo 'copy ..\..\..'$(_proj_subdir)$$$$F' $$$$(CopyDir)\include'$(_headers_destdir)'\'$$$$F >>$(top_builddir)/build/win32/vs10/$(1).vs10.headers \
+			echo 'copy ..\..'$(_proj_subdir)$$$$F' $$$$(CopyDir)\include'$(_headers_destdir)'\'$$$$F'&#x0D;&#x0A;' >>$(top_builddir)/win32/vs9/$(1).headers && \
+			echo 'copy ..\..'$(_proj_subdir)$$$$F' $$$$(CopyDir)\include'$(_headers_destdir)'\'$$$$F >>$(top_builddir)/win32/vs10/$(1).vs10.headers \
+			;; \
+		esac;	\
+	done
+
+$(top_builddir)/win32/vs12/$(1).vcxproj.filters: $(top_builddir)/win32/vs12/$(1).vcxproj
+
+$(top_builddir)/win32/vs12/$(1).vcxproj: Makefile
+	-$(RM) $(top_builddir)/win32/vs14/$(1).vcxproj
+	-$(RM) $(top_builddir)/win32/vs14/$(1).vcxproj.filters
+
+	for F in $(_proj_files); do \
+		case $$$$F in \
+		$(_proj_filters)) \
+			;; \
+		*.c|*.cpp|*.cc|*.cxx) \
+			echo '   <ClCompile Include="..\..'$(_proj_subdir)$$$$F'" />' >>$(1).vs12.sourcefiles && \
+			echo '   <ClCompile Include="..\..'$(_proj_subdir)$$$$F'"><Filter>Source Files</Filter></ClCompile>' >>$(1).vs12.sourcefiles.filters \
+			;; \
+		esac;	\
+	done
+
+	$(CPP) -P - <$(top_srcdir)/win32/vs12/$(1).vcxprojin >$(top_builddir)/win32/vs12/$(1).vcxproj
+	$(CPP) -P - <$(top_srcdir)/win32/vs12/$(1).vcxproj.filtersin >$(top_builddir)/win32/vs12/$(1).vcxproj.filters
+	$(RM) $(1).vs12.sourcefiles
+	$(RM) $(1).vs12.sourcefiles.filters
+
+$(top_builddir)/win32/vs12/$(1).vs12.headers: Makefile
+	-$(RM) $(top_builddir)/win32/vs12/$(1).vs12.headers
+
+	for F in $(_proj_headers); do \
+		case $$$$F in \
+		$(_proj_headers_excludes)) \
+			;; \
+		*.h|*.hpp|*.hh|*.hxx) \
+			echo 'copy ..\..'$(_proj_subdir)$$$$F' $$$$(CopyDir)\include'$(_headers_destdir)'\'$$$$F >>$(top_builddir)/win32/vs12/$(1).vs12.headers \
 			;; \
 		esac;	\
 	done
@@ -2015,53 +2143,53 @@ $(foreach proj,$(MSVCPROJS),$(eval $(call msvcproj-builder,$(proj))))
 @HAVE_INTROSPECTION_TRUE@          $($(_gir_name)_MSVC_PROGRAM)),,
 @HAVE_INTROSPECTION_TRUE@    $(error Need to define $(_gir_name)_MSVC_LIBS or $(_gir_name)_MSVC_PROGRAM))
 
-@HAVE_INTROSPECTION_TRUE@$(top_builddir)/build/win32/$(_gir_name)_list:
+@HAVE_INTROSPECTION_TRUE@$(top_builddir)/win32/$(_gir_name)_list:
 @HAVE_INTROSPECTION_TRUE@	for F in $(_gir_files_msvc); do \
 @HAVE_INTROSPECTION_TRUE@		case $$$$F in \
 @HAVE_INTROSPECTION_TRUE@		*.c|*.cpp|*.cc|*.cxx|*.h|*.hpp|*.hh|*.hxx) \
-@HAVE_INTROSPECTION_TRUE@			echo '..\..'$(_gir_source_subdir_msvc)$$$$F >>$(top_builddir)/build/win32/$(_gir_name)_list \
+@HAVE_INTROSPECTION_TRUE@			echo '..'$(_gir_source_subdir_msvc)$$$$F >>$(top_builddir)/win32/$(_gir_name)_list \
 @HAVE_INTROSPECTION_TRUE@			;; \
 @HAVE_INTROSPECTION_TRUE@		esac; \
 @HAVE_INTROSPECTION_TRUE@	done
 
-@HAVE_INTROSPECTION_TRUE@$(top_builddir)/build/win32/$(1).msvc.introspect:
-@HAVE_INTROSPECTION_TRUE@	-$(RM) $(top_builddir)/build/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@$(top_builddir)/win32/$(1).msvc.introspect:
+@HAVE_INTROSPECTION_TRUE@	-$(RM) $(top_builddir)/win32/$(1).msvc.introspect
 
 # Assemble the Command to Run g-ir-scanner
-@HAVE_INTROSPECTION_TRUE@	echo $(1)': '$(_gir_name)'_list '$($(_gir_name)_MSVC_GIR_DEPS)>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '	@-echo Generating $$$$@...'>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '	$$$$(PYTHON) $$$$(G_IR_SCANNER)	\'>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '	--verbose -no-libtool	\'>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '	--namespace='$(_gir_namespace_msvc)'	\'>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '	--nsversion='$(_gir_version_msvc)'	\'>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '	'$(_gir_packages_msvc)'	\'>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '	'$(_gir_libraries_msvc)'	\'>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '	'$(_gir_program_msvc)'	\'>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '	--add-include-path=$$$$(G_IR_INCLUDEDIR)	\'>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '	'$(_gir_includes_msvc)'	\'>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '	'$(_gir_export_packages_msvc)'	\'>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '	--cflags-begin	\'>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '	'$($(_gir_name)_MSVC_CFLAGS)'	\'>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '	--cflags-end	\'>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '	-Lvs$$$$(VSVER)\$$$$(CFG)\$$$$(PLAT)\bin	\'>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '	'$($(_gir_name)_MSVC_SCANNERFLAGS)'	\'>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '	--filelist='$(_gir_name)'_list	\'>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '	-o $$$$@'>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '' >>$(top_builddir)/build/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo $(1)': '$(_gir_name)'_list '$($(_gir_name)_MSVC_GIR_DEPS)>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '	@-echo Generating $$$$@...'>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '	$$$$(PYTHON) $$$$(G_IR_SCANNER)	\'>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '	--verbose -no-libtool	\'>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '	--namespace='$(_gir_namespace_msvc)'	\'>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '	--nsversion='$(_gir_version_msvc)'	\'>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '	'$(_gir_packages_msvc)'	\'>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '	'$(_gir_libraries_msvc)'	\'>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '	'$(_gir_program_msvc)'	\'>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '	--add-include-path=$$$$(G_IR_INCLUDEDIR)	\'>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '	'$(_gir_includes_msvc)'	\'>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '	'$(_gir_export_packages_msvc)'	\'>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '  '$(_gir_c_includes_msvc)'	\'>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '	--cflags-begin	\'>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '	'$($(_gir_name)_MSVC_CFLAGS)'	\'>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '	--cflags-end	\'>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '	'$($(_gir_name)_MSVC_SCANNERFLAGS)'	\'>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '	--filelist='$(_gir_name)'_list	\'>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '	-o $$$$@'>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '' >>$(top_builddir)/win32/$(1).msvc.introspect
 
 # Finally Assemble the Command to Compile the generated .gir
-@HAVE_INTROSPECTION_TRUE@	echo '$(_typelib_basename_msvc).typelib: '$(_typelib_basename_msvc)'.gir'>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '	@-echo Compiling $$$$@...'>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '	$$$$(G_IR_COMPILER)	\'>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '	--includedir=. --debug --verbose	\'>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '	'$(1)'	\'>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '	-o $$$$@'>>$(top_builddir)/build/win32/$(1).msvc.introspect
-@HAVE_INTROSPECTION_TRUE@	echo '' >>$(top_builddir)/build/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '$(_typelib_basename_msvc).typelib: '$(_typelib_basename_msvc)'.gir'>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '	@-echo Compiling $$$$@...'>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '	$$$$(G_IR_COMPILER)	\'>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '	--includedir=. --debug --verbose	\'>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '	'$(1)'	\'>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '	-o $$$$@'>>$(top_builddir)/win32/$(1).msvc.introspect
+@HAVE_INTROSPECTION_TRUE@	echo '' >>$(top_builddir)/win32/$(1).msvc.introspect
 @HAVE_INTROSPECTION_TRUE@endef
 
 @HAVE_INTROSPECTION_TRUE@$(foreach gir,$(MSVC_INTROSPECT_GIRS),$(eval $(call gir-nmake-builder,$(gir))))
 
-$(MSVCPROJ_GENERATED): $(top_builddir)/build/win32/vs9/rsvg.headers
+$(MSVCPROJ_GENERATED): $(top_builddir)/win32/vs12/rsvg.vs12.headers
 
 # ChangeLog generation
 

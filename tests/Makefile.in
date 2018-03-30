@@ -171,25 +171,31 @@ am__installdirs = "$(DESTDIR)$(installed_testdir)" \
 	"$(DESTDIR)$(installed_test_metadir)" \
 	"$(DESTDIR)$(installed_testdir)"
 LTLIBRARIES = $(installed_test_LTLIBRARIES) $(noinst_LTLIBRARIES)
-am__EXEEXT_1 = loading$(EXEEXT) rsvg-test$(EXEEXT) crash$(EXEEXT) \
-	styles$(EXEEXT) render-crash$(EXEEXT) dimensions$(EXEEXT)
+am__EXEEXT_1 = api$(EXEEXT) loading$(EXEEXT) rsvg-test$(EXEEXT) \
+	crash$(EXEEXT) render-crash$(EXEEXT) dimensions$(EXEEXT)
 am__EXEEXT_2 = $(am__EXEEXT_1)
 @ENABLE_ALWAYS_BUILD_TESTS_FALSE@am__EXEEXT_3 = $(am__EXEEXT_2)
 @ENABLE_INSTALLED_TESTS_TRUE@am__EXEEXT_4 = $(am__EXEEXT_1)
 @ENABLE_ALWAYS_BUILD_TESTS_TRUE@am__EXEEXT_5 = $(am__EXEEXT_2)
 PROGRAMS = $(installed_test_PROGRAMS) $(noinst_PROGRAMS)
 am__objects_1 = test-utils.$(OBJEXT)
-am_crash_OBJECTS = crash.$(OBJEXT) $(am__objects_1)
-crash_OBJECTS = $(am_crash_OBJECTS)
-crash_LDADD = $(LDADD)
+am_api_OBJECTS = api.$(OBJEXT) $(am__objects_1)
+api_OBJECTS = $(am_api_OBJECTS)
+api_LDADD = $(LDADD)
 am__DEPENDENCIES_1 =
-crash_DEPENDENCIES =  \
+api_DEPENDENCIES =  \
 	$(top_builddir)/librsvg-@RSVG_API_MAJOR_VERSION@.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+am_crash_OBJECTS = crash.$(OBJEXT) $(am__objects_1)
+crash_OBJECTS = $(am_crash_OBJECTS)
+crash_LDADD = $(LDADD)
+crash_DEPENDENCIES =  \
+	$(top_builddir)/librsvg-@RSVG_API_MAJOR_VERSION@.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am_dimensions_OBJECTS = dimensions.$(OBJEXT) $(am__objects_1)
 dimensions_OBJECTS = $(am_dimensions_OBJECTS)
 dimensions_LDADD = $(LDADD)
@@ -212,12 +218,6 @@ am_rsvg_test_OBJECTS = rsvg-test.$(OBJEXT) $(am__objects_1)
 rsvg_test_OBJECTS = $(am_rsvg_test_OBJECTS)
 rsvg_test_LDADD = $(LDADD)
 rsvg_test_DEPENDENCIES =  \
-	$(top_builddir)/librsvg-@RSVG_API_MAJOR_VERSION@.la \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
-am_styles_OBJECTS = styles.$(OBJEXT) $(am__objects_1)
-styles_OBJECTS = $(am_styles_OBJECTS)
-styles_LDADD = $(LDADD)
-styles_DEPENDENCIES =  \
 	$(top_builddir)/librsvg-@RSVG_API_MAJOR_VERSION@.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 SCRIPTS = $(installed_test_SCRIPTS) $(noinst_SCRIPTS)
@@ -255,11 +255,12 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(crash_SOURCES) $(dimensions_SOURCES) $(loading_SOURCES) \
-	$(render_crash_SOURCES) $(rsvg_test_SOURCES) $(styles_SOURCES)
-DIST_SOURCES = $(crash_SOURCES) $(dimensions_SOURCES) \
+SOURCES = $(api_SOURCES) $(crash_SOURCES) $(dimensions_SOURCES) \
 	$(loading_SOURCES) $(render_crash_SOURCES) \
-	$(rsvg_test_SOURCES) $(styles_SOURCES)
+	$(rsvg_test_SOURCES)
+DIST_SOURCES = $(api_SOURCES) $(crash_SOURCES) $(dimensions_SOURCES) \
+	$(loading_SOURCES) $(render_crash_SOURCES) \
+	$(rsvg_test_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -468,7 +469,14 @@ DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
 AM_CFLAGS = @AM_CFLAGS@
-AM_CPPFLAGS = @AM_CPPFLAGS@
+AM_CPPFLAGS = \
+	-I$(srcdir) 				\
+	-I$(top_srcdir)				\
+	-DTEST_DATA_DIR="\"$(srcdir)\""		\
+	-DTEST_SRC_DIR="\"$(PWD)\""		\
+	-DTOP_SRC_DIR="\"$(top_srcdir)\""	\
+	$(LIBRSVG_CFLAGS)
+
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 AM_LDFLAGS = @AM_LDFLAGS@
 AR = @AR@
@@ -479,6 +487,7 @@ AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 BSYMBOLIC_LDFLAG = @BSYMBOLIC_LDFLAG@
 CAIRO_PREFIX = @CAIRO_PREFIX@
+CARGO = @CARGO@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -579,6 +588,8 @@ RSVG_API_VERSION_U = @RSVG_API_VERSION_U@
 RSVG_CONVERT_CFLAGS = @RSVG_CONVERT_CFLAGS@
 RSVG_CONVERT_LIBS = @RSVG_CONVERT_LIBS@
 RSVG_LT_VERSION_INFO = @RSVG_LT_VERSION_INFO@
+RUSTC = @RUSTC@
+RUST_TARGET_SUBDIR = @RUST_TARGET_SUBDIR@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -662,7 +673,7 @@ BUILT_EXTRA_DIST =
 CLEANFILES = *.log *.trs $(am__append_13)
 DISTCLEANFILES = 
 MAINTAINERCLEANFILES = 
-EXTRA_DIST = $(all_dist_test_scripts) $(all_dist_test_data)
+EXTRA_DIST = $(all_dist_test_scripts) $(all_dist_test_data) README.md
 installed_test_LTLIBRARIES = $(am__append_12)
 installed_test_SCRIPTS = $(am__append_10)
 nobase_installed_test_DATA = $(am__append_11)
@@ -697,16 +708,22 @@ all_test_ltlibs = $(test_ltlibraries) $(uninstalled_test_ltlibraries) $(installe
 
 @ENABLE_INSTALLED_TESTS_TRUE@installed_test_meta_DATA = $(installed_testcases:=.test)
 test_programs = \
+	api		\
 	loading		\
 	rsvg-test	\
 	crash		\
-	styles		\
 	render-crash	\
 	dimensions
 
+
+# Removed "styles" from the above; it is broken right now
 test_utils_common_sources = \
 	test-utils.c	\
 	test-utils.h
+
+api_SOURCES = \
+	api.c		\
+	$(test_utils_common_sources)
 
 rsvg_test_SOURCES = \
 	rsvg-test.c	\
@@ -720,10 +737,10 @@ render_crash_SOURCES = \
 	render-crash.c	\
 	$(test_utils_common_sources)
 
-styles_SOURCES = \
-	styles.c	\
-	$(test_utils_common_sources)
 
+# styles_SOURCES = \
+# 	styles.c	\
+# 	$(test_utils_common_sources)
 dimensions_SOURCES = \
 	dimensions.c	\
 	$(test_utils_common_sources)
@@ -736,15 +753,9 @@ LDADD = $(top_builddir)/librsvg-@RSVG_API_MAJOR_VERSION@.la		\
 	$(LIBRSVG_LIBS)							\
 	$(LIBM)
 
-INCLUDES = -I$(srcdir) 							\
-	   -I$(top_srcdir)						\
-	   -DTEST_DATA_DIR="\"$(srcdir)\""				\
-	   -DTEST_SRC_DIR="\"$(PWD)\""					\
-	   -DTOP_SRC_DIR="\"$(top_srcdir)\""				\
-	  $(LIBRSVG_CFLAGS)
-
 dist_installed_test_data = \
 	$(wildcard $(srcdir)/resources/*)				\
+	$(wildcard $(srcdir)/fixtures/api/*.svg)			\
 	$(wildcard $(srcdir)/fixtures/crash/*.svg)			\
 	$(wildcard $(srcdir)/fixtures/crash/*.png)			\
 	$(wildcard $(srcdir)/fixtures/loading/*)			\
@@ -933,6 +944,10 @@ clean-noinstPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
+api$(EXEEXT): $(api_OBJECTS) $(api_DEPENDENCIES) $(EXTRA_api_DEPENDENCIES) 
+	@rm -f api$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(api_OBJECTS) $(api_LDADD) $(LIBS)
+
 crash$(EXEEXT): $(crash_OBJECTS) $(crash_DEPENDENCIES) $(EXTRA_crash_DEPENDENCIES) 
 	@rm -f crash$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(crash_OBJECTS) $(crash_LDADD) $(LIBS)
@@ -952,10 +967,6 @@ render-crash$(EXEEXT): $(render_crash_OBJECTS) $(render_crash_DEPENDENCIES) $(EX
 rsvg-test$(EXEEXT): $(rsvg_test_OBJECTS) $(rsvg_test_DEPENDENCIES) $(EXTRA_rsvg_test_DEPENDENCIES) 
 	@rm -f rsvg-test$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(rsvg_test_OBJECTS) $(rsvg_test_LDADD) $(LIBS)
-
-styles$(EXEEXT): $(styles_OBJECTS) $(styles_DEPENDENCIES) $(EXTRA_styles_DEPENDENCIES) 
-	@rm -f styles$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(styles_OBJECTS) $(styles_LDADD) $(LIBS)
 install-installed_testSCRIPTS: $(installed_test_SCRIPTS)
 	@$(NORMAL_INSTALL)
 	@list='$(installed_test_SCRIPTS)'; test -n "$(installed_testdir)" || list=; \
@@ -998,31 +1009,34 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/api.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crash.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dimensions.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/loading.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/render-crash.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rsvg-test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/styles.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-utils.Po@am__quote@
 
 .c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
 
 .c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .c.lo:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
@@ -1271,6 +1285,13 @@ recheck: all $(check_LTLIBRARIES) $(check_PROGRAMS) $(check_SCRIPTS) $(check_DAT
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
+api.log: api$(EXEEXT)
+	@p='api$(EXEEXT)'; \
+	b='api'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 loading.log: loading$(EXEEXT)
 	@p='loading$(EXEEXT)'; \
 	b='loading'; \
@@ -1288,13 +1309,6 @@ rsvg-test.log: rsvg-test$(EXEEXT)
 crash.log: crash$(EXEEXT)
 	@p='crash$(EXEEXT)'; \
 	b='crash'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-styles.log: styles$(EXEEXT)
-	@p='styles$(EXEEXT)'; \
-	b='styles'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

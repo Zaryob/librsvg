@@ -51,14 +51,6 @@ EXTRA_rsvg_loader_DEPENDENCIES = libpixbufloader-svg.la gdk-pixbuf-loaders
 gdk-pixbuf-loaders: Makefile
 	$(AM_V_GEN) ( $(GDK_PIXBUF_QUERYLOADERS) ./libpixbufloader-svg.la && $(GDK_PIXBUF_QUERYLOADERS)) > gdk-pixbuf.loaders 2>/dev/null
 
-thumbnailerdir = $(datadir)/thumbnailers/
-thumbnailer_DATA = librsvg.thumbnailer
-librsvg.thumbnailer: librsvg.thumbnailer.in
-	$(AM_V_GEN) $(SED) -e "s|\@bindir\@|$(bindir)|" \
-	$< > $@
-
-EXTRA_DIST = librsvg.thumbnailer.in
-
 if CROSS_COMPILING
 RUN_QUERY_LOADER_TEST=false
 else
@@ -85,6 +77,14 @@ install-data-hook:
 	  echo "*** system using gdk-pixbuf-query-loaders" ; \
 	  echo "***" ; \
 	fi
+
+thumbnailerdir = $(datadir)/thumbnailers/
+thumbnailer_DATA = librsvg.thumbnailer
+librsvg.thumbnailer: librsvg.thumbnailer.in
+	$(AM_V_GEN) $(SED) -e "s|\@bindir\@|$(bindir)|" \
+	$< > $@
+
+EXTRA_DIST = librsvg.thumbnailer.in
 
 CLEANFILES = \
 	gdk-pixbuf.loaders \

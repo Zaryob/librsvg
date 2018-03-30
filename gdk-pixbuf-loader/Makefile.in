@@ -246,6 +246,7 @@ AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 BSYMBOLIC_LDFLAG = @BSYMBOLIC_LDFLAG@
 CAIRO_PREFIX = @CAIRO_PREFIX@
+CARGO = @CARGO@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -346,6 +347,8 @@ RSVG_API_VERSION_U = @RSVG_API_VERSION_U@
 RSVG_CONVERT_CFLAGS = @RSVG_CONVERT_CFLAGS@
 RSVG_CONVERT_LIBS = @RSVG_CONVERT_LIBS@
 RSVG_LT_VERSION_INFO = @RSVG_LT_VERSION_INFO@
+RUSTC = @RUSTC@
+RUST_TARGET_SUBDIR = @RUST_TARGET_SUBDIR@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -457,11 +460,11 @@ top_srcdir = @top_srcdir@
 @ENABLE_PIXBUF_LOADER_TRUE@	$(GDK_PIXBUF_LIBS)
 
 @ENABLE_PIXBUF_LOADER_TRUE@EXTRA_rsvg_loader_DEPENDENCIES = libpixbufloader-svg.la gdk-pixbuf-loaders
+@CROSS_COMPILING_FALSE@@ENABLE_PIXBUF_LOADER_TRUE@RUN_QUERY_LOADER_TEST = test -z "$(DESTDIR)"
+@CROSS_COMPILING_TRUE@@ENABLE_PIXBUF_LOADER_TRUE@RUN_QUERY_LOADER_TEST = false
 @ENABLE_PIXBUF_LOADER_TRUE@thumbnailerdir = $(datadir)/thumbnailers/
 @ENABLE_PIXBUF_LOADER_TRUE@thumbnailer_DATA = librsvg.thumbnailer
 @ENABLE_PIXBUF_LOADER_TRUE@EXTRA_DIST = librsvg.thumbnailer.in
-@CROSS_COMPILING_FALSE@@ENABLE_PIXBUF_LOADER_TRUE@RUN_QUERY_LOADER_TEST = test -z "$(DESTDIR)"
-@CROSS_COMPILING_TRUE@@ENABLE_PIXBUF_LOADER_TRUE@RUN_QUERY_LOADER_TEST = false
 @ENABLE_PIXBUF_LOADER_TRUE@CLEANFILES = \
 @ENABLE_PIXBUF_LOADER_TRUE@	gdk-pixbuf.loaders \
 @ENABLE_PIXBUF_LOADER_TRUE@	$(thumbnailer_DATA) \
@@ -566,22 +569,25 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rsvg_loader-test.Po@am__quote@
 
 .c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
 
 .c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .c.lo:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
@@ -855,9 +861,6 @@ uninstall-am: uninstall-gdk_pixbuf_moduleLTLIBRARIES \
 
 @ENABLE_PIXBUF_LOADER_TRUE@gdk-pixbuf-loaders: Makefile
 @ENABLE_PIXBUF_LOADER_TRUE@	$(AM_V_GEN) ( $(GDK_PIXBUF_QUERYLOADERS) ./libpixbufloader-svg.la && $(GDK_PIXBUF_QUERYLOADERS)) > gdk-pixbuf.loaders 2>/dev/null
-@ENABLE_PIXBUF_LOADER_TRUE@librsvg.thumbnailer: librsvg.thumbnailer.in
-@ENABLE_PIXBUF_LOADER_TRUE@	$(AM_V_GEN) $(SED) -e "s|\@bindir\@|$(bindir)|" \
-@ENABLE_PIXBUF_LOADER_TRUE@	$< > $@
 
 # The following bit is stolen from gdk-pixbuf/gdk-pixbuf/Makefile.am:
 #
@@ -879,6 +882,9 @@ uninstall-am: uninstall-gdk_pixbuf_moduleLTLIBRARIES \
 @ENABLE_PIXBUF_LOADER_TRUE@	  echo "*** system using gdk-pixbuf-query-loaders" ; \
 @ENABLE_PIXBUF_LOADER_TRUE@	  echo "***" ; \
 @ENABLE_PIXBUF_LOADER_TRUE@	fi
+@ENABLE_PIXBUF_LOADER_TRUE@librsvg.thumbnailer: librsvg.thumbnailer.in
+@ENABLE_PIXBUF_LOADER_TRUE@	$(AM_V_GEN) $(SED) -e "s|\@bindir\@|$(bindir)|" \
+@ENABLE_PIXBUF_LOADER_TRUE@	$< > $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
