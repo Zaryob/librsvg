@@ -2,8 +2,7 @@
 /* vim: set ts=4 nowrap ai expandtab sw=4: */
 
 #include <glib.h>
-#include "rsvg.h"
-#include "rsvg-compat.h"
+#include "librsvg/rsvg.h"
 #include "test-utils.h"
 
 typedef struct _FixtureData
@@ -61,7 +60,6 @@ main (int argc, char *argv[])
     gint i;
     int result;
 
-    RSVG_G_TYPE_INIT;
     g_test_init (&argc, &argv, NULL);
 
     for (i = 0; i < n_fixtures; i++)

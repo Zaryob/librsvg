@@ -25,7 +25,7 @@
 
 #include <stdlib.h>
 
-#include <rsvg.h>
+#include "librsvg/rsvg.h"
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
 #define N_(string) (string)
@@ -153,7 +153,8 @@ gdk_pixbuf__svg_image_stop_load (gpointer data, GError **error)
                 return FALSE;
         }
 
-        rsvg_handle_close (context->handle, error);
+        if (!rsvg_handle_close (context->handle, error))
+                return FALSE;
 
         pixbuf = rsvg_handle_get_pixbuf (context->handle);
 

@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Using RSVG with cairo: RSVG Libary Reference Manual</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.79.0">
-<link rel="home" href="index.html" title="RSVG Libary Reference Manual">
+<title>Using RSVG with cairo: Librsvg Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets Vsnapshot">
+<link rel="home" href="index.html" title="Librsvg Reference Manual">
 <link rel="up" href="rsvg.html" title="Part I. API Reference">
 <link rel="prev" href="rsvg-Using-RSVG-with-GIO.html" title="Using RSVG with GIO">
 <link rel="next" href="rsvg-Using-RSVG-with-GdkPixbuf.html" title="Using RSVG with GdkPixbuf">
-<meta name="generator" content="GTK-Doc V1.26 (XML mode)">
+<meta name="generator" content="GTK-Doc V1.27 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -44,7 +44,7 @@
 <a href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>
 </td>
 <td class="function_name">
-<a class="link" href="rsvg-Using-RSVG-with-cairo.html#rsvg-handle-render-cairo" title="rsvg_handle_render_cairo ()">rsvg_handle_render_cairo</a> <span class="c_punctuation">()</span>
+<a href="rsvg-Using-RSVG-with-cairo.html#rsvg-handle-render-cairo">rsvg_handle_render_cairo</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 <tr>
@@ -52,7 +52,7 @@
 <a href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>
 </td>
 <td class="function_name">
-<a class="link" href="rsvg-Using-RSVG-with-cairo.html#rsvg-handle-render-cairo-sub" title="rsvg_handle_render_cairo_sub ()">rsvg_handle_render_cairo_sub</a> <span class="c_punctuation">()</span>
+<a href="rsvg-Using-RSVG-with-cairo.html#rsvg-handle-render-cairo-sub">rsvg_handle_render_cairo_sub</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 </tbody>
@@ -66,7 +66,7 @@
 <div class="refsect2">
 <a name="rsvg-handle-render-cairo"></a><h3>rsvg_handle_render_cairo ()</h3>
 <pre class="programlisting"><a href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>
-rsvg_handle_render_cairo (<em class="parameter"><code><a class="link" href="RsvgHandle.html" title="RsvgHandle"><span class="type">RsvgHandle</span></a> *handle</code></em>,
+rsvg_handle_render_cairo (<em class="parameter"><code><a href="rsvg-RsvgHandle.html#RsvgHandle"><span class="type">RsvgHandle</span></a> *handle</code></em>,
                           <em class="parameter"><code><a href="/usr/share/gtk-doc/html/cairo/cairo-cairo-t.html#cairo-t"><span class="type">cairo_t</span></a> *cr</code></em>);</pre>
 <p>Draws a SVG to a Cairo surface</p>
 <div class="refsect3">
@@ -80,7 +80,7 @@ rsvg_handle_render_cairo (<em class="parameter"><code><a class="link" href="Rsvg
 <tbody>
 <tr>
 <td class="parameter_name"><p>handle</p></td>
-<td class="parameter_description"><p>A <a class="link" href="RsvgHandle.html" title="RsvgHandle"><span class="type">RsvgHandle</span></a></p></td>
+<td class="parameter_description"><p>A <a href="rsvg-RsvgHandle.html#RsvgHandle"><span class="type">RsvgHandle</span></a></p></td>
 <td class="parameter_annotations"> </td>
 </tr>
 <tr>
@@ -95,13 +95,13 @@ rsvg_handle_render_cairo (<em class="parameter"><code><a class="link" href="Rsvg
 <a name="rsvg-handle-render-cairo.returns"></a><h4>Returns</h4>
 <p> <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if drawing succeeded.</p>
 </div>
-<p class="since">Since: <a class="link" href="api-index-2-14.html#api-index-2.14">2.14</a></p>
+<p class="since">Since: 2.14</p>
 </div>
 <hr>
 <div class="refsect2">
 <a name="rsvg-handle-render-cairo-sub"></a><h3>rsvg_handle_render_cairo_sub ()</h3>
 <pre class="programlisting"><a href="/usr/share/gtk-doc/html/glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>
-rsvg_handle_render_cairo_sub (<em class="parameter"><code><a class="link" href="RsvgHandle.html" title="RsvgHandle"><span class="type">RsvgHandle</span></a> *handle</code></em>,
+rsvg_handle_render_cairo_sub (<em class="parameter"><code><a href="rsvg-RsvgHandle.html#RsvgHandle"><span class="type">RsvgHandle</span></a> *handle</code></em>,
                               <em class="parameter"><code><a href="/usr/share/gtk-doc/html/cairo/cairo-cairo-t.html#cairo-t"><span class="type">cairo_t</span></a> *cr</code></em>,
                               <em class="parameter"><code>const <span class="type">char</span> *id</code></em>);</pre>
 <p>Draws a subset of a SVG to a Cairo surface</p>
@@ -116,7 +116,7 @@ rsvg_handle_render_cairo_sub (<em class="parameter"><code><a class="link" href="
 <tbody>
 <tr>
 <td class="parameter_name"><p>handle</p></td>
-<td class="parameter_description"><p>A <a class="link" href="RsvgHandle.html" title="RsvgHandle"><span class="type">RsvgHandle</span></a></p></td>
+<td class="parameter_description"><p>A <a href="rsvg-RsvgHandle.html#RsvgHandle"><span class="type">RsvgHandle</span></a></p></td>
 <td class="parameter_annotations"> </td>
 </tr>
 <tr>
@@ -138,7 +138,7 @@ that you wish to render, pass "#<span class="type">layer1</span>" as the id. </p
 <a name="rsvg-handle-render-cairo-sub.returns"></a><h4>Returns</h4>
 <p> <a href="/usr/share/gtk-doc/html/glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if drawing succeeded.</p>
 </div>
-<p class="since">Since: <a class="link" href="api-index-2-14.html#api-index-2.14">2.14</a></p>
+<p class="since">Since: 2.14</p>
 </div>
 </div>
 <div class="refsect1">
@@ -146,6 +146,6 @@ that you wish to render, pass "#<span class="type">layer1</span>" as the id. </p
 </div>
 </div>
 <div class="footer">
-<hr>Generated by GTK-Doc V1.26</div>
+<hr>Generated by GTK-Doc V1.27</div>
 </body>
 </html>

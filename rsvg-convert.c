@@ -1,5 +1,5 @@
-/* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set sw=4 sts=4 ts=4 expandtab: */
+/* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* vim: set sw=4 sts=4 expandtab: */
 /*
 
    rsvg-convert.c: Command line utility for exercising rsvg with cairo.
@@ -30,9 +30,11 @@
 
 #include "config.h"
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 #include <locale.h>
 #include <glib/gi18n.h>
 #include <gio/gio.h>
@@ -44,14 +46,15 @@
 #ifdef G_OS_WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <io.h>
+#include <fcntl.h>
 
 #include <gio/gwin32inputstream.h>
 #endif
 
-#include "rsvg-css.h"
-#include "rsvg.h"
-#include "rsvg-compat.h"
-#include "rsvg-size-callback.h"
+#include "librsvg/rsvg-css.h"
+#include "librsvg/rsvg.h"
+#include "librsvg/rsvg-size-callback.h"
 
 #ifdef CAIRO_HAS_PS_SURFACE
 #include <cairo-ps.h>
@@ -143,6 +146,13 @@ main (int argc, char **argv)
     double unscaled_width, unscaled_height;
     int scaled_width, scaled_height;
 
+    char buffer[25];
+    char *endptr;
+    char *source_date_epoch;
+    time_t now;
+    struct tm *build_time;
+    unsigned long long epoch;
+
 #ifdef G_OS_WIN32
     HANDLE handle;
 #endif
@@ -183,8 +193,6 @@ main (int argc, char **argv)
     /* Set the locale so that UTF-8 filenames work */
     setlocale(LC_ALL, "");
 
-    RSVG_G_TYPE_INIT;
-
     g_option_context = g_option_context_new (_("- SVG Converter"));
     g_option_context_add_main_entries (g_option_context, options_table, NULL);
     g_option_context_set_help_enabled (g_option_context, TRUE);
@@ -211,17 +219,33 @@ main (int argc, char **argv)
 
         g_free (output);
     }
+#ifdef G_OS_WIN32
+    else {
+        setmode (fileno (stdout), O_BINARY);
+    }
+#endif   
 
     if (args)
         while (args[n_args] != NULL)
             n_args++;
 
     if (n_args == 0) {
+        const gchar * const stdin_args[] = { "stdin", NULL };
         n_args = 1;
         using_stdin = TRUE;
+        g_strfreev (args);
+        args = g_strdupv ((gchar **) stdin_args);
     } else if (n_args > 1 && (!format || !(!strcmp (format, "ps") || !strcmp (format, "eps") || !strcmp (format, "pdf")))) {
         g_printerr (_("Multiple SVG files are only allowed for PDF and (E)PS output.\n"));
         exit (1);
+    }
+
+    if (dpi_x <= 0.0) {
+        dpi_x = 90.0;
+    }
+
+    if (dpi_y <= 0.0) {
+        dpi_y = 90.0;
     }
 
     if (format != NULL &&
@@ -231,8 +255,6 @@ main (int argc, char **argv)
 
     if (zoom != 1.0)
         x_zoom = y_zoom = zoom;
-
-    rsvg_set_default_dpi_x_y (dpi_x, dpi_y);
 
     if (unlimited)
         flags |= RSVG_HANDLE_FLAG_UNLIMITED;
@@ -279,6 +301,10 @@ main (int argc, char **argv)
             g_printerr ("\n");
             exit (1);
         }
+
+        g_assert (rsvg != NULL);
+
+        rsvg_handle_set_dpi_x_y (rsvg, dpi_x, dpi_y);
 
         export_lookup_id = get_lookup_id_from_command_line (export_id);
         if (export_lookup_id != NULL
@@ -333,9 +359,42 @@ main (int argc, char **argv)
                 surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
                                                       scaled_width, scaled_height);
 #ifdef CAIRO_HAS_PDF_SURFACE
-            else if (!strcmp (format, "pdf"))
+            else if (!strcmp (format, "pdf")) {
                 surface = cairo_pdf_surface_create_for_stream (rsvg_cairo_write_func, output_file,
                                                                scaled_width, scaled_height);
+                source_date_epoch = getenv("SOURCE_DATE_EPOCH");
+                if (source_date_epoch) {
+                    errno = 0;
+                    epoch = strtoull(source_date_epoch, &endptr, 10);
+                    if ((errno == ERANGE && (epoch == ULLONG_MAX || epoch == 0))
+                            || (errno != 0 && epoch == 0)) {
+                        g_printerr (_("Environment variable $SOURCE_DATE_EPOCH: strtoull: %s\n"),
+                                    strerror(errno));
+                        exit (1);
+                    }
+                    if (endptr == source_date_epoch) {
+                        g_printerr (_("Environment variable $SOURCE_DATE_EPOCH: No digits were found: %s\n"),
+                                    endptr);
+                        exit (1);
+                    }
+                    if (*endptr != '\0') {
+                        g_printerr (_("Environment variable $SOURCE_DATE_EPOCH: Trailing garbage: %s\n"),
+                                    endptr);
+                        exit (1);
+                    }
+                    if (epoch > ULONG_MAX) {
+                        g_printerr (_("Environment variable $SOURCE_DATE_EPOCH: value must be smaller than or equal to %lu but was found to be: %llu \n"),
+                                    ULONG_MAX, epoch);
+                        exit (1);
+                    }
+                    now = (time_t) epoch;
+                    build_time = gmtime(&now);
+                    g_assert (strftime (buffer, sizeof (buffer), "%Y-%m-%dT%H:%M:%S%z", build_time));
+                    cairo_pdf_surface_set_metadata (surface,
+                                                    CAIRO_PDF_METADATA_CREATE_DATE,
+                                                    buffer);
+                }
+            }
 #endif
 #ifdef CAIRO_HAS_PS_SURFACE
             else if (!strcmp (format, "ps") || !strcmp (format, "eps")){
@@ -372,7 +431,15 @@ main (int argc, char **argv)
 
         // Set background color
         if (background_color_str && g_ascii_strcasecmp(background_color_str, "none") != 0) {
-            background_color = rsvg_css_parse_color(background_color_str, FALSE);
+            RsvgCssColorSpec spec;
+
+            spec = rsvg_css_parse_color_ (background_color_str, ALLOW_INHERIT_NO, ALLOW_CURRENT_COLOR_NO);
+            if (spec.kind == RSVG_CSS_COLOR_SPEC_ARGB) {
+                background_color = spec.argb;
+            } else {
+                g_printerr (_("Invalid color specification."));
+                exit (1);
+            }
 
             cairo_set_source_rgb (
                 cr, 

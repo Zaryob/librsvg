@@ -35,8 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "rsvg.h"
-#include "rsvg-compat.h"
+#include "librsvg/rsvg.h"
 
 #include "test-utils.h"
 
@@ -239,6 +238,39 @@ read_png (const char *test_name)
   return surface;
 }
 
+static cairo_surface_t *
+extract_rectangle (cairo_surface_t *source,
+		   int x,
+		   int y,
+		   int w,
+		   int h)
+{
+    cairo_surface_t *dest;
+    cairo_t *cr;
+
+    dest = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, w, h);
+    cr = cairo_create (dest);
+    cairo_set_source_surface (cr, source, -x, -y);
+
+    cairo_paint (cr);
+    cairo_destroy (cr);
+
+    return dest;
+}
+
+// https://gitlab.gnome.org/GNOME/librsvg/issues/91
+//
+// We were computing some offsets incorrectly if the initial transformation matrix
+// passed to rsvg_handle_render_cairo() was not the identity matrix.  So,
+// we create a surface with a "frame" around the destination for the image,
+// and then only consider the pixels inside the frame.  This will require us
+// to have a non-identity transformation (i.e. a translation matrix), which
+// will test for this bug.
+//
+// The frame size is meant to be a ridiculous number to simulate an arbitrary
+// offset.
+#define FRAME_SIZE 47
+
 static void
 rsvg_cairo_check (gconstpointer data)
 {
@@ -246,6 +278,7 @@ rsvg_cairo_check (gconstpointer data)
     RsvgHandle *rsvg;
     RsvgDimensionData dimensions;
     cairo_t *cr;
+    cairo_surface_t *render_surface;
     cairo_surface_t *surface_a, *surface_b, *surface_diff;
     buffer_diff_result_t result;
     char *test_file_base;
@@ -263,13 +296,25 @@ rsvg_cairo_check (gconstpointer data)
 
     rsvg_handle_internal_set_testing (rsvg, TRUE);
 
+    rsvg_handle_set_dpi_x_y (rsvg, 72.0, 72.0);
     rsvg_handle_get_dimensions (rsvg, &dimensions);
     g_assert (dimensions.width > 0);
     g_assert (dimensions.height > 0);
-    surface_a = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-					    dimensions.width, dimensions.height);
-    cr = cairo_create (surface_a);
+
+    render_surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+						 dimensions.width + 2 * FRAME_SIZE,
+						 dimensions.height + 2 * FRAME_SIZE);
+    cr = cairo_create (render_surface);
+    cairo_translate (cr, FRAME_SIZE, FRAME_SIZE);
     rsvg_handle_render_cairo (rsvg, cr);
+
+    surface_a = extract_rectangle (render_surface,
+				   FRAME_SIZE,
+				   FRAME_SIZE,
+				   dimensions.width,
+				   dimensions.height);
+    cairo_surface_destroy (render_surface);
+
     save_image (surface_a, test_file_base, "-out.png");
 
     surface_b = read_png (test_file_base);
@@ -288,12 +333,15 @@ rsvg_cairo_check (gconstpointer data)
                         width_a, height_a, width_b, height_b); 
     }
     else {
+        /* https://gitlab.gnome.org/GNOME/librsvg/issues/178 */
+	const unsigned int MAX_DIFF = sizeof (long) == 8 ? 1 : 10;
+
 	surface_diff = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
 						   dimensions.width, dimensions.height);
 
 	compare_surfaces (surface_a, surface_b, surface_diff, &result);
 
-	if (result.pixels_changed && result.max_diff > 1) {
+	if (result.pixels_changed && result.max_diff > MAX_DIFF) {
             g_test_fail ();
             save_image (surface_diff, test_file_base, "-diff.png");
 	}
@@ -314,17 +362,14 @@ main (int argc, char **argv)
 {
     int result;
 
-    RSVG_G_TYPE_INIT;
     g_test_init (&argc, &argv, NULL);
-
-    rsvg_set_default_dpi_x_y (72, 72);
 
     if (argc < 2) {
         GFile *base, *tests;
 
         base = g_file_new_for_path (test_utils_get_test_data_path ());
         tests = g_file_get_child (base, "reftests");
-        test_utils_add_test_for_all_files ("/rsvg/reftest", tests, tests, rsvg_cairo_check, is_svg_or_subdir);
+        test_utils_add_test_for_all_files ("/rsvg-test/reftests", tests, tests, rsvg_cairo_check, is_svg_or_subdir);
         g_object_unref (tests);
         g_object_unref (base);
     } else {
@@ -333,7 +378,7 @@ main (int argc, char **argv)
         for (i = 1; i < argc; i++) {
             GFile *file = g_file_new_for_commandline_arg (argv[i]);
 
-            test_utils_add_test_for_all_files ("/rsvg/reftest", NULL, file, rsvg_cairo_check, is_svg_or_subdir);
+            test_utils_add_test_for_all_files ("/rsvg-test/reftests", NULL, file, rsvg_cairo_check, is_svg_or_subdir);
 
             g_object_unref (file);
         }

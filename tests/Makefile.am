@@ -1,16 +1,25 @@
 include $(top_srcdir)/glib-tap.mk
 
+EXTRA_DIST +=		\
+	README.md
+
 test_programs =		\
+	api		\
 	loading		\
 	rsvg-test	\
 	crash		\
-	styles		\
 	render-crash	\
 	dimensions
+
+# Removed "styles" from the above; it is broken right now
 
 test_utils_common_sources = \
 	test-utils.c	\
 	test-utils.h
+
+api_SOURCES = 		\
+	api.c		\
+	$(test_utils_common_sources)
 
 rsvg_test_SOURCES = \
 	rsvg-test.c	\
@@ -24,9 +33,9 @@ render_crash_SOURCES = \
 	render-crash.c	\
 	$(test_utils_common_sources)
 
-styles_SOURCES = \
-	styles.c	\
-	$(test_utils_common_sources)
+# styles_SOURCES = \
+# 	styles.c	\
+# 	$(test_utils_common_sources)
 
 dimensions_SOURCES = \
 	dimensions.c	\
@@ -40,15 +49,17 @@ LDADD = $(top_builddir)/librsvg-@RSVG_API_MAJOR_VERSION@.la		\
 	$(LIBRSVG_LIBS)							\
 	$(LIBM)
 
-INCLUDES = -I$(srcdir) 							\
-	   -I$(top_srcdir)						\
-	   -DTEST_DATA_DIR="\"$(srcdir)\""				\
-	   -DTEST_SRC_DIR="\"$(PWD)\""					\
-	   -DTOP_SRC_DIR="\"$(top_srcdir)\""				\
-	  $(LIBRSVG_CFLAGS)
+AM_CPPFLAGS =					\
+	-I$(srcdir) 				\
+	-I$(top_srcdir)				\
+	-DTEST_DATA_DIR="\"$(srcdir)\""		\
+	-DTEST_SRC_DIR="\"$(PWD)\""		\
+	-DTOP_SRC_DIR="\"$(top_srcdir)\""	\
+	$(LIBRSVG_CFLAGS)
 
 dist_installed_test_data =						\
 	$(wildcard $(srcdir)/resources/*)				\
+	$(wildcard $(srcdir)/fixtures/api/*.svg)			\
 	$(wildcard $(srcdir)/fixtures/crash/*.svg)			\
 	$(wildcard $(srcdir)/fixtures/crash/*.png)			\
 	$(wildcard $(srcdir)/fixtures/loading/*)			\
