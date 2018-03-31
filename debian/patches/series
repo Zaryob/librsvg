@@ -1,4 +1,3 @@
 10_rsvg-gz.patch
 disable-new-failing-test.patch
-Skip-known-failing-tests-on-32-bit-architectures-at-build.patch
 git-238-build-failure-on-ubuntu-debian.patch
