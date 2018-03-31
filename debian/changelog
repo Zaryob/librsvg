@@ -2,7 +2,11 @@ librsvg (2.42.3-1) UNRELEASED; urgency=medium
 
   [ Tim Lunn ]
   * New upstream release
-  * d/p/10_rsvg-gz.patch: Rebased on new version 
+  * debian/patches:
+    - 10_rsvg-gz.patch: Rebased on new version 
+    - disable-new-failing-test.patch,
+      Skip-known-failing-tests-on-32-bit-architectures-at-build.patch:
+      Dropped both failures should be fixed in the new version
   * debian/librsvg2-2.docs: renamed README to README.md
   * debian/librsvg2-dev.docs: Install new doc files
   * debian/librsvg2-2.symbols: update for renamed symbol
