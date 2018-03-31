@@ -2,13 +2,21 @@ librsvg (2.42.3-1) UNRELEASED; urgency=medium
 
   [ Tim Lunn ]
   * New upstream release
+  * debian/control.in:
+    - Bump Build-deps libxml2-dev (>= 2.9.0), libpango1.0-dev (>= 1.38.0),
+      libglib2.0-doc (>= 2.52.0), libcairo2-doc (>= 1.15.4),
+    - Add Build-dep on dh-cargo, librsvg now requires rust
+    - Add build-dep on libfreetype6-dev (>= 2.8.0)
   * debian/patches:
-    - 10_rsvg-gz.patch: Rebased on new version 
+    - 10_rsvg-gz.patch: Rebased on new version
+    - git-238-build-failure-on-ubuntu-debian.patch: proposed upstream 
+      patch to fix FTBFS caused by --as-needed linking
     - disable-new-failing-test.patch,
       Skip-known-failing-tests-on-32-bit-architectures-at-build.patch:
-      Dropped both failures should be fixed in the new version
-  * debian/librsvg2-2.docs: renamed README to README.md
-  * debian/librsvg2-dev.docs: Install new doc files
+        Dropped both failures should be fixed in the new version
+  * debian/librsvg2-2.docs: README was renamed to README.md upstream
+  * debian/librsvg2-dev.docs: Install new doc files that seem 
+    developer specific
   * debian/librsvg2-2.symbols: update for renamed symbol
 
   [ Simon McVittie ]
