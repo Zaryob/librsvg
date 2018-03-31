@@ -5,6 +5,7 @@ librsvg (2.42.3-1) UNRELEASED; urgency=medium
   * d/p/10_rsvg-gz.patch: Rebased on new version 
   * debian/librsvg2-2.docs: renamed README to README.md
   * debian/librsvg2-dev.docs: Install new doc files
+  * debian/librsvg2-2.symbols: update for renamed symbol
 
   [ Simon McVittie ]
   * Bump Standards-Version to 4.1.3 (no changes required)
