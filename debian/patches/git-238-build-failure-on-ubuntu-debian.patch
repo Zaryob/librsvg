@@ -1,0 +1,47 @@
+From 3f4d143eb171afe9e62690c8965c9eb4b838a0eb Mon Sep 17 00:00:00 2001
+From: Tim Lunn <tim@feathertop.org>
+Date: Sat, 31 Mar 2018 13:55:02 +1100
+Subject: [PATCH] Fix build failure on Ubuntu/Debian
+
+This fixes unresolved symbols when linking with --as-needed
+
+Closes #238
+---
+ Makefile.am  | 3 ++-
+ configure.ac | 5 +++++
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile.am b/Makefile.am
+index dcc15e5..9484560 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -172,7 +172,8 @@ librsvg_@RSVG_API_MAJOR_VERSION@_la_LDFLAGS = \
+ librsvg_@RSVG_API_MAJOR_VERSION@_la_LIBADD = \
+ 	$(LIBRSVG_LIBS) 	\
+ 	$(LIBM)			\
+-	$(RUST_LIB)
++	$(RUST_LIB)		\
++	$(DLOPEN_LIBS)
+ 
+ librsvgincdir = $(includedir)/librsvg-$(RSVG_API_VERSION)/librsvg
+ librsvginc_HEADERS =			\
+diff --git a/configure.ac b/configure.ac
+index 63b1062..c966675 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -67,6 +67,11 @@ PKG_PROG_PKG_CONFIG
+ LT_INIT([win32-dll])
+ LT_LIB_M
+ 
++# Check if -ldl is needed to use dlopen()
++AC_CHECK_FUNC(dlopen, [],
++              [AC_CHECK_LIB(dl, dlopen, [DLOPEN_LIBS=-ldl])])
++AC_SUBST(DLOPEN_LIBS)
++
+ dnl ===========================================================================
+ 
+ AC_CHECK_PROG(CARGO, [cargo], [yes], [no])
+--
+libgit2 0.26.0
+
+
