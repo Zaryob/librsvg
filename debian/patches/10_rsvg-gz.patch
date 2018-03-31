@@ -9,17 +9,20 @@ applications using it to use rsvg_handle_new instead.
  rsvg-gobject.c | 6 ++++++
  1 file changed, 6 insertions(+)
 
-diff --git a/rsvg-gobject.c b/rsvg-gobject.c
-index 2a4726c..423069d 100644
---- a/rsvg-gobject.c
-+++ b/rsvg-gobject.c
-@@ -380,3 +380,9 @@ rsvg_handle_new_with_flags (RsvgHandleFlags flags)
-                          "flags", flags,
+Index: librsvg/librsvg/rsvg-handle.c
+===================================================================
+--- librsvg.orig/librsvg/rsvg-handle.c
++++ librsvg/librsvg/rsvg-handle.c
+@@ -478,6 +478,12 @@ rsvg_handle_new_with_flags (RsvgHandleFl
                           NULL);
  }
-+
+ 
 +RsvgHandle *
 +rsvg_handle_new_gz (void)
 +{
 +    return rsvg_handle_new ();
 +}
++
+ /**
+  * rsvg_handle_new_from_gfile_sync:
+  * @file: a #GFile

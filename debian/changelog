@@ -2,6 +2,7 @@ librsvg (2.42.3-1) UNRELEASED; urgency=medium
 
   [ Tim Lunn ]
   * New upstream release
+  * d/p/10_rsvg-gz.patch: Rebased on new version 
   * debian/librsvg2-2.docs: renamed README to README.md
   * debian/librsvg2-dev.docs: Install new doc files
 
