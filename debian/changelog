@@ -1,4 +1,4 @@
-librsvg (2.42.3-1) UNRELEASED; urgency=medium
+librsvg (2.42.3-1) experimental; urgency=medium
 
   [ Tim Lunn ]
   * New upstream release
@@ -25,7 +25,7 @@ librsvg (2.42.3-1) UNRELEASED; urgency=medium
   [ Jeremy Bicha ]
   * Update Vcs fields for migration to https://salsa.debian.org/
 
- -- Tim Lunn <tim@feathertop.org>  Fri, 30 Mar 2018 16:20:59 +1100
+ -- Tim Lunn <tim@feathertop.org>  Sun, 01 Apr 2018 10:13:35 +1000
 
 librsvg (2.40.20-2) unstable; urgency=medium
 
