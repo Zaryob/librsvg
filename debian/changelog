@@ -7,6 +7,7 @@ librsvg (2.40.20-3) UNRELEASED; urgency=medium
   * Don't install detailed ChangeLog, only NEWS
   * Bump Standards-Version to 4.2.1 (no further changes required)
   * Set Rules-Requires-Root to no
+  * d/gbp.conf: Use debian/sid, upstream/2.40.x branches
 
  -- Simon McVittie <smcv@debian.org>  Sun, 31 Dec 2017 11:32:50 +0000
 
