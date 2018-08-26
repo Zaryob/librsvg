@@ -3,6 +3,7 @@
 
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 export DEB_LDFLAGS_MAINT_APPEND = -Wl,-z,defs -Wl,--as-needed
+NULL =
 
 %:
 	dh $@ --with gnome,gir
@@ -15,7 +16,9 @@ override_dh_auto_configure:
 		--enable-pixbuf-loader \
 		--enable-introspection \
 		--enable-vala \
-		--enable-gtk-doc
+		--enable-gtk-doc \
+		GDK_PIXBUF_QUERYLOADERS=/usr/lib/$(DEB_HOST_MULTIARCH)/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders \
+		$(NULL)
 
 override_dh_makeshlibs:
 	dh_makeshlibs -V -- -c4
