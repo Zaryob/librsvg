@@ -1,0 +1,22 @@
+From: Lovell Fuller <github@lovell.info>
+Date: Sat, 6 Jan 2018 10:45:02 +0000
+Subject: Ensure GFile is unreferenced to avoid filename memory leak See
+ commit 475764f
+
+(cherry picked from commit 59f925e4c54a4f0c17a401cd88f31dee6f22d618)
+---
+ rsvg-base-file-util.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/rsvg-base-file-util.c b/rsvg-base-file-util.c
+index 366fc4a..efef2df 100644
+--- a/rsvg-base-file-util.c
++++ b/rsvg-base-file-util.c
+@@ -116,6 +116,7 @@ rsvg_handle_new_from_file (const gchar * file_name, GError ** error)
+     }
+ 
+     g_free (base_uri);
++    g_object_unref (file);
+ 
+     return handle;
+ }

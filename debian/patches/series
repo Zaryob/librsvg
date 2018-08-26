@@ -1,3 +1,4 @@
 10_rsvg-gz.patch
 disable-new-failing-test.patch
 Skip-known-failing-tests-on-32-bit-architectures-at-build.patch
+Ensure-GFile-is-unreferenced-to-avoid-filename-memory-lea.patch
