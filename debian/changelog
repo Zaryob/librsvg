@@ -1,5 +1,6 @@
-librsvg (2.40.20-3) UNRELEASED; urgency=medium
+librsvg (2.40.20-3) unstable; urgency=medium
 
+  * Team upload
   * Set GDK_PIXBUF_QUERYLOADERS to
     /usr/lib/$(DEB_HOST_MULTIARCH)/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders
     since we no longer install the /usr/bin/gdk-pixbuf-query-loaders
@@ -13,7 +14,7 @@ librsvg (2.40.20-3) UNRELEASED; urgency=medium
     Add patch from upstream librsvg-2.40 branch to fix a memory leak
   * Update Vcs-* for migration to salsa.debian.org
 
- -- Simon McVittie <smcv@debian.org>  Sun, 31 Dec 2017 11:32:50 +0000
+ -- Simon McVittie <smcv@debian.org>  Sun, 26 Aug 2018 16:34:42 +0100
 
 librsvg (2.40.20-2) unstable; urgency=medium
 
