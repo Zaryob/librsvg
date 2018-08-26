@@ -8,6 +8,7 @@ librsvg (2.40.20-3) UNRELEASED; urgency=medium
   * Bump Standards-Version to 4.2.1 (no further changes required)
   * Set Rules-Requires-Root to no
   * d/gbp.conf: Use debian/sid, upstream/2.40.x branches
+  * d/gbp.conf: Don't generate numbered patches
   * d/p/Ensure-GFile-is-unreferenced-to-avoid-filename-memory-lea.patch:
     Add patch from upstream librsvg-2.40 branch to fix a memory leak
 
