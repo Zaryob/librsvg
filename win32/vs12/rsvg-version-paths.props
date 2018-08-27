@@ -5,7 +5,7 @@
   <PropertyGroup Label="UserMacros">
     <RsvgMajorVersion>2</RsvgMajorVersion>
     <RsvgMinorVersion>42</RsvgMinorVersion>
-    <RsvgMicroVersion>3</RsvgMicroVersion>
+    <RsvgMicroVersion>7</RsvgMicroVersion>
     <ApiVersion>2.0</ApiVersion>
     <VSVer>12</VSVer>
     <GlibEtcInstallRoot>$(SolutionDir)\..\..\..\vs$(VSVer)\$(Platform)</GlibEtcInstallRoot>

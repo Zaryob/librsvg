@@ -1,6 +1,6 @@
 m4_define([rsvg_major_version],[2])
 m4_define([rsvg_minor_version],[42])
-m4_define([rsvg_micro_version],[3])
+m4_define([rsvg_micro_version],[7])
 m4_define([rsvg_extra_version],[])
 m4_define([rsvg_version],[rsvg_major_version.rsvg_minor_version.rsvg_micro_version()rsvg_extra_version])
 m4_define([rsvg_lt_version_info],m4_eval(rsvg_major_version + rsvg_minor_version):rsvg_micro_version:rsvg_minor_version)
@@ -80,15 +80,12 @@ AS_IF(test x$RUSTC = xno,
 
 dnl Minimum version of rustc that we support
 MINIMUM_RUST_MAJOR=1
-MINIMUM_RUST_MINOR=20
+MINIMUM_RUST_MINOR=21
 
 rust_version=`rustc --version`
 version=`echo "$rust_version" | sed -e 's/^rustc //g'`
 major=`echo "$version" | cut -d. -f1`
 minor=`echo "$version" | cut -d. -f2`
-
-MINIMUM_RUST_MAJOR=1
-MINIMUM_RUST_MINOR=20
 
 AS_IF(test "$major" -lt "$MINIMUM_RUST_MAJOR" -o "$minor" -lt "$MINIMUM_RUST_MINOR",
     AC_MSG_ERROR([librsvg needs at rustc version at least $MINIMUM_RUST_MAJOR.$MINIMUM_RUST_MINOR])
@@ -153,10 +150,6 @@ case "$host" in
 esac
 
 GLIB_TESTS
-
-dnl ===========================================================================
-
-AC_CHECK_FUNCS(strtok_r)
 
 # ===========================================================================
 # GTK
@@ -288,9 +281,14 @@ else
 fi
 AM_CONDITIONAL([DEBUG_RELEASE], [test "x$debug_release" = "xyes"])
 
+AC_ARG_VAR(RUST_TARGET, [Set rust target (default=$host)])
+if test "x$RUST_TARGET" == x; then
+	RUST_TARGET=$host
+fi
+
 AM_CONDITIONAL(CROSS_COMPILING, test $cross_compiling = yes)
 if test "x$cross_compiling" = "xyes" ; then
-	RUST_TARGET_SUBDIR="$host/$RUST_TARGET_SUBDIR"
+	RUST_TARGET_SUBDIR="$RUST_TARGET/$RUST_TARGET_SUBDIR"
 fi
 AC_SUBST([RUST_TARGET_SUBDIR])
 

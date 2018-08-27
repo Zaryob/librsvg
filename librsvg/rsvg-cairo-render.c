@@ -73,6 +73,7 @@ rsvg_cairo_render_new (cairo_t * cr, double width, double height)
 
     cairo_render->super.type = RSVG_RENDER_TYPE_CAIRO;
     cairo_render->super.free = rsvg_cairo_render_free;
+    cairo_render->super.set_affine_on_cr = rsvg_cairo_set_affine_on_cr;
     cairo_render->super.get_pango_context = rsvg_cairo_get_pango_context;
     cairo_render->super.render_pango_layout = rsvg_cairo_render_pango_layout;
     cairo_render->super.render_surface = rsvg_cairo_render_surface;
@@ -81,6 +82,7 @@ rsvg_cairo_render_new (cairo_t * cr, double width, double height)
     cairo_render->super.push_discrete_layer = rsvg_cairo_push_discrete_layer;
     cairo_render->super.add_clipping_rect = rsvg_cairo_add_clipping_rect;
     cairo_render->super.get_surface_of_node = rsvg_cairo_get_surface_of_node;
+    cairo_render->super.insert_bbox = rsvg_cairo_insert_bbox;
     cairo_render->width = width;
     cairo_render->height = height;
     cairo_render->offset_x = 0;
@@ -211,9 +213,12 @@ rsvg_cairo_new_drawing_ctx (cairo_t * cr, RsvgHandle * handle)
  *   the whole SVG. For example, if you have a layer called "layer1"
  *   that you wish to render, pass "##layer1" as the id.
  *
- * Draws a subset of a SVG to a Cairo surface
- *
- * Returns: %TRUE if drawing succeeded.
+ * Draws a subset of a loaded SVG handle to a Cairo context.  Drawing will occur with
+ * respect to the @cr's current transformation:  for example, if the @cr has a
+ * rotated current transformation matrix, the whole SVG will be rotated in the
+ * rendered version.
+  *
+ * Returns: %TRUE if drawing succeeded; %FALSE otherwise.
  *
  * Since: 2.14
  */
@@ -222,16 +227,28 @@ rsvg_handle_render_cairo_sub (RsvgHandle * handle, cairo_t * cr, const char *id)
 {
     RsvgDrawingCtx *draw;
     RsvgNode *drawsub = NULL;
+    cairo_status_t status;
+    gboolean res;
 
     g_return_val_if_fail (handle != NULL, FALSE);
 
     if (handle->priv->state != RSVG_HANDLE_STATE_CLOSED_OK)
         return FALSE;
 
+    status = cairo_status (cr);
+
+    if (status != CAIRO_STATUS_SUCCESS) {
+        g_warning ("cannot render on a cairo_t with a failure status (status=%d, %s)",
+                   (int) status,
+                   cairo_status_to_string (status));
+        return FALSE;
+    }
+
     if (id && *id)
         drawsub = rsvg_defs_lookup (handle->priv->defs, id);
 
     if (drawsub == NULL && id != NULL) {
+        g_warning ("element id=\"%s\" does not exist", id);
         /* todo: there's no way to signal that @id doesn't exist */
         return FALSE;
     }
@@ -244,13 +261,13 @@ rsvg_handle_render_cairo_sub (RsvgHandle * handle, cairo_t * cr, const char *id)
 
     cairo_save (cr);
 
-    rsvg_drawing_ctx_draw_node_from_stack (draw, handle->priv->treebase, 0);
+    res = rsvg_drawing_ctx_draw_node_from_stack (draw, handle->priv->treebase, 0);
 
     cairo_restore (cr);
 
     rsvg_drawing_ctx_free (draw);
 
-    return TRUE;
+    return res;
 }
 
 /**
@@ -258,9 +275,12 @@ rsvg_handle_render_cairo_sub (RsvgHandle * handle, cairo_t * cr, const char *id)
  * @handle: A #RsvgHandle
  * @cr: A Cairo renderer
  *
- * Draws a SVG to a Cairo surface
+ * Draws a loaded SVG handle to a Cairo context.  Drawing will occur with
+ * respect to the @cr's current transformation:  for example, if the @cr has a
+ * rotated current transformation matrix, the whole SVG will be rotated in the
+ * rendered version.
  *
- * Returns: %TRUE if drawing succeeded.
+ * Returns: %TRUE if drawing succeeded; %FALSE otherwise. 
  * Since: 2.14
  */
 gboolean

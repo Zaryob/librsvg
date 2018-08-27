@@ -1,3 +1,2135 @@
+commit 7a40d7b8d188919b0557f671a5c06f0aba260aa9
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Wed Aug 22 13:10:53 2018 -0500
+
+    Update NEWS
+
+ NEWS | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+commit 9394e52071749757e43c8ec25986f43642b7c754
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Wed Aug 22 13:10:32 2018 -0500
+
+    Clarify documentation for rsvg_handle_render_cairo() / render_cairo_sub()
+
+ librsvg/rsvg-cairo-render.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
+
+commit 706166a0ff8ec84e7a3dac7a5db4c1f14bb645f5
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Aug 21 17:30:27 2018 -0500
+
+    rsvg-test.c: Check the return value of rsvg_handle_render_cairo()
+
+ tests/rsvg-test.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit c6a76d8d395223e28b8d1cfa3d34cd7921c368cc
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Aug 21 17:17:32 2018 -0500
+
+    tests/errors.c: New set of tests for reported errors from the API
+    
+    Although we can't report detailed errors from the rendering functions,
+    we do report a success/failure boolean value.  Test this, at least,
+    for problematic files.
+
+ tests/Makefile.am                        |   9 +-
+ tests/errors.c                           |  55 +++++++++
+ tests/fixtures/errors/323-nested-use.svg | 196 +++++++++++++++++++++++++++++++
+ 3 files changed, 259 insertions(+), 1 deletion(-)
+
+commit 984bb44fe467ca479047eefd82745724e9e71183
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Wed Aug 22 12:58:43 2018 -0500
+
+    rsvg-convert: Exit with an error code if rendering was unsuccessful
+
+ rsvg-convert.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+commit 9db884a1aa1b6b3128bd9abd30ad8203f2681cad
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Wed Aug 22 12:15:13 2018 -0500
+
+    gitlab#323 - Limit the number of instancings through the <use> element
+    
+    A pathological SVG file can do this:
+    
+    <svg>
+      <defs>
+        <rect id="foo" .../>
+    
+        <g id="foo1">
+          <use xlink:href="#foo"/>
+          ... repeat 10 times ...
+        </g>
+    
+        <g id="foo2">
+            <use xlink:href="#foo1"/>
+            ... repeat 10 times ...
+        </g>
+    
+        <g id="foo3">
+            <use xlink:href="#foo2"/>
+            ... repeat 10 times ...
+        </g>
+    
+        ... etc ...
+      </defs>
+    
+      <use xlink:href="#foo17"/>
+    </svg>
+    
+    This would cause about 10^17 objects to be rendered.  While this does
+    not exhaust memory (the objects are not instanced in memory), it would
+    take a really long time to render that many objects.
+    
+    So, we now have a limit on up to 500,000 objects instanced through
+    <use>.  We can tweak this limit later, or the way in which it is
+    computed; the point is that we can now detect this situation and
+    propagate an error upstream.
+    
+    https://gitlab.gnome.org/GNOME/librsvg/issues/323
+
+ librsvg/rsvg-base.c         | 29 +++++++++++++++++++++++++++--
+ librsvg/rsvg-cairo-render.c |  5 +++--
+ librsvg/rsvg-private.h      |  2 +-
+ 3 files changed, 31 insertions(+), 5 deletions(-)
+
+commit 2aeaac79265f9e916fdd8ff3990287fc9cbf119b
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Wed Aug 22 11:00:19 2018 -0500
+
+    Keep track of how many elements get instanced through <use> nodes
+
+ librsvg/rsvg-base.c               | 6 ++++++
+ librsvg/rsvg-private.h            | 1 +
+ rsvg_internals/src/drawing_ctx.rs | 8 ++++++++
+ rsvg_internals/src/structure.rs   | 2 ++
+ 4 files changed, 17 insertions(+)
+
+commit 49455947dff1f5f55abeabd159de974aa9fda36d
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Aug 7 16:42:49 2018 -0500
+
+    Post-release version bump
+
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit fa70c935c143aa8928d9336d28cb010da7e0a869
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Aug 7 15:19:02 2018 -0500
+
+    Update rustfmt configuration
+
+ .rustfmt.toml                      |  1 -
+ rsvg_internals/src/aspect_ratio.rs |  4 ++--
+ rsvg_internals/src/draw.rs         | 15 +++++++--------
+ rsvg_internals/src/gradient.rs     |  3 +--
+ rsvg_internals/src/marker.rs       | 36 ++++++++++++++++++------------------
+ rsvg_internals/src/parsers.rs      |  3 +--
+ rsvg_internals/src/pattern.rs      |  6 ++----
+ rsvg_internals/src/space.rs        |  9 +++------
+ rsvg_internals/src/stop.rs         |  4 ++--
+ rsvg_internals/src/transform.rs    | 28 +++++++++++-----------------
+ 10 files changed, 47 insertions(+), 62 deletions(-)
+
+commit f6e1d0f58040c7c490edb90ded2c502f9e1a629b
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Aug 7 08:12:48 2018 -0500
+
+    Update NEWS
+
+ NEWS | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+commit af70724360cbf72c38c3b0663ec1f7669f761526
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Jun 21 09:06:22 2018 -0500
+
+    (#292): Don't panic if we try to clip with an empty bounding box
+    
+    https://gitlab.gnome.org/GNOME/librsvg/issues/292
+
+ librsvg/rsvg-cairo-clip.c                            | 16 ++++++++++++----
+ tests/fixtures/render-crash/292-clip-empty-group.svg | 11 +++++++++++
+ 2 files changed, 23 insertions(+), 4 deletions(-)
+
+commit e6ba378241ed47b85a6efa3b8510a2a7e4a27749
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Jun 21 08:52:53 2018 -0500
+
+    CONTRIBUTING.md: Note on formatting commit messages
+
+ CONTRIBUTING.md | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+commit 48b261eda6f48cdef47761cbb7ce835574c443fd
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Wed Jun 20 17:31:16 2018 -0500
+
+    (#259): Make test fonts work for installed tests
+    
+    Don't hardcode the font locations based on the SRCDIR; actually
+    compute their locations with g_test_build_filename().
+    
+    https://gitlab.gnome.org/GNOME/librsvg/issues/259
+
+ librsvg/rsvg-cairo-draw.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
+
+commit dfcdb26c6934b1a986f6eba626d31ba70fef7f4c
+Author: Jehan <jehan@girinstud.io>
+Date:   Sat Jun 9 21:17:14 2018 +0200
+
+    tests: fix also VPATH build for unit tests.
+
+ tests/Makefile.am | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+commit ea5bdf468f410fa4360cc993195b6725d4698cf8
+Author: Jehan <jehan@girinstud.io>
+Date:   Sat Jun 9 19:04:51 2018 +0200
+
+    Makefile: fix VPATH (out-of-tree) builds.
+    
+    In `librsvg/rsvg.h`, the include is "librsvg-enum-types.h", which is a
+    generated file and is therefore inside $(top_builddir)/librsvg/.
+
+ Makefile.am                   | 6 ++++--
+ gdk-pixbuf-loader/Makefile.am | 3 ++-
+ tools/Makefile.am             | 1 +
+ 3 files changed, 7 insertions(+), 3 deletions(-)
+
+commit 727724e5ab209c2d04244f4b3b9e732c88d51c38
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Jun 8 11:47:17 2018 -0500
+
+    Add test for the light source type
+
+ .../reftests/bugs/241-light-source-type-ref.png         | Bin 0 -> 4036 bytes
+ tests/fixtures/reftests/bugs/241-light-source-type.svg  |  16 ++++++++++++++++
+ 2 files changed, 16 insertions(+)
+
+commit 88ea624c294d4361415cabb16dcea620008982cd
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Jun 8 11:43:14 2018 -0500
+
+    (#241) rsvg_new_node_light_source() - Fix cut&paste error between feDistantLight and feSpotLight
+    
+    Sigh, I broke this and never caught it because there weren't tests for
+    filters with light sources.
+    
+    https://gitlab.gnome.org/GNOME/librsvg/issues/241
+
+ librsvg/rsvg-filter.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+commit ed00b08d1c4a0e653a94b0f9e8499b7555ea5143
+Author: Ivan Molodetskikh <yalterz@gmail.com>
+Date:   Fri Jun 8 11:29:45 2018 -0500
+
+    Fix find_light_source_in_children()
+    
+    Part of (#241).
+
+ librsvg/rsvg-filter.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit d1506ab6620df62486eb03804a2c38aa13dd552c
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Jun 8 07:49:51 2018 -0500
+
+    (#282) - Don't reuse the input surface for painting feComposite's output
+    
+    feComposite tried to take a shortcut if one of its inputs is an
+    existing surface, by painting its output to that same surface.
+    However, the overall filter may want to reuse the original surface
+    unchanged.  This was causing drop shadows, done like Inkscape's, to be
+    mis-painted.
+    
+    https://gitlab.gnome.org/GNOME/librsvg/issues/282
+
+ librsvg/rsvg-filter.c                              |  36 ++++++++++-----------
+ .../fixtures/reftests/bugs/282-drop-shadow-ref.png | Bin 0 -> 1726 bytes
+ tests/fixtures/reftests/bugs/282-drop-shadow.svg   |  12 +++++++
+ 3 files changed, 30 insertions(+), 18 deletions(-)
+
+commit 1988df6e67837aa106b6861f8ce31a46bddc614f
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Mon Jun 4 12:05:36 2018 -0500
+
+    configure.ac: Post-release version bump
+
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit e2b8a2d19a96debc0b97a0445093c29d233c54a8
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Mon Jun 4 12:00:03 2018 -0500
+
+    COMPILING.md: Update to mention the RUST_TARGET environment variable
+
+ COMPILING.md | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+commit 9f9b049cf1241fed9d00b294ee62a3b618aba98f
+Author: Fabrice Fontaine <fontaine.fabrice@gmail.com>
+Date:   Sat Jun 2 09:46:59 2018 +0200
+
+    Add RUST_TARGET variable
+    
+    Add RUST_TARGET environment variable through AC_ARG_VAR to allow the
+    user to override the rust target name. Indeed, using $host when
+    cross-compiling is not always the good option especially when vendor
+    part of target is not set to unknown but to another value such as
+    buildroot.
+    Indeed, in this case aarch64-buildroot-linux-gnu won't be recognised as
+    a valid target by rust/cargo.
+    
+    Signed-off-by: Fabrice Fontaine <fontaine.fabrice@gmail.com>
+
+ Makefile.am  | 2 +-
+ configure.ac | 7 ++++++-
+ 2 files changed, 7 insertions(+), 2 deletions(-)
+
+commit d251d1add0928ba395daece5b406e4a5114a097b
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Mon Jun 4 11:35:23 2018 -0500
+
+    Punctuation fix.
+
+ README.md | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 986a95ebdcdbbdbfea558dcecdae3aec5cf5ff79
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Jun 1 19:33:31 2018 -0500
+
+    Remind people that github will delete their pull requests
+
+ README.md | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+commit 497c925593e41c12cec4a55e4365655a29c3fe59
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Jun 1 13:39:13 2018 -0500
+
+    Update NEWS
+
+ NEWS | 2 ++
+ 1 file changed, 2 insertions(+)
+
+commit e0f9ea86480ca9563c4bcb927e04506c438fb17c
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Jun 1 13:36:22 2018 -0500
+
+    (#266) - Don't ignore the results of filters with errors in attributes
+    
+    The only remaining C nodes are filters.  The NodeTrait implementation
+    of CNode::set_atts() was returning Ok(()) always, even if the C code
+    had called rsvg_node_set_attribute_parse_error().  Instead, actually
+    return that error result so the rest of the code will know about it.
+    
+    Additionally, don't render filter primitives that are in error.
+    
+    https://gitlab.gnome.org/GNOME/librsvg/issues/266
+
+ librsvg/rsvg-filter.c                              |   4 +-
+ librsvg/rsvg-private.h                             |   6 +
+ rsvg_internals/src/cnode.rs                        |   2 +-
+ rsvg_internals/src/lib.rs                          |   1 +
+ rsvg_internals/src/node.rs                         |  10 ++
+ .../266-filters-with-error-attributes.svg          | 187 +++++++++++++++++++++
+ 6 files changed, 208 insertions(+), 2 deletions(-)
+
+commit 915a15b5f34b75eac03ad2ebcb7982b8750e2f7a
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Jun 1 12:14:53 2018 -0500
+
+    Update NEWS
+
+ NEWS | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+commit 248e9942e171023256afeba58da584ee6b96d5aa
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Jun 1 12:08:17 2018 -0500
+
+    configure.ac: Bump version to 2.42.5
+
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 2fa1ca97dc6cf749bc45346146097efe2eb4a4fc
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Jun 1 12:00:20 2018 -0500
+
+    CONTRIBUTING.md: Note on how to install/update rustfmt
+
+ CONTRIBUTING.md | 24 ++++++++++++++++++++----
+ 1 file changed, 20 insertions(+), 4 deletions(-)
+
+commit a4888f62248114f171b58c7017f341575e534f26
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Jun 1 11:46:05 2018 -0500
+
+    Update .gitlab-ci.yml from master
+
+ .gitlab-ci.yml | 39 +++++++++++++++++----------------------
+ 1 file changed, 17 insertions(+), 22 deletions(-)
+
+commit ce3741b5e8c3065fce17d6dbcec5183f70863970
+Author: Saurav Sachidanand <sauravsachidanand@gmail.com>
+Date:   Wed May 30 23:41:51 2018 +0530
+
+    Write test artifacts to tests/output
+
+ tests/Makefile.am |  3 +++
+ tests/README.md   | 15 ++++++++-------
+ tests/rsvg-test.c | 14 +++++++++++++-
+ 3 files changed, 24 insertions(+), 8 deletions(-)
+
+commit 13e244d01b7c9f6391e7180f519a3d1cf74dce5a
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Jun 1 10:59:58 2018 -0500
+
+    rustfmt - and update its configuration
+
+ .rustfmt.toml                      |  5 +--
+ rsvg_internals/src/aspect_ratio.rs | 11 +++---
+ rsvg_internals/src/bbox.rs         |  3 +-
+ rsvg_internals/src/color.rs        |  6 ++-
+ rsvg_internals/src/coord_units.rs  |  2 +-
+ rsvg_internals/src/gradient.rs     |  4 +-
+ rsvg_internals/src/length.rs       |  2 +-
+ rsvg_internals/src/marker.rs       | 76 +++++++++++++++++++-------------------
+ rsvg_internals/src/node.rs         |  2 +-
+ rsvg_internals/src/paint_server.rs |  5 +--
+ rsvg_internals/src/path_parser.rs  | 19 ++++++----
+ rsvg_internals/src/pattern.rs      | 14 +++++--
+ rsvg_internals/src/shapes.rs       | 40 ++++++++++++--------
+ rsvg_internals/src/stop.rs         |  4 +-
+ rsvg_internals/src/structure.rs    | 34 ++++++++++-------
+ rsvg_internals/src/transform.rs    | 36 ++++++++++--------
+ rsvg_internals/src/viewbox.rs      |  2 +-
+ 17 files changed, 147 insertions(+), 118 deletions(-)
+
+commit b99692db46e2a6c61d37a70165198ad029c4ec69
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Jun 1 09:59:24 2018 -0500
+
+    (#276) - Guard against getting a cairo_t in an error state at the toplevel API
+    
+    The cairo-dock program was passing a cairo_t in an error state to
+    rsvg_handle_render_cairo(), and so we failed deep in the innards of
+    librsvg when cairo-rs validates the cairo::Context's status.
+    
+    Cairo-dock was doing something like
+    
+      surf = cairo_image_surface_create (... an invalid size ...);
+      cr = cairo_create (surf);
+    
+      rsvg_handle_render_cairo (handle, cr);    // we now catch the error right here
+    
+    We catch invalid cr's, emit a warning, and return FALSE from
+    rsvg_handle_render_cairo*().
+    
+    https://gitlab.gnome.org/GNOME/librsvg/issues/276
+
+ librsvg/rsvg-cairo-render.c | 11 +++++++++++
+ tests/api.c                 | 27 +++++++++++++++++++++++++++
+ 2 files changed, 38 insertions(+)
+
+commit 15711ddd1e6ffc5052423a7550a926fa1a2c73b5
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Jun 1 08:43:57 2018 -0500
+
+    COMPILING.md: Note on how to run `make distcheck` so it will work
+
+ COMPILING.md | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+commit 46ffa7d6f9b41e989cde8f0d0b6cc645f985582d
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Mon May 7 13:33:50 2018 -0500
+
+    Add missing source file to Makefile.am
+
+ Makefile.am | 1 +
+ 1 file changed, 1 insertion(+)
+
+commit d589038bead8f37b1cb85b9ba7100991d22a1e62
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Mon May 7 13:08:03 2018 -0500
+
+    Update NEWS
+
+ NEWS | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+commit 7d0383f69a7696d6247784806ea5abc61f135ed6
+Author: Jordan Petridis <jordanpetridis@protonmail.com>
+Date:   Wed Mar 21 07:39:18 2018 +0200
+
+    cond.rs: Use AsciiExt to maintain backwards compatibility.
+    
+    In rustc 1.23 the "eq_ignore_ascii_case" method of the AsciiExt
+    was implemented directly for the types u8, chat, [u8] and str.
+    This causes the code to built fine with 1.23+ version of rustc
+    but failling for the v1.21 and v1.22 as the method does not exitst.
+    
+    This patch imports the AsciiExt Trait and ignores the compiler
+    warning that would be produced when compiling with 1.23+ version
+    about an unused import.
+
+ rsvg_internals/src/cond.rs | 3 +++
+ 1 file changed, 3 insertions(+)
+
+commit 76f08cd2f39c5f9a0e38384119a6f2c56539f573
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 20 19:21:32 2018 -0600
+
+    RsvgHandle: Document the preferred way to load SVGs from memory
+    
+    https://gitlab.gnome.org/GNOME/librsvg/issues/98
+
+ librsvg/rsvg-handle.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+commit 77fc0df2dea257c57bb0f398575935bc777469c8
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 20 18:27:55 2018 -0600
+
+    ARCHITECTURE.md: Finish documenting the CSS cascade process
+
+ ARCHITECTURE.md | 32 ++++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
+
+commit e7c574513787847da81dd372db039dd81124a85a
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 20 17:11:08 2018 -0600
+
+    ARCHITECTURE.md: Start describing our single-pass CSS cascade / rendering process
+
+ ARCHITECTURE.md | 46 +++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 43 insertions(+), 3 deletions(-)
+
+commit bf0f9632fd8beacb21587c7a2a43788f73d08c84
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 20 09:22:00 2018 -0600
+
+    CONTRIBUTING.md: Document the CI infrastructure a bit and cargo fmt
+
+ CONTRIBUTING.md | 129 ++++++++++++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 98 insertions(+), 31 deletions(-)
+
+commit b1777095fae963378f2eb3b90bfe77cae01e2c1d
+Author: Paolo Borelli <borellip@amazon.com>
+Date:   Sat Mar 17 15:33:49 2018 +0100
+
+    Implement svg switch conditions in rust
+
+ Makefile.am                |   1 -
+ config.h.win32.in          |   3 -
+ configure.ac               |   4 -
+ librsvg/rsvg-cond.c        | 192 --------------------------------------
+ librsvg/rsvg-css.c         |  83 -----------------
+ librsvg/rsvg-css.h         |   3 -
+ librsvg/rsvg-private.h     |  12 ++-
+ librsvg/rsvg-styles.c      |  47 ++++++++++
+ rsvg_internals/src/cond.rs | 224 +++++++++++++++++++++++++++++++++++++++++++++
+ rsvg_internals/src/lib.rs  |   7 ++
+ 10 files changed, 289 insertions(+), 287 deletions(-)
+
+commit d8203f5caa3b3d4a9d98d4c5d14ae25d174430ae
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri May 4 20:07:48 2018 -0500
+
+    CI: use a DESTDIR that can be accessed
+    
+    This will hopefully make the gdk-pixbuf-loader installation check work
+
+ .gitlab-ci.yml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit d3c7620c1ad46b330011f3177c9f7e98f16fa29b
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri May 4 20:05:38 2018 -0500
+
+    CI: Go back to running distcheck after lint
+
+ .gitlab-ci.yml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 3f514a2d294f673328c4a7341937eb4b759511d5
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri May 4 18:38:40 2018 -0500
+
+    Add missing Rust files to Makefile.am
+
+ Makefile.am | 1 +
+ 1 file changed, 1 insertion(+)
+
+commit bac14e18caa15c4becd2e26fcd27061f1642269b
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri May 4 16:38:45 2018 -0500
+
+    Install xz so "make distcheck" can run tar
+
+ .gitlab-ci.yml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 862e844c89e1b1aec29f0121dc51ab8580f8e542
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri May 4 16:26:37 2018 -0500
+
+    Install cmake to build cargo-vendor
+
+ .gitlab-ci.yml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 9f4644aa145a259db08a0f8642ceff38a4c5f848
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri May 4 15:58:16 2018 -0500
+
+    Install libgit2-devel to build cargo-vendor
+
+ .gitlab-ci.yml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 6199ea8a58a054b2e08fecd3e93a326ac3382597
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri May 4 15:44:30 2018 -0500
+
+    Install libssh2-devel to build cargo-vendor
+
+ .gitlab-ci.yml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit c34689c71c63dbd646a472e84ddcb21f8ca1b864
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri May 4 15:40:52 2018 -0500
+
+    Add openssl-devel to build cargo-vendor
+
+ .gitlab-ci.yml | 1 +
+ 1 file changed, 1 insertion(+)
+
+commit 439fbd7ede50a261cfa67cbac721b6e371b3edfa
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri May 4 15:28:13 2018 -0500
+
+    Try not to refresh the gdk-pixbuf loader database
+
+ .gitlab-ci.yml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 514c202b594a90687fa15f38507d41046c23b5ec
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri May 4 15:28:02 2018 -0500
+
+    Install cargo-vendor
+
+ .gitlab-ci.yml | 1 +
+ 1 file changed, 1 insertion(+)
+
+commit 8eb8e2a5614e7b597fa411845c218a720491a975
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri May 4 15:19:28 2018 -0500
+
+    Run distcheck first, to test this
+
+ .gitlab-ci.yml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 1c3b2f6ebdd4adf57ddba3be3fc90b74ef93d6bc
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri May 4 15:17:56 2018 -0500
+
+    Ahem, run autogen.sh before "make distcheck"
+
+ .gitlab-ci.yml | 2 ++
+ 1 file changed, 2 insertions(+)
+
+commit 35c7bdcc0a5b894190a00b60717b75a93c342c06
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri May 4 14:57:33 2018 -0500
+
+    CI: run the stage_2 in the librsvg-2.42 branch everywhere
+
+ .gitlab-ci.yml | 1 +
+ 1 file changed, 1 insertion(+)
+
+commit 3156661ce06fb8da7e300f84e33818284df707f7
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri May 4 14:53:34 2018 -0500
+
+    CI: add a distcheck stage that runs "make distcheck" to build a tarball
+
+ .gitlab-ci.yml | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+commit 14d0b9b353feb5af7a667afa146b4099b7006598
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri May 4 13:42:49 2018 -0500
+
+    Run the stage_2 CI for the librsvg-2.42 branch.
+
+ .gitlab-ci.yml | 1 +
+ 1 file changed, 1 insertion(+)
+
+commit 29cf9876b5fc88db127613172c48243a545e90f9
+Author: Jordan Petridis <jordanpetridis@protonmail.com>
+Date:   Sat Mar 31 19:51:13 2018 +0300
+
+    gitlabci: Remove most amd64 release builds.
+    
+    One job should be enough to cover all the cases where
+    something would brake only in release mode.
+
+ .gitlab-ci.yml | 21 ---------------------
+ 1 file changed, 21 deletions(-)
+
+commit 809535ea6504fd6706e514f665e59210e29166d4
+Author: Jordan Petridis <jordanpetridis@protonmail.com>
+Date:   Thu Mar 29 13:38:11 2018 +0300
+
+    gitlabci: Add test for rustc v1.25
+
+ .gitlab-ci.yml | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+commit b1217591db9b820336cab18a0feb2bf1685096b3
+Author: Jordan Petridis <jordanpetridis@protonmail.com>
+Date:   Wed Mar 21 09:34:02 2018 +0200
+
+    Update COMPILING.md. Fixes #213.
+
+ .gitlab-ci.yml |  2 +-
+ COMPILING.md   | 16 +---------------
+ 2 files changed, 2 insertions(+), 16 deletions(-)
+
+commit 047df32780ae99849617d1ebdd4ef4ef0d8f8879
+Author: Jordan Petridis <jordanpetridis@protonmail.com>
+Date:   Wed Mar 21 09:13:15 2018 +0200
+
+    gitlabci: Add ubuntu builds.
+
+ .gitlab-ci.yml | 31 ++++++++++++++-----------------
+ 1 file changed, 14 insertions(+), 17 deletions(-)
+
+commit bc01d3f1988fdca739eb393e47a53d465ae78498
+Author: Jordan Petridis <jordanpetridis@protonmail.com>
+Date:   Wed Mar 21 06:23:10 2018 +0200
+
+    gitlabci: Add mutliple rustc builds.
+
+ .gitlab-ci.yml | 54 +++++++++++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 49 insertions(+), 5 deletions(-)
+
+commit b379e62166d75a0c2e81b259a6f479d71a8047fd
+Author: Jordan Petridis <jordanpetridis@protonmail.com>
+Date:   Tue Mar 20 13:32:16 2018 +0200
+
+    gitlabci: demote fedora_release to stgage 3.
+
+ .gitlab-ci.yml | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+commit cb4aab48d45aca835a99ddfe27c19a56f84a12a5
+Author: Jordan Petridis <jordanpetridis@protonmail.com>
+Date:   Tue Mar 20 07:08:18 2018 +0200
+
+    gitlabci: Document the different stage setup.
+
+ .gitlab-ci.yml | 151 ++++++++++++++++++++++++++-------------------------------
+ 1 file changed, 70 insertions(+), 81 deletions(-)
+
+commit 79dbf2e0950503388125062e66dee8d642ef2c94
+Author: Jordan Petridis <jordanpetridis@protonmail.com>
+Date:   Tue Mar 20 06:32:19 2018 +0200
+
+    gitlabci: Limit cross-distos tests to only the GNOME/librsvg repo.
+    
+    We currently have 3 test stages(not to be confused with the pipeline
+    stages).
+    
+    Stage 1 is the relative cheap fedora builds and linting that
+    are run for every fork and every commit. It ensures that every commit
+    is buildable.
+    
+    Stage 2 is the cross-distro and cross arch(amd64/i386/arm/etc) builds
+    that should will run on every commit in the master and stable branches
+    of the GNOME/librsvg repo.
+    
+    Stage 3 are the expensive tests that should run only on schedules or
+    manually requested pipelines. Ex testing multiple gcc/rustc version
+    to ensure we don't accidently brake compatibility.
+    
+    We do not want contributors to be confused if stage 1 passes but a later
+    stage 2 job fails due to probably a distro specific bug, which could
+    lead discourgage meant and not filling an MR. We are mote than happy
+    to help you fix stuff! Thus why stage 2+ is restricted to GNOME/librsvg
+    unless a pipeline is explicitly manually triggered from the Web GUI.
+    
+    Previously that would be the case as long people did not develop on fork/master
+    branch. I've done that too accidently many times. This will make sure that
+    such we won't have to worry about such occasions.
+
+ .gitlab-ci.yml | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+commit 80b633f695de1fbee4d358ae4d2a4df04614e937
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri May 4 13:50:18 2018 -0500
+
+    Remove librsvg-2.42 temporarily so we can cherry-pick in peace
+
+ .gitlab-ci.yml | 8 --------
+ 1 file changed, 8 deletions(-)
+
+commit f55f2c60cd32c2827e251f383ae40b2dbd0240d4
+Author: Jordan Petridis <jordanpetridis@protonmail.com>
+Date:   Tue Mar 20 05:21:06 2018 +0200
+
+    gitlabci: fix rawhide typo.
+
+ .gitlab-ci.yml | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+commit 17784bc42f56e824762f5ce33cfd3e2e9f86149b
+Author: Jordan Petridis <jordanpetridis@protonmail.com>
+Date:   Tue Mar 20 05:19:51 2018 +0200
+
+    gitlabci: remove dead codde/template.
+
+ .gitlab-ci.yml | 15 +++------------
+ 1 file changed, 3 insertions(+), 12 deletions(-)
+
+commit 22f5a9e58de1281d4b6b464c2669ce6396380bab
+Author: Jordan Petridis <jordanpetridis@protonmail.com>
+Date:   Tue Mar 20 05:14:43 2018 +0200
+
+    gitlabci: switch clippy image to a prebuilt one.
+
+ .gitlab-ci.yml | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
+
+commit 72d5fd5cff8823d02beedecbd1607331d22e8035
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Mar 16 18:35:54 2018 -0600
+
+    Update NEWS
+
+ NEWS | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+commit 541460b2dca51da8749ca2f23831e748ed751baf
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Mar 16 16:41:42 2018 -0600
+
+    Bump version to 2.42.4
+
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 5adbb1639cedfabb4d68dc4af0fb6c5335bc084b
+Author: Jordan Petridis <jordanpetridis@protonmail.com>
+Date:   Fri Mar 16 23:23:45 2018 +0200
+
+    aspect_ratio: Use seperate types for Aling X and Align Y.
+    
+    This declares 2 tuple structs that wrap Align1D.
+    The main reason for that is to avoid accidently using Y in
+    place of X which was previously possible.
+
+ rsvg_internals/src/aspect_ratio.rs | 74 ++++++++++++++++++++++++--------------
+ 1 file changed, 48 insertions(+), 26 deletions(-)
+
+commit d1dbf49e5549845a41d706d3d21901390c07343d
+Author: Jordan Petridis <jordanpetridis@protonmail.com>
+Date:   Fri Mar 16 02:35:04 2018 +0200
+
+    aspect_ratio: make tests more compact.
+
+ rsvg_internals/src/aspect_ratio.rs | 269 +++++++++----------------------------
+ 1 file changed, 64 insertions(+), 205 deletions(-)
+
+commit 8f23aed193cba6eca3bae9a2358005ae05a095db
+Author: Jordan Petridis <jordanpetridis@protonmail.com>
+Date:   Fri Mar 16 01:59:56 2018 +0200
+
+    aspect_ratio: Move impl Defualts under the struct declarations.
+
+ rsvg_internals/src/aspect_ratio.rs | 50 +++++++++++++++++++-------------------
+ 1 file changed, 25 insertions(+), 25 deletions(-)
+
+commit 1b6b11b23a485b766af1b1c31067d44612e27fd5
+Author: Jordan Petridis <jordanpetridis@protonmail.com>
+Date:   Fri Mar 16 01:09:53 2018 +0200
+
+    aspect_ratio: Remove AlignXY struct.
+    
+    It ended up adding more clutter than being an abstraction.
+
+ rsvg_internals/src/aspect_ratio.rs | 32 +++++++++++++-------------------
+ 1 file changed, 13 insertions(+), 19 deletions(-)
+
+commit 11dbe09c0dcaeb5cb9d0c2aa1fb5d02027d09206
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Mar 16 10:19:19 2018 -0600
+
+    rsvg_draw_pango_layout(): Move to Rust.  Yay!
+
+ librsvg/rsvg-cairo-draw.c   |  97 -----------------------------
+ librsvg/rsvg-cairo-render.h |   2 +
+ rsvg_internals/src/draw.rs  | 147 ++++++++++++++++++++++++++++++++++++++++----
+ rsvg_internals/src/lib.rs   |   2 +-
+ 4 files changed, 139 insertions(+), 109 deletions(-)
+
+commit 658c18af6100392dac69b341c35d16259f327308
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Mar 16 10:18:35 2018 -0600
+
+    Clean up the imports a bit
+
+ rsvg_internals/src/chars.rs       | 2 +-
+ rsvg_internals/src/drawing_ctx.rs | 3 ---
+ rsvg_internals/src/length.rs      | 1 -
+ rsvg_internals/src/stop.rs        | 3 +--
+ 4 files changed, 2 insertions(+), 7 deletions(-)
+
+commit b142438000e68a539bf04c9dbaf0aafddf5374d5
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Mar 16 10:16:52 2018 -0600
+
+    Cargo.toml: Bring in the pangocairo crate
+
+ Cargo.lock                 | 39 +++++++++++++++++++++++++++++++++++++++
+ rsvg_internals/Cargo.toml  |  1 +
+ rsvg_internals/src/draw.rs |  3 +++
+ rsvg_internals/src/lib.rs  |  1 +
+ 4 files changed, 44 insertions(+)
+
+commit 58854124ccef27db2b7811a6610476f0926819ba
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Mar 16 08:31:54 2018 -0600
+
+    text::gravity_is_vertical() - Make public
+
+ rsvg_internals/src/text.rs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 0dea301b632a3358bb8a7d7ccc53e485de39ad62
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Mar 16 08:31:41 2018 -0600
+
+    state::get_text_rendering_type() - Bind to Rust
+
+ librsvg/rsvg-styles.c       | 6 ++++++
+ librsvg/rsvg-styles.h       | 3 +++
+ rsvg_internals/src/state.rs | 5 +++++
+ 3 files changed, 14 insertions(+)
+
+commit 76f95c9b664bea676f777755e522cf573ccb17bf
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Mar 16 08:04:37 2018 -0600
+
+    rsvg_cairo_clip_render_pango_layout(): Just use rsvg_draw_pango_layout() in clipping mode
+
+ librsvg/rsvg-cairo-clip.c   | 25 +++----------------------
+ librsvg/rsvg-cairo-render.h |  3 +++
+ 2 files changed, 6 insertions(+), 22 deletions(-)
+
+commit de1dad2f31636a13582e120ae5c1ade86cbfcd31
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Mar 16 08:02:24 2018 -0600
+
+    rsvg_draw_pango_layout(): Generalize the drawing and clipping processes
+
+ librsvg/rsvg-cairo-draw.c | 41 ++++++++++++++++++++++++++---------------
+ 1 file changed, 26 insertions(+), 15 deletions(-)
+
+commit ad84d868b1746681952fb4f647b0366d18d19c59
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Mar 16 07:48:06 2018 -0600
+
+    rsvg_draw_pango_layout(): Collapse the if's
+
+ librsvg/rsvg-cairo-draw.c | 36 +++++++++++++++++-------------------
+ 1 file changed, 17 insertions(+), 19 deletions(-)
+
+commit 25c78a0ad3934c630d24bad478fe095966922317
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Mar 16 07:46:34 2018 -0600
+
+    rsvg_draw_pango_layout(): Factor out the save/move/rotate/restore step
+
+ librsvg/rsvg-cairo-draw.c | 22 ++++++++--------------
+ 1 file changed, 8 insertions(+), 14 deletions(-)
+
+commit 5839eb6e8a1e153611415e4d88063549ed4c5c9f
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Mar 16 07:43:12 2018 -0600
+
+    rsvg_draw_pango_layout(): Do rotation outside the stroke/fill specifics
+
+ librsvg/rsvg-cairo-draw.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
+
+commit 9983d54431af1323121c933e6a566398150272b9
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Mar 16 07:40:24 2018 -0600
+
+    rsvg_draw_pango_layout(): Always set up the stroke parameters
+
+ librsvg/rsvg-cairo-draw.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+commit ec290b55b89447061fa9f609ef533c2fa3953a7c
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Mar 16 07:40:01 2018 -0600
+
+    compute_text_bbox(): Move this chunk to its own function
+
+ librsvg/rsvg-cairo-draw.c | 38 ++++++++++++++++++++++++--------------
+ 1 file changed, 24 insertions(+), 14 deletions(-)
+
+commit ee56256761afd5cc611463441ddf33e754b8fdce
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Mar 16 07:28:24 2018 -0600
+
+    rsvg_draw_pango_layout(): Only insert the bbox once
+
+ librsvg/rsvg-cairo-draw.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+commit f7f2ce44b55522ca1dc3733dd4c94e6ecb24bf38
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Mar 16 07:24:03 2018 -0600
+
+    rsvg_draw_pango_layout(): Fetch the cr from the RsvgDrawingContext, not from the Render
+
+ librsvg/rsvg-cairo-draw.c | 34 +++++++++++++++++-----------------
+ 1 file changed, 17 insertions(+), 17 deletions(-)
+
+commit 44376cb0ad894cd95e852a7575162b020d344724
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Mar 16 07:14:16 2018 -0600
+
+    Start an rsvg_draw_pango_layout() with a clipping argument
+
+ librsvg/rsvg-cairo-draw.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+commit 1b4422a56e0b2caeaebd1addfc2c28fbbd3dc6ca
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 19:13:14 2018 -0600
+
+    cargo fmt
+
+ rsvg_internals/src/bbox.rs      |  2 +-
+ rsvg_internals/src/draw.rs      | 60 ++++++++++++++++++++++-------------------
+ rsvg_internals/src/length.rs    | 12 ++++++---
+ rsvg_internals/src/lib.rs       |  7 ++---
+ rsvg_internals/src/stop.rs      |  4 +--
+ rsvg_internals/src/structure.rs |  3 +--
+ 6 files changed, 48 insertions(+), 40 deletions(-)
+
+commit 2e40aee869f8494fd72aaa2a4924b2c6bb0f458e
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 19:08:56 2018 -0600
+
+    rsvg_draw_path_builder(): Finally move to Rust.  Yay!
+
+ librsvg/rsvg-cairo-draw.c  | 75 +---------------------------------------------
+ rsvg_internals/src/draw.rs | 75 +++++++++++++++++++++++++++++++++-------------
+ rsvg_internals/src/lib.rs  |  2 +-
+ 3 files changed, 56 insertions(+), 96 deletions(-)
+
+commit d81d94e3604c6ae3b83e83d50e58a1a58ff048bd
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 19:07:49 2018 -0600
+
+    rsvg_set_source_rsvg_paint_server(): Rename in the Rust code; this will go away soon
+
+ librsvg/rsvg-cairo-draw.c          | 32 ++++++++++++++---------------
+ rsvg_internals/src/lib.rs          |  2 +-
+ rsvg_internals/src/paint_server.rs | 41 ++++++++++++++++++++++++--------------
+ 3 files changed, 43 insertions(+), 32 deletions(-)
+
+commit c04cc8c83ef7edaa8be48959a0fbf70ff15ad006
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 19:05:45 2018 -0600
+
+    state::get_fill() / get_fill_opacity() - Bind to Rust
+
+ librsvg/rsvg-styles.c       | 12 ++++++++++++
+ librsvg/rsvg-styles.h       |  6 ++++++
+ rsvg_internals/src/state.rs | 18 ++++++++++++++++++
+ 3 files changed, 36 insertions(+)
+
+commit 1be97f64eb97755a1c9b8e0635b42b2ca2effee7
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 18:30:20 2018 -0600
+
+    rsvg_compute_bbox_from_stroke_and_fill(): Move to Rust
+
+ librsvg/rsvg-cairo-draw.c  | 64 ++-----------------------------------
+ rsvg_internals/src/draw.rs | 80 +++++++++++++++++++++++++++++++++++++++++++++-
+ rsvg_internals/src/lib.rs  |  1 +
+ 3 files changed, 82 insertions(+), 63 deletions(-)
+
+commit 4e3de68c900348eb491cf84a484967ff21203fd1
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 18:30:40 2018 -0600
+
+    state::get_stroke() - Bind to Rust
+
+ librsvg/rsvg-styles.c       |  6 ++++++
+ librsvg/rsvg-styles.h       |  3 +++
+ rsvg_internals/src/state.rs | 14 ++++++++++++++
+ 3 files changed, 23 insertions(+)
+
+commit e24410eeeac60eb40024703953bacef4394cfb7d
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 18:16:06 2018 -0600
+
+    RsvgBbox.set_rect() - new method
+
+ rsvg_internals/src/bbox.rs | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+commit 1fafabb5fb457d1a76423e352ac6b8e638a82496
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 18:15:15 2018 -0600
+
+    RsvgBbox: new methods new(), insert(), clip()
+    
+    Moved from the extern "C" functions
+
+ rsvg_internals/src/bbox.rs | 277 ++++++++++++++++++++++++---------------------
+ 1 file changed, 150 insertions(+), 127 deletions(-)
+
+commit 4a264975a37bf827ae04a3fd6b11176585a676c2
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 18:14:14 2018 -0600
+
+    state::get_affine() - Bind to Rust
+
+ librsvg/rsvg-styles.c       | 6 ++++++
+ librsvg/rsvg-styles.h       | 3 +++
+ rsvg_internals/src/state.rs | 5 +++++
+ 3 files changed, 14 insertions(+)
+
+commit aea84506e3b63549a4e6dd89756ac09d31b35853
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 17:47:06 2018 -0600
+
+    Move rsvg_setup_cr_for_stroke() to Rust
+
+ librsvg/rsvg-cairo-draw.c    | 22 ++++------------------
+ rsvg_internals/src/draw.rs   | 27 +++++++++++++++++++++++----
+ rsvg_internals/src/length.rs | 16 +---------------
+ rsvg_internals/src/lib.rs    |  5 ++++-
+ 4 files changed, 32 insertions(+), 38 deletions(-)
+
+commit 27ba40f2e32104c14eb431bbb73cd2294ad2f998
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 17:43:48 2018 -0600
+
+    state::get_stroke_dasharray() / get_dash_offset(): Bind to Rust
+
+ librsvg/rsvg-styles.c       |  6 ++++++
+ librsvg/rsvg-styles.h       |  3 +++
+ rsvg_internals/src/state.rs | 18 +++++++++++++++++-
+ 3 files changed, 26 insertions(+), 1 deletion(-)
+
+commit 4cdc6d22f2c820df17679c3333c5ea5b60e2d98c
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 17:22:03 2018 -0600
+
+    Move all the method-like RsvgState functions from drawing_ctx.rs to state.rs
+    
+    ... because that's really where they should be.
+
+ rsvg_internals/src/chars.rs       |  3 +-
+ rsvg_internals/src/drawing_ctx.rs | 87 -------------------------------------
+ rsvg_internals/src/image.rs       |  7 ++-
+ rsvg_internals/src/marker.rs      |  6 +--
+ rsvg_internals/src/node.rs        |  4 +-
+ rsvg_internals/src/state.rs       | 91 +++++++++++++++++++++++++++++++++++++++
+ rsvg_internals/src/stop.rs        | 20 ++++-----
+ rsvg_internals/src/structure.rs   | 11 ++---
+ 8 files changed, 117 insertions(+), 112 deletions(-)
+
+commit 4e88e9c1ce50891530ed2ae797cfa8e04f5c4ea6
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 07:57:22 2018 -0600
+
+    wip: start draw.rs
+
+ Makefile.am                |  1 +
+ rsvg_internals/src/draw.rs | 58 ++++++++++++++++++++++++++++++++++++++++++++++
+ rsvg_internals/src/lib.rs  |  1 +
+ 3 files changed, 60 insertions(+)
+
+commit 628180823876d7ff446f5d6cb5f8448b65d287a2
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 15:21:49 2018 -0600
+
+    Set the stroke_dasharray on the cairo::Context in the Rust code
+    
+    * rsvg_parse_stroke_dasharray() now returns a value in the heap, not a
+      copied value, which is opaque to the C code.
+    
+    * We now have rsvg_stroke_dasharray_{clone,free}
+    
+    * The C code uses a new rsvg_stroke_dasharray_set_on_cairo()
+      implemented in Rust.
+
+ librsvg/rsvg-cairo-draw.c    | 53 ++++-------------------------
+ librsvg/rsvg-styles.c        | 56 ++++++++++++++++++-------------
+ librsvg/rsvg-styles.h        | 19 ++++-------
+ rsvg_internals/src/length.rs | 80 ++++++++++++++++----------------------------
+ rsvg_internals/src/lib.rs    |  3 ++
+ 5 files changed, 77 insertions(+), 134 deletions(-)
+
+commit db8ddb41c2bc67e68ded4b0eb7f1f0a774a74bb9
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 14:01:55 2018 -0600
+
+    fix: get_shape_rendering_type
+
+ rsvg_internals/src/drawing_ctx.rs | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+commit e6a63da29b9027611aed7eb78a133fc3d5a2e1ab
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 14:02:49 2018 -0600
+
+    StrokeDasharray.set_on_cairo(): New function; ported from the C code
+
+ rsvg_internals/src/length.rs | 32 +++++++++++++++++++++++++++++++-
+ 1 file changed, 31 insertions(+), 1 deletion(-)
+
+commit e362b7f34758db5a6ca679263209ae2d3d62e984
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 13:31:57 2018 -0600
+
+    Bind to Rust: stroke_opacity, miter_limit, line_cap, line_join
+
+ librsvg/rsvg-styles.c             | 29 +++++++++++++++++++++++++++++
+ librsvg/rsvg-styles.h             | 15 +++++++++++++++
+ rsvg_internals/src/drawing_ctx.rs |  7 +++++++
+ rsvg_internals/src/state.rs       | 20 ++++++++++++++++++++
+ 4 files changed, 71 insertions(+)
+
+commit ba06edc4d248797d33dee73cac55c25ccbd69474
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 13:20:20 2018 -0600
+
+    drawing_ctx::insert_bbox() - bind to Rust
+
+ rsvg_internals/src/drawing_ctx.rs | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+commit af792448ffe12cf485f73819307f2763226e774b
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 13:18:52 2018 -0600
+
+    state::get_stroke_width() - Bind to Rust
+    
+    Remove rsvg_get_normalized_stroke_width(); inline it in the (two) callers
+
+ librsvg/rsvg-base.c          |  9 ---------
+ librsvg/rsvg-cairo-draw.c    |  2 +-
+ librsvg/rsvg-private.h       |  3 ---
+ librsvg/rsvg-styles.c        |  6 ++++++
+ librsvg/rsvg-styles.h        |  3 +++
+ rsvg_internals/src/marker.rs | 13 +++++++------
+ rsvg_internals/src/state.rs  |  5 +++++
+ 7 files changed, 22 insertions(+), 19 deletions(-)
+
+commit 744772c4ac41ad6c4dd66b5025bef79bcf391c1f
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 12:53:39 2018 -0600
+
+    rsvg_drawing_ctx_insert_bbox(): Turn this into a vmethod to enable Rustification
+    
+    Again, a bit of a round-about move, but this removes the "render" from
+    stroke_and_fill() to make it easy to Rustify.
+    
+    We'll remove the indirection later.
+
+ librsvg/rsvg-base.c         |  6 ++++++
+ librsvg/rsvg-cairo-clip.c   |  1 +
+ librsvg/rsvg-cairo-draw.c   | 17 ++++++++++++-----
+ librsvg/rsvg-cairo-draw.h   |  3 +++
+ librsvg/rsvg-cairo-render.c |  1 +
+ librsvg/rsvg-private.h      | 36 ++++++++++++++++++++----------------
+ 6 files changed, 43 insertions(+), 21 deletions(-)
+
+commit d98c5e66354a7539f9a96b6adb70282e9b87685b
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 09:54:34 2018 -0600
+
+    Factor out function to compute bbox contributions from a path
+
+ librsvg/rsvg-cairo-draw.c | 30 ++++++++++++++++++++++--------
+ 1 file changed, 22 insertions(+), 8 deletions(-)
+
+commit 36798fdb8567eef506359cfec8adb997e2d26e52
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 09:07:36 2018 -0600
+
+    RsvgPathBuilder::to_cairo() - make public
+
+ rsvg_internals/src/path_builder.rs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 56eb1e679e76ceeb7ae50dac49084944abd20622
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 09:05:08 2018 -0600
+
+    state::get_clip_rule() / state::get_fill_rule() - bind to Rust
+    
+    We export functions from the C side to do this.
+    
+    We also change state->{clip_rule,fill_rule} to cairo_fill_rule_t - why
+    the hell were they gints?
+
+ librsvg/rsvg-styles.c       | 13 +++++++++++++
+ librsvg/rsvg-styles.h       | 10 ++++++++--
+ rsvg_internals/src/state.rs | 11 +++++++++++
+ 3 files changed, 32 insertions(+), 2 deletions(-)
+
+commit b79c19e0bff9d44e8fb7b522309e6d3cfe62e130
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 08:50:33 2018 -0600
+
+    drawing_ctx::set_affine_on_cr(): Bind to Rust
+
+ rsvg_internals/src/drawing_ctx.rs | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+
+commit 600b1c422501fb3762c05c97d6ec0d4069015326
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 08:32:40 2018 -0600
+
+    Make set_affine_on_cr() a vfunc on RsvgRender
+    
+    And use a new rsvg_drawing_ctx_set_affine_on_cr() throughout the code,
+    similar to the other vmethods accessed like
+    rsvg_drawing_ctx_get_pango_context().
+    
+    This is a bit round-about, but it is because of this:  in the Rust
+    code we don't have direct access to RsvgRender; only to RsvgDrawingCtx
+    methods.  When we move all of that to Rust, this indirection will
+    disappear.
+
+ librsvg/rsvg-base.c         |  6 ++++++
+ librsvg/rsvg-cairo-clip.c   |  3 ++-
+ librsvg/rsvg-cairo-draw.c   | 23 +++++++++++++++++++----
+ librsvg/rsvg-cairo-draw.h   |  3 +++
+ librsvg/rsvg-cairo-render.c | 15 +--------------
+ librsvg/rsvg-cairo-render.h |  3 ---
+ librsvg/rsvg-private.h      |  4 ++++
+ 7 files changed, 35 insertions(+), 22 deletions(-)
+
+commit 71ed806fcf3ab38fd95268bc08f87fc4566131fc
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 08:14:58 2018 -0600
+
+    rsvg_cairo_render_set_affine_on_cr(): Renamed; have callers pass the cr they wish to modify
+    
+    This is to avoid changing the render->cr implicitly.
+
+ librsvg/rsvg-cairo-clip.c   | 2 +-
+ librsvg/rsvg-cairo-draw.c   | 8 ++++----
+ librsvg/rsvg-cairo-render.c | 3 +--
+ librsvg/rsvg-cairo-render.h | 2 +-
+ 4 files changed, 7 insertions(+), 8 deletions(-)
+
+commit 52e8932d9ff579cec907c0bf731b7f1ec03e8341
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 07:42:24 2018 -0600
+
+    Make the clipping and rendering code use a single rsvg_draw_path_builder()
+    
+    Both places set the affine on the cr, add the path builder, and set
+    the fill rule.
+    
+    In addition, the rendering code actually sets up layers, stroke/fill
+    parameters, and maintains bounding boxes.
+    
+    We now share a single core function for this.
+
+ librsvg/rsvg-cairo-clip.c   | 13 +-----------
+ librsvg/rsvg-cairo-draw.c   | 52 +++++++++++++++++++++++++++++++--------------
+ librsvg/rsvg-cairo-render.h |  3 +++
+ 3 files changed, 40 insertions(+), 28 deletions(-)
+
+commit e86a2eb4c20494cbe34f5d4b5698f9ee115c4ae4
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 07:27:15 2018 -0600
+
+    Rename rsvg_render_path_builder() and rsvg_render_surface()
+    
+    They are really vmethods on RsvgDrawingCtx
+
+ librsvg/rsvg-base.c               |  5 +++--
+ librsvg/rsvg-private.h            |  7 ++++---
+ rsvg_internals/src/drawing_ctx.rs | 11 +++++++----
+ 3 files changed, 14 insertions(+), 9 deletions(-)
+
+commit 41c31ab24ebd585820e0e25459813eb21e4e9099
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Thu Mar 15 07:25:29 2018 -0600
+
+    Set the fill_rule as late as possible
+
+ librsvg/rsvg-cairo-clip.c | 4 ++--
+ librsvg/rsvg-cairo-draw.c | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+commit fce49ac6c7ec9799bdb2957474912d27a89c972a
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Wed Mar 14 20:52:33 2018 -0600
+
+    rsvg_cairo_render_path_builder(): Move the functions that frob the cr
+
+ librsvg/rsvg-cairo-draw.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+commit a5e049932642f32a69b86710c9a241e289935a51
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Wed Mar 14 20:48:09 2018 -0600
+
+    rsvg_cairo_render_path_builder(): Set the fill rule in the same place as the clipping code
+
+ librsvg/rsvg-cairo-draw.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+commit 2d2cef4e7d2d29c21fa25c52fee841ded436350c
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Wed Mar 14 20:43:07 2018 -0600
+
+    rsvg_cairo_render_set_affine(): Share this function between drawing and clipping
+    
+    We had duplicated code between _set_rsvg_affine() and rsvg_cairo_clip_apply_affine().
+
+ librsvg/rsvg-cairo-clip.c   | 19 ++-----------------
+ librsvg/rsvg-cairo-draw.c   | 23 ++++-------------------
+ librsvg/rsvg-cairo-render.c | 15 +++++++++++++++
+ librsvg/rsvg-cairo-render.h |  7 +++++--
+ 4 files changed, 26 insertions(+), 38 deletions(-)
+
+commit 22c15287e7931246daa1d7161be598a3863e5835
+Author: Jordan Petridis <jordanpetridis@protonmail.com>
+Date:   Fri Mar 16 19:59:06 2018 +0200
+
+    Cargo fmt
+
+ rsvg_internals/src/aspect_ratio.rs | 22 +++++++++++-----------
+ rsvg_internals/src/paint_server.rs | 12 ++++++------
+ 2 files changed, 17 insertions(+), 17 deletions(-)
+
+commit 7c6dd4e30c70c4a4ca537f0ecf62493eaaf88294
+Author: Jordan Petridis <jordanpetridis@protonmail.com>
+Date:   Fri Mar 16 03:36:44 2018 +0200
+
+    Bump the minimum rustc version to 1.21
+
+ configure.ac | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+commit c6bdaecd3b9c35e1e2b4d4e919b9d376410f64f3
+Author: Jordan Petridis <jordanpetridis@protonmail.com>
+Date:   Fri Mar 16 03:08:16 2018 +0200
+
+    gradient.rs: Refactor a for-loop to iterator combinators chain.
+
+ rsvg_internals/src/gradient.rs | 22 ++++++++++------------
+ 1 file changed, 10 insertions(+), 12 deletions(-)
+
+commit 1c9516ad1249242aac9bf5002418957873a024ff
+Author: Ivan Molodetskikh <yalterz@gmail.com>
+Date:   Thu Mar 15 22:44:13 2018 +0300
+
+    Remove Node::foreach_child()
+
+ librsvg/rsvg-private.h     | 11 -----------
+ rsvg_internals/src/lib.rs  |  1 -
+ rsvg_internals/src/node.rs | 35 -----------------------------------
+ 3 files changed, 47 deletions(-)
+
+commit 4b5ae0dd24a08d79184e639242f33394997c2e6c
+Author: Ivan Molodetskikh <yalterz@gmail.com>
+Date:   Thu Mar 15 22:42:30 2018 +0300
+
+    rsvg-filter.c: Replace rsvg_node_foreach_child() with iterators
+
+ librsvg/rsvg-filter.c | 140 ++++++++++++++++++++++++++------------------------
+ 1 file changed, 74 insertions(+), 66 deletions(-)
+
+commit 7205714bf8deb6f79533873a517ed1003949dd2d
+Author: Ivan Molodetskikh <yalterz@gmail.com>
+Date:   Thu Mar 15 22:02:18 2018 +0300
+
+    rsvg-text.c: Replace rsvg_node_foreach_child() with iterators
+
+ librsvg/rsvg-text.c | 134 +++++++++++++++++++++++++---------------------------
+ 1 file changed, 65 insertions(+), 69 deletions(-)
+
+commit cb6034ee97e2bd57c5a17510fbf1049071f52da6
+Author: Ivan Molodetskikh <yalterz@gmail.com>
+Date:   Thu Mar 15 21:49:02 2018 +0300
+
+    rsvg-base.c: Replace rsvg_node_foreach_child() with iterators
+
+ librsvg/rsvg-base.c | 53 ++++++++++++++++++++++-------------------------------
+ 1 file changed, 22 insertions(+), 31 deletions(-)
+
+commit 32f324eaa842d2acd94e24cb51fa96767f509e3b
+Author: Ivan Molodetskikh <yalterz@gmail.com>
+Date:   Thu Mar 15 21:29:42 2018 +0300
+
+    rsvg-private.h: Declare node children iter functions
+
+ librsvg/rsvg-private.h | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+
+commit 88a932e48eeed82ade5ff472e7924301d6bc8624
+Author: Ivan Molodetskikh <yalterz@gmail.com>
+Date:   Thu Mar 15 21:23:51 2018 +0300
+
+    node.rs: Add C API for node.children() and tests
+
+ rsvg_internals/src/lib.rs  |   4 ++
+ rsvg_internals/src/node.rs | 108 ++++++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 111 insertions(+), 1 deletion(-)
+
+commit 3458137baae07932195b563430661e1b4721f34c
+Author: Ivan Molodetskikh <yalterz@gmail.com>
+Date:   Thu Mar 15 20:59:40 2018 +0300
+
+    node.rs: Add a test for Children
+
+ rsvg_internals/src/node.rs | 42 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 42 insertions(+)
+
+commit bcf3b0db26739238d7eebb57648fb5f7ec0f07b6
+Author: Ivan Molodetskikh <yalterz@gmail.com>
+Date:   Thu Mar 15 20:51:12 2018 +0300
+
+    node.rs: Impl DoubleEndedIterator for Children
+
+ rsvg_internals/src/node.rs | 23 ++++++++++++++++++++---
+ 1 file changed, 20 insertions(+), 3 deletions(-)
+
+commit 3b2c938df9ddb14d34b45378997612cff12a375f
+Author: Ivan Molodetskikh <yalterz@gmail.com>
+Date:   Thu Mar 15 10:09:46 2018 +0300
+
+    node.rs: Fix line being too long
+
+ rsvg_internals/src/node.rs | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+commit 22f8ecc36fe0a600c5a24e9b4c53955e406fda50
+Author: Ivan Molodetskikh <yalterz@gmail.com>
+Date:   Thu Mar 15 09:36:34 2018 +0300
+
+    Replace uses of node.foreach_child() with iteration
+
+ rsvg_internals/src/gradient.rs  | 10 ++++------
+ rsvg_internals/src/node.rs      | 10 ++++------
+ rsvg_internals/src/structure.rs |  8 +++-----
+ 3 files changed, 11 insertions(+), 17 deletions(-)
+
+commit 3493d56d5572bfbbe389195778f0e409d7cd6e1e
+Author: Ivan Molodetskikh <yalterz@gmail.com>
+Date:   Thu Mar 15 09:32:24 2018 +0300
+
+    node.rs: Add an iterator over Node's children
+
+ rsvg_internals/src/node.rs | 39 ++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 38 insertions(+), 1 deletion(-)
+
+commit eeb33fa1490713d4d2e5df95a8640ab059994048
+Author: Dmitry Kontsevoy <dmitry.kontsevoy@gmail.com>
+Date:   Thu Mar 15 01:09:36 2018 +0300
+
+    aspect_ratio.rs: move (x,y) parsing to AlignXY
+
+ rsvg_internals/src/aspect_ratio.rs | 71 +++++++++++++++++++-------------------
+ 1 file changed, 35 insertions(+), 36 deletions(-)
+
+commit 8439895d01e01a9f09f7206c560236abdf92f21c
+Author: Dmitry Kontsevoy <dmitry.kontsevoy@gmail.com>
+Date:   Wed Mar 14 22:42:46 2018 +0300
+
+    aspect_ratio.rs: use cssparser
+
+ rsvg_internals/src/aspect_ratio.rs | 127 ++++++++++++++-----------------------
+ 1 file changed, 46 insertions(+), 81 deletions(-)
+
+commit e9e80b9ea9152895e824169b11033449ddd8e118
+Author: Dmitry Kontsevoy <dmitry.kontsevoy@gmail.com>
+Date:   Tue Mar 13 22:15:52 2018 +0300
+
+    aspect_ratio.rs: split AlignMode into (x,y)
+
+ rsvg_internals/src/aspect_ratio.rs | 239 ++++++++++++++++---------------------
+ 1 file changed, 105 insertions(+), 134 deletions(-)
+
+commit 174929f5457b832418a2ccb6a04c2f053c5769c9
+Author: Dmitry Kontsevoy <dmitry.kontsevoy@gmail.com>
+Date:   Thu Mar 15 00:24:36 2018 +0300
+
+    yield the identity transform for empty transform attribute
+
+ rsvg_internals/src/transform.rs | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+commit c54812ff70688733a470af3fc2607e25d9d17451
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Wed Mar 14 12:25:04 2018 -0600
+
+    Appease cargo fmt
+
+ rsvg_internals/src/aspect_ratio.rs | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+commit c27f030294142aa5536ed699ef0df539ef51adb2
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Wed Mar 14 12:19:57 2018 -0600
+
+    aspect_ratio.rs: Inline the default of Align into AspectRatio::default
+    
+    We don't need to create a standalone default value for Align
+
+ rsvg_internals/src/aspect_ratio.rs | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
+
+commit 22ed166c1f046628d913e6b1f5d080ea5ef1dfdf
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Wed Mar 14 12:15:43 2018 -0600
+
+    aspect_ratio.rs: Simplify parse_align()
+    
+    It used to return a complete Align struct, while the caller only
+    really needs an Option<AlignMode>, and it is only parsing the
+    AlignMode part of the grammar, anyway.
+
+ rsvg_internals/src/aspect_ratio.rs | 61 ++++++++++++--------------------------
+ 1 file changed, 19 insertions(+), 42 deletions(-)
+
+commit 74b2f72df67467548ce72bab4218d58a2a38e97a
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Wed Mar 14 11:55:27 2018 -0600
+
+    aspect_ratio.rs: Return AttributeError from the helper parsers
+    
+    This cleans up the toplevel parser a bit.
+
+ rsvg_internals/src/aspect_ratio.rs | 40 ++++++++++++++------------------------
+ 1 file changed, 15 insertions(+), 25 deletions(-)
+
+commit be97fd328f12a44160280c60a68411af0ba35193
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Wed Mar 14 11:47:18 2018 -0600
+
+    AspectRatio: make everything but the toplevel struct private
+
+ rsvg_internals/src/aspect_ratio.rs | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
+
+commit abc31fb78b25a306399edbb733b0d44d2bcd971e
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Wed Mar 14 11:43:40 2018 -0600
+
+    AspectRatio.is_slice: new method, so image.rs can avoid peeking into the struct's innards
+
+ rsvg_internals/src/aspect_ratio.rs | 11 +++++++++++
+ rsvg_internals/src/image.rs        | 12 +++---------
+ 2 files changed, 14 insertions(+), 9 deletions(-)
+
+commit 0ca75669b944fa4e9593652c59caf33f78c46037
+Author: Jordan Petridis <jordanpetridis@protonmail.com>
+Date:   Sun Mar 11 21:55:21 2018 +0200
+
+    aspect_ratio: Fix failling test.
+    
+    parse_align_mode seems like can have 3 states.
+    * parsed x,y
+    * parsed None
+    * Error
+    
+    Previously I overlooked that and Parsed None was returning the result
+    as the Error state.
+    Now the singature is changed to Result<Option<T>, Error> instead of
+    Option<T> so it will be able to return Ok(None) to indicate the
+    parsed None state, and Err(E) for the Error State.
+
+ rsvg_internals/src/aspect_ratio.rs | 54 +++++++++++++++++++-------------------
+ 1 file changed, 27 insertions(+), 27 deletions(-)
+
+commit 8b858b2256172879ff20c6d407866896e8a287fc
+Author: Jordan Petridis <jordanpetridis@protonmail.com>
+Date:   Sat Mar 10 17:42:03 2018 +0200
+
+    aspect_ratio: Remove unnecessary enum.
+    
+    enum { None, T } could be represented better as an Option<T>.
+    thus, enum Align could become just struct Align { .. } and the
+    previous encounters could be repalced with Option<Align>.
+
+ rsvg_internals/src/aspect_ratio.rs | 74 +++++++++++++++++++-------------------
+ rsvg_internals/src/image.rs        |  4 +--
+ 2 files changed, 39 insertions(+), 39 deletions(-)
+
+commit 997bd63b4aa88aa48c17cb1fc9ecced84145b42f
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Wed Mar 14 10:25:50 2018 -0600
+
+    gradient.rs: Refactor the resolution loop similarly to pattern.rs
+
+ rsvg_internals/src/gradient.rs | 71 ++++++++++++++++++++++++++----------------
+ 1 file changed, 44 insertions(+), 27 deletions(-)
+
+commit 39a8b747ef29722c540e2e85ad10071c76a3cfa4
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Wed Mar 14 10:14:50 2018 -0600
+
+    gradient.rs: Remove FallbackSource; use acquired nodes instead
+    
+    Similar to what we did for pattern.rs - we use the program's stack
+    instead of an explicit stack to maintain and drop the acquired
+    gradient nodes.
+
+ rsvg_internals/src/gradient.rs                     | 69 ++++++----------------
+ .../render-crash/gradient-with-no-children.svg     | 11 ++++
+ 2 files changed, 30 insertions(+), 50 deletions(-)
+
+commit 97a71bee7ed2672fb604b3206b0643b195f86887
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Wed Mar 14 09:45:02 2018 -0600
+
+    Prettify the rather horrible while() loop in resolve_pattern()
+    
+    The previous commits made it possible to assert that if
+    pattern.resolve_from_defaults() is called, then a subsequent call to
+    pattern.is_resolved() will return true.
+    
+    So, we can now use just this is_resolved() as the "while" loop's
+    condition, without having to explicitly "break" out of the loop.
+    
+    This also makes it possible to chain .and_then().and_then().or_else().
+
+ rsvg_internals/src/pattern.rs | 25 ++++++++++++-------------
+ 1 file changed, 12 insertions(+), 13 deletions(-)
+
+commit 49374ab98fe852c6e33897f56fc3dd3a4d148cf7
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Wed Mar 14 09:37:05 2018 -0600
+
+    pattern.rs: Handle patterns with no children in a cleaner way
+    
+    We used to peek for node_has_children() in a few places, and used that
+    as a special condition to see if a pattern is resolved.
+    
+    Now we establish the following.  After calling resolve_pattern():
+    
+    * pattern.node = Some(...) means that we have found a node with
+      children among the fallbacks.
+    
+    * pattern.node = None means that we found no children.
+
+ rsvg_internals/src/pattern.rs                      | 57 ++++++++++++++--------
+ .../render-crash/pattern-with-no-children.svg      | 13 +++++
+ 2 files changed, 50 insertions(+), 20 deletions(-)
+
+commit 303b901658386b17996d5543642dd634fed21d18
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 13 18:51:46 2018 -0600
+
+    pattern.rs: Remove the FallbackSource stack
+    
+    We now use the program's stack for the AcquiredNodes.  They'll get
+    dropped in the proper order as the stack shrinks; we don't need a
+    helper stack for this.
+
+ rsvg_internals/src/pattern.rs | 66 +++++++++----------------------------------
+ 1 file changed, 13 insertions(+), 53 deletions(-)
+
+commit ba23e84019a347e60edf0739405af38643bb3566
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 13 18:22:32 2018 -0600
+
+    drawing_ctx.rs: Removed unused acquire_node()/acquire_node_of_type()/release_node()
+
+ rsvg_internals/src/drawing_ctx.rs | 22 +++-------------------
+ 1 file changed, 3 insertions(+), 19 deletions(-)
+
+commit 045abdc5581426584e4aaffe138b301ee08d0bd5
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 13 18:17:29 2018 -0600
+
+    pattern.rs: Use AcquiredNode
+
+ rsvg_internals/src/pattern.rs | 52 +++++++++++++++++++++----------------------
+ 1 file changed, 25 insertions(+), 27 deletions(-)
+
+commit 2ffbce5a6cc22a211d7c699b910b6d83a62f9482
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 13 18:10:33 2018 -0600
+
+    structure.rs: Use AcquiredNode
+
+ rsvg_internals/src/structure.rs | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
+
+commit 2f55b49833dab2105f29c51c2809e18ebbe4ec3e
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 13 18:03:10 2018 -0600
+
+    paint_server.rs: Use AcquiredNode
+
+ rsvg_internals/src/paint_server.rs | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
+
+commit 008f9225be1c2e63d63d70f7c66c592fef103ddd
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 13 17:59:25 2018 -0600
+
+    marker.rs: use AcquiredNode
+
+ rsvg_internals/src/marker.rs | 32 ++++++--------------------------
+ 1 file changed, 6 insertions(+), 26 deletions(-)
+
+commit b309df0e5c5368da24bae8b309b367db4d5d9ccf
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 13 17:52:22 2018 -0600
+
+    marker.rs: Don't pass an extra c_node; we can get it from the node
+
+ rsvg_internals/src/marker.rs | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+commit 3a1686c6286c64b35aebd88a4dc7f8da05cd5a15
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 13 17:49:09 2018 -0600
+
+    gradient.rs: Use AcquiredNode
+
+ rsvg_internals/src/gradient.rs | 40 ++++++++++++++++++----------------------
+ 1 file changed, 18 insertions(+), 22 deletions(-)
+
+commit b909d3ae8bb9114d35d927c985ac07f9bd73836c
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 13 17:34:22 2018 -0600
+
+    AcquiredNode: new wrapper over acquire_node()/release_node()
+    
+    We will use this to avoid releasing acquired nodes by hand.
+
+ rsvg_internals/src/drawing_ctx.rs | 40 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 40 insertions(+)
+
+commit 1ab5853abd34a890b4624e7a2bee560e04c44757
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 13 16:02:53 2018 -0600
+
+    NodeUse: release the acquired node as soon as possible; to refactor later
+
+ rsvg_internals/src/structure.rs | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+commit eab271edac7357604c4033b7926d63204a62d96d
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 13 15:37:36 2018 -0600
+
+    gradient.rs: Release acquired nodes if they are not of the type we expect
+
+ rsvg_internals/src/gradient.rs | 1 +
+ 1 file changed, 1 insertion(+)
+
+commit 23d86813d86ed8d779bae41299b2d659f4c674a4
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 13 14:55:23 2018 -0600
+
+    gitlab#227 - Catch negative values in stroke-dasharray
+    
+    Per the spec this is an error.  In theory we shouldn't render the
+    problematic element, but the styles code can't propagate error
+    conditions right now.  We catch this in the rendering code instead and
+    use a solid dash pattern.  When this gets ported to Rust it will be
+    easier.
+    
+    https://gitlab.gnome.org/GNOME/librsvg/issues/227
+
+ librsvg/rsvg-cairo-draw.c                                    |  4 +++-
+ rsvg_internals/src/length.rs                                 | 11 ++++++++++-
+ tests/fixtures/render-crash/227-negative-dasharray-value.svg |  3 +++
+ 3 files changed, 16 insertions(+), 2 deletions(-)
+
+commit febb9e0e54c105e83170fe8f823c55f876b21454
+Author: Paolo Borelli <pborelli@gnome.org>
+Date:   Sat Mar 10 16:05:40 2018 +0100
+
+    Add reftest for system language attribute
+
+ tests/fixtures/reftests/system-language-de-ref.png    | Bin 0 -> 94 bytes
+ tests/fixtures/reftests/system-language-de.svg        |   7 +++++++
+ tests/fixtures/reftests/system-language-en-ref.png    | Bin 0 -> 95 bytes
+ tests/fixtures/reftests/system-language-en.svg        |   7 +++++++
+ tests/fixtures/reftests/system-language-other-ref.png | Bin 0 -> 95 bytes
+ tests/fixtures/reftests/system-language-other.svg     |   7 +++++++
+ tests/rsvg-test.c                                     |   3 +++
+ 7 files changed, 24 insertions(+)
+
+commit b9f6c1bd04d3b52ec93616a8d79feb3ecf7d20c0
+Author: Paolo Borelli <pborelli@gnome.org>
+Date:   Sat Mar 10 15:22:28 2018 +0100
+
+    Compare with all the system languages
+    
+    The spec says "one of the languages indicated by user preferences".
+
+ librsvg/rsvg-cond.c | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
+
+commit 8e7e4cbb6d0b52acf96aee1829ced0a6936eeea5
+Author: Paolo Borelli <pborelli@gnome.org>
+Date:   Sat Mar 10 15:08:45 2018 +0100
+
+    Use g_get_language_names in rsvg_cond_parse_system_language
+    
+    Using the first element keeps the existing behavior but avoids a
+    bunch of platform specific code and removes the need to allocate
+    and free the string each time.
+
+ librsvg/rsvg-cond.c | 32 ++++++++------------------------
+ 1 file changed, 8 insertions(+), 24 deletions(-)
+
+commit 399f8243ba7b5c766eb95b7e4814e9b802aa646e
+Author: Paolo Borelli <pborelli@gnome.org>
+Date:   Sat Mar 10 15:06:49 2018 +0100
+
+    Simplify code in rsvg_cond_parse_system_language
+
+ librsvg/rsvg-cond.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
+
+commit b5fc046e18b2d496226a74a806d8e4d373f60323
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Sun Mar 11 11:42:40 2018 -0600
+
+    Aaaaargh, remove parse_transform.lalrpop - it's been unused for ages
+    
+    I forgot to remove that file when removing the lalrpop dependency.  It
+    wasn't getting built or anything.
+
+ rsvg_internals/src/parse_transform.lalrpop | 92 ------------------------------
+ 1 file changed, 92 deletions(-)
+
+commit 424f6aebdc541727ef5750bc6f5c13e003ec1840
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Mar 9 15:46:10 2018 -0600
+
+    Remove unexported/unused rsvg_cairo_to_pixbuf()
+
+ librsvg/rsvg-cairo-draw.c | 31 -------------------------------
+ 1 file changed, 31 deletions(-)
+
+commit 56c3ebf0e6516473b3c4fb6db408d0b6afd83551
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Mar 9 15:23:06 2018 -0600
+
+    CI: Do all the distros at the same time
+    
+    Otherwise it takes very long before we are able to see results in
+    i386, which may be the problematic one.
+
+ .gitlab-ci.yml | 19 +++++++++----------
+ 1 file changed, 9 insertions(+), 10 deletions(-)
+
+commit 5d119f315700d3a6ee9954972f64b97f221d6224
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Mar 9 11:29:01 2018 -0600
+
+    ARCHITECTURE.md: Document how to compare floating-point numbers
+
+ ARCHITECTURE.md | 41 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
+
+commit 05a6cdd160e9c0651ea115aff91edc8dfc990025
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Mar 9 11:16:56 2018 -0600
+
+    CONTRIBUTING.md: Link to ARCHITECTURE.md
+
+ CONTRIBUTING.md | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+commit 4ce9c9c8a75182e13fb113a743568a6203ce7307
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Fri Mar 9 11:08:52 2018 -0600
+
+    Use ApproxEq again in ApproxEqCairo.  This lets us compare big numbers, too.
+    
+    Those big numbers won't be very useful since Cairo can't represent
+    them, but it lets our comparisons of f64 be "correct" even for large
+    numbers.
+
+ rsvg_internals/src/float_eq_cairo.rs | 53 ++++++++++++++++++++++++++++++++----
+ 1 file changed, 47 insertions(+), 6 deletions(-)
+
+commit 855acd74b53960493e282187b51aaa9147da9aa8
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 6 13:47:14 2018 -0600
+
+    util.rs: Remove DBL_EPSILON and double_equals().  Yay!
+
+ rsvg_internals/src/util.rs | 6 ------
+ 1 file changed, 6 deletions(-)
+
+commit f6c8daafd8f9ccf988aa044e67ee08118c9d980f
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 6 13:46:35 2018 -0600
+
+    viewport.rs: Use approx_eq_cairo() instead of double_equals()
+
+ rsvg_internals/src/viewport.rs | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
+
+commit 99a232fae5e2de05fd1c0c959c6a34021d2488ca
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 6 13:44:41 2018 -0600
+
+    structure.rs: Use approx_eq_cairo() instead of double_equals()
+
+ rsvg_internals/src/structure.rs | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+commit 820a7dfe2bf5fcbfd61216291d555e4311c5c3a8
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 6 13:37:28 2018 -0600
+
+    marker.rs: Use approx_eq_cairo() and float_cmp::ApproxEq instead of double_equals()
+
+ Cargo.lock                   | 77 +++++++++++++++++++++++++++++++++++---------
+ rsvg_internals/src/marker.rs | 12 ++++---
+ 2 files changed, 68 insertions(+), 21 deletions(-)
+
+commit 5f067d0bbaadc63660f38721fe57aa4f357e2dc2
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 6 13:06:03 2018 -0600
+
+    RsvgBbox: use approx_eq_cairo() instead of double_equals()
+
+ rsvg_internals/src/bbox.rs | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+commit ed2a9567424025a29bf85c9f1ff5344df00e0fdd
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 6 12:57:19 2018 -0600
+
+    util.rs: Make DBL_EPSILON private; we'll remove it soon
+
+ rsvg_internals/src/util.rs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit cd791d94743bf7a45ca9e48520a3b11f62f453ae
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 6 12:42:47 2018 -0600
+
+    pattern.rs: Tighten division-by-zero guards; use approx_eq_cairo()
+
+ rsvg_internals/src/pattern.rs | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+commit cfef100c223da9fc420e7a65ed60759e3d5737ea
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 6 12:07:20 2018 -0600
+
+    path_builder.rs: Use approx_eq_cairo() instead of direct float comparisons
+    
+    Also, make the guard against division by zero a little more correct;
+    we should be checking against the actual divisors.
+
+ rsvg_internals/src/path_builder.rs | 37 +++++++++++++++++++++++++++++++------
+ 1 file changed, 31 insertions(+), 6 deletions(-)
+
+commit 5e1c93b9f95c0b3186f42eb5f6b30d72861ad47b
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 6 11:53:14 2018 -0600
+
+    New trait ApproxEqCairo
+    
+    Checks if two f64 numbers are approximately equal, with their absolute
+    difference being smaller than the smallest fixed-point fraction that
+    Cairo can represent.
+
+ rsvg_internals/src/float_eq_cairo.rs | 29 +++++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
+
+commit 51ecd8d4953955abce7a1b9fc1fed8b5b0b8f8f4
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 6 09:54:48 2018 -0600
+
+    New trait FixedEqCairo with a fixed_eq_cairo() method
+    
+    We can now use this to check if two floating-point numbers would have
+    the same fixed-point representation in Cairo - that is, if their
+    absolute difference is less than the smallest representable fraction
+    in Cairo's fixed-point numbers.
+
+ rsvg_internals/src/float_eq_cairo.rs | 51 ++++++++++++++++++++++++++++++++++++
+ rsvg_internals/src/lib.rs            |  1 +
+ 2 files changed, 52 insertions(+)
+
+commit 7caba60a3a3037c9fbd4a8cfb407ea05c3f5afca
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Tue Mar 6 08:55:12 2018 -0600
+
+    Depend on float-cmp so we can get traits for approximate comparisons for floats
+
+ Cargo.lock                | 50 +++++++++++++++++++++++++++++++----------------
+ rsvg_internals/Cargo.toml |  1 +
+ rsvg_internals/src/lib.rs |  1 +
+ 3 files changed, 35 insertions(+), 17 deletions(-)
+
+commit 2dfef6a5c63c920fda9a8910b4a925662515d437
+Merge: ca640d11 ba4b2e4f
+Author: Federico Mena Quintero <federico.mena@gmail.com>
+Date:   Tue Mar 6 01:15:58 2018 +0000
+
+    Merge branch 'librsvg-2.42' into 'librsvg-2.42'
+    
+    gitlab#214 - Pass cargo flags to "cargo test"
+    
+    See merge request GNOME/librsvg!30
+
+commit ba4b2e4f11b7c5141eb63091e4ae693cb16114ab
+Author: Federico Mena Quintero <federico@gnome.org>
+Date:   Mon Mar 5 18:34:30 2018 -0600
+
+    gitlab#214 - Pass cargo flags to "cargo test"
+    
+    So that e.g. --release gets passed in release mode.
+    
+    https://gitlab.gnome.org/GNOME/librsvg/issues/214
+
+ Makefile.am | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
 commit ca640d1185745665c61689b71c627e1d020a80b7
 Author: Federico Mena Quintero <federico@gnome.org>
 Date:   Mon Mar 5 08:01:13 2018 -0600

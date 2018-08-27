@@ -10,15 +10,17 @@ use attributes::Attribute;
 use drawing_ctx;
 use drawing_ctx::RsvgDrawingCtx;
 use error::*;
+use float_eq_cairo::ApproxEqCairo;
 use handle::RsvgHandle;
-use length::*;
+use length::{LengthDir, RsvgLength};
 use node::*;
 use parsers;
-use parsers::{parse, Parse};
 use parsers::ParseError;
+use parsers::{parse, Parse};
 use path_builder::*;
 use property_bag::PropertyBag;
-use util::*;
+use state;
+use util::utf8_cstr;
 use viewbox::*;
 
 // markerUnits attribute: https://www.w3.org/TR/SVG/painting.html#MarkerElement
@@ -110,7 +112,6 @@ impl NodeMarker {
     fn render(
         &self,
         node: &RsvgNode,
-        c_node: *const RsvgNode,
         draw_ctx: *const RsvgDrawingCtx,
         xpos: f64,
         ypos: f64,
@@ -120,7 +121,7 @@ impl NodeMarker {
         let marker_width = self.width.get().normalize(draw_ctx);
         let marker_height = self.height.get().normalize(draw_ctx);
 
-        if double_equals(marker_width, 0.0) || double_equals(marker_height, 0.0) {
+        if marker_width.approx_eq_cairo(&0.0) || marker_height.approx_eq_cairo(&0.0) {
             // markerWidth or markerHeight set to 0 disables rendering of the element
             // https://www.w3.org/TR/SVG/painting.html#MarkerWidthAttribute
             return;
@@ -166,14 +167,14 @@ impl NodeMarker {
         drawing_ctx::state_push(draw_ctx);
 
         let state = drawing_ctx::get_current_state(draw_ctx);
-        drawing_ctx::state_reinit(state);
-        drawing_ctx::state_reconstruct(state, c_node);
+        state::reinit(state);
+        state::reconstruct(state, node as *const RsvgNode);
 
         drawing_ctx::set_current_state_affine(draw_ctx, affine);
 
         let state = drawing_ctx::get_current_state(draw_ctx);
 
-        if !drawing_ctx::state_is_overflow(state) {
+        if !state::is_overflow(state) {
             if let Some(vbox) = self.vbox.get() {
                 drawing_ctx::add_clipping_rect(
                     draw_ctx,
@@ -206,7 +207,8 @@ impl NodeTrait for NodeMarker {
                         .set(parse("refX", value, LengthDir::Horizontal, None)?)
                 }
 
-                Attribute::RefY => self.ref_y
+                Attribute::RefY => self
+                    .ref_y
                     .set(parse("refY", value, LengthDir::Vertical, None)?),
 
                 Attribute::MarkerWidth => self.width.set(parse(
@@ -419,7 +421,7 @@ pub fn path_builder_to_segments(builder: &RsvgPathBuilder) -> Vec<Segment> {
 }
 
 fn points_equal(x1: f64, y1: f64, x2: f64, y2: f64) -> bool {
-    double_equals(x1, x2) && double_equals(y1, y2)
+    x1.approx_eq_cairo(&x2) && y1.approx_eq_cairo(&y2)
 }
 
 // If the segment has directionality, returns two vectors (v1x, v1y, v2x, v2y); otherwise,
@@ -602,27 +604,14 @@ fn emit_marker_by_name(
 
     let name = unsafe { utf8_cstr(marker_name) };
 
-    let c_node = drawing_ctx::acquire_node_of_type(draw_ctx, name, NodeType::Marker);
+    if let Some(acquired) = drawing_ctx::get_acquired_node_of_type(draw_ctx, name, NodeType::Marker)
+    {
+        let node = acquired.get();
 
-    if c_node.is_null() {
-        return;
+        node.with_impl(|marker: &NodeMarker| {
+            marker.render(&node, draw_ctx, xpos, ypos, computed_angle, line_width)
+        });
     }
-
-    let node: &RsvgNode = unsafe { &*c_node };
-
-    node.with_impl(|marker: &NodeMarker| {
-        marker.render(
-            node,
-            c_node,
-            draw_ctx,
-            xpos,
-            ypos,
-            computed_angle,
-            line_width,
-        )
-    });
-
-    drawing_ctx::release_node(draw_ctx, c_node);
 }
 
 fn get_marker_name_from_drawing_ctx(
@@ -664,8 +653,6 @@ fn emit_marker<E>(
 }
 
 extern "C" {
-    fn rsvg_get_normalized_stroke_width(draw_ctx: *const RsvgDrawingCtx) -> f64;
-
     fn rsvg_get_start_marker(draw_ctx: *const RsvgDrawingCtx) -> *const libc::c_char;
     fn rsvg_get_middle_marker(draw_ctx: *const RsvgDrawingCtx) -> *const libc::c_char;
     fn rsvg_get_end_marker(draw_ctx: *const RsvgDrawingCtx) -> *const libc::c_char;
@@ -678,9 +665,11 @@ fn drawing_ctx_has_markers(draw_ctx: *const RsvgDrawingCtx) -> bool {
 }
 
 pub fn render_markers_for_path_builder(builder: &RsvgPathBuilder, draw_ctx: *const RsvgDrawingCtx) {
-    let linewidth: f64 = unsafe { rsvg_get_normalized_stroke_width(draw_ctx) };
+    let state = drawing_ctx::get_current_state(draw_ctx);
 
-    if linewidth == 0.0 {
+    let line_width = state::get_stroke_width(state).normalize(draw_ctx);
+
+    if line_width.approx_eq_cairo(&0.0) {
         return;
     }
 
@@ -697,7 +686,7 @@ pub fn render_markers_for_path_builder(builder: &RsvgPathBuilder, draw_ctx: *con
                 x,
                 y,
                 computed_angle,
-                linewidth,
+                line_width,
             );
         },
     );
@@ -841,10 +830,12 @@ mod parser_tests {
 
     #[test]
     fn parsing_invalid_marker_units_yields_error() {
-        assert!(is_parse_error(&MarkerUnits::parse("", ()).map_err(|e| AttributeError::from(e))));
-        assert!(
-            is_parse_error(&MarkerUnits::parse("foo", ()).map_err(|e| AttributeError::from(e)))
-        );
+        assert!(is_parse_error(
+            &MarkerUnits::parse("", ()).map_err(|e| AttributeError::from(e))
+        ));
+        assert!(is_parse_error(
+            &MarkerUnits::parse("foo", ()).map_err(|e| AttributeError::from(e))
+        ));
     }
 
     #[test]
@@ -861,13 +852,15 @@ mod parser_tests {
 
     #[test]
     fn parsing_invalid_marker_orient_yields_error() {
-        assert!(is_parse_error(&MarkerOrient::parse("", ()).map_err(|e| AttributeError::from(e))));
-        assert!(
-            is_parse_error(&MarkerOrient::parse("blah", ()).map_err(|e| AttributeError::from(e)))
-        );
-        assert!(
-            is_parse_error(&MarkerOrient::parse("45blah", ()).map_err(|e| AttributeError::from(e)))
-        );
+        assert!(is_parse_error(
+            &MarkerOrient::parse("", ()).map_err(|e| AttributeError::from(e))
+        ));
+        assert!(is_parse_error(
+            &MarkerOrient::parse("blah", ()).map_err(|e| AttributeError::from(e))
+        ));
+        assert!(is_parse_error(
+            &MarkerOrient::parse("45blah", ()).map_err(|e| AttributeError::from(e))
+        ));
     }
 
     #[test]
@@ -897,7 +890,8 @@ mod parser_tests {
 #[cfg(test)]
 mod directionality_tests {
     use super::*;
-    use std::f64::consts::*;
+    use float_cmp::ApproxEq;
+    use std::f64;
 
     fn test_bisection_angle(
         expected: f64,
@@ -910,7 +904,7 @@ mod directionality_tests {
             super::angle_from_vector(incoming_vx, incoming_vy),
             super::angle_from_vector(outgoing_vx, outgoing_vy),
         );
-        assert!(double_equals(expected, bisected));
+        assert!(expected.approx_eq(&bisected, 2.0 * PI * f64::EPSILON, 1));
     }
 
     #[test]
@@ -991,8 +985,6 @@ mod directionality_tests {
         test_path_builder_to_segments(&setup_open_path(), expected_segments);
     }
 
-    // Multiple open subpaths
-
     fn setup_multiple_open_subpaths() -> RsvgPathBuilder {
         let mut builder = RsvgPathBuilder::new();
 
@@ -1022,7 +1014,6 @@ mod directionality_tests {
     }
 
     // Closed subpath; must have a line segment back to the first point
-
     fn setup_closed_subpath() -> RsvgPathBuilder {
         let mut builder = RsvgPathBuilder::new();
 
@@ -1047,8 +1038,6 @@ mod directionality_tests {
 
     // Multiple closed subpaths; each must have a line segment back to their
     // initial points, with no degenerate segments between subpaths.
-    //
-
     fn setup_multiple_closed_subpaths() -> RsvgPathBuilder {
         let mut builder = RsvgPathBuilder::new();
 
@@ -1083,8 +1072,6 @@ mod directionality_tests {
 
     // A lineto follows the first closed subpath, with no moveto to start the second subpath.
     // The lineto must start at the first point of the first subpath.
-    //
-
     fn setup_no_moveto_after_closepath() -> RsvgPathBuilder {
         let mut builder = RsvgPathBuilder::new();
 
@@ -1143,7 +1130,6 @@ mod directionality_tests {
     //
     // test_path_builder_to_segments (&setup_sequence_of_moveto (), expected_segments);
     // }
-    //
 
     #[test]
     fn degenerate_segment_has_no_directionality() {
@@ -1223,14 +1209,7 @@ mod directionality_tests {
     #[test]
     fn curve_with_12_34_coincident_has_directionality() {
         let (v1x, v1y, v2x, v2y) = super::get_segment_directionalities(&curve(
-            20.0,
-            40.0,
-            20.0,
-            40.0,
-            60.0,
-            70.0,
-            60.0,
-            70.0,
+            20.0, 40.0, 20.0, 40.0, 60.0, 70.0, 60.0, 70.0,
         )).unwrap();
 
         assert_eq!((40.0, 30.0), (v1x, v1y));

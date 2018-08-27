@@ -40,6 +40,11 @@
 
 #include <libcroco/libcroco.h>
 
+/* Defined in rust/src/length.rs */
+extern RsvgStrokeDasharray *rsvg_parse_stroke_dasharray(const char *str);
+extern RsvgStrokeDasharray *rsvg_stroke_dasharray_clone(RsvgStrokeDasharray *dash);
+extern void rsvg_stroke_dasharray_free(RsvgStrokeDasharray *dash);
+
 #define RSVG_DEFAULT_FONT "Times New Roman"
 
 enum {
@@ -233,10 +238,9 @@ rsvg_state_finalize (RsvgState * state)
     rsvg_paint_server_unref (state->stroke);
     state->stroke = NULL;
 
-    if (state->dash.num_dashes != 0) {
-        g_free (state->dash.dashes);
-        state->dash.num_dashes = 0;
-        state->dash.dashes = NULL;
+    if (state->dash) {
+        rsvg_stroke_dasharray_free (state->dash);
+        state->dash = NULL;
     }
 
     if (state->styles) {
@@ -268,7 +272,6 @@ typedef int (*InheritanceFunction) (int dst, int src);
 void
 rsvg_state_clone (RsvgState * dst, const RsvgState * src)
 {
-    gint i;
     RsvgState *parent = dst->parent;
 
     rsvg_state_finalize (dst);
@@ -288,10 +291,8 @@ rsvg_state_clone (RsvgState * dst, const RsvgState * src)
 
     dst->styles = g_hash_table_ref (src->styles);
 
-    if (src->dash.num_dashes > 0) {
-        dst->dash.dashes = g_new0 (RsvgLength, src->dash.num_dashes);
-        for (i = 0; i < src->dash.num_dashes; i++)
-            dst->dash.dashes[i] = src->dash.dashes[i];
+    if (src->dash) {
+        dst->dash = rsvg_stroke_dasharray_clone (src->dash);
     }
 }
 
@@ -306,8 +307,6 @@ static void
 rsvg_state_inherit_run (RsvgState * dst, const RsvgState * src,
                         const InheritanceFunction function, const gboolean inherituninheritables)
 {
-    gint i;
-
     if (function (dst->has_baseline_shift, src->has_baseline_shift))
         dst->baseline_shift = src->baseline_shift;
     if (function (dst->has_current_color, src->has_current_color))
@@ -416,14 +415,15 @@ rsvg_state_inherit_run (RsvgState * dst, const RsvgState * src,
         dst->lang = g_strdup (src->lang);
     }
 
-    if (src->dash.num_dashes > 0 && (function (dst->has_dash, src->has_dash))) {
-        if (dst->has_dash)
-            g_free (dst->dash.dashes);
+    if (function (dst->has_dash, src->has_dash)) {
+        if (dst->dash) {
+            rsvg_stroke_dasharray_free (dst->dash);
+            dst->dash = NULL;
+        }
 
-        dst->dash.dashes = g_new0 (RsvgLength, src->dash.num_dashes);
-        dst->dash.num_dashes = src->dash.num_dashes;
-        for (i = 0; i < src->dash.num_dashes; i++)
-            dst->dash.dashes[i] = src->dash.dashes[i];
+        if (src->dash) {
+            dst->dash = rsvg_stroke_dasharray_clone (src->dash);
+        }
     }
 
     if (function (dst->has_dashoffset, src->has_dashoffset)) {
@@ -518,9 +518,6 @@ state_inherit (RsvgState * dst, const RsvgState * src)
 {
     rsvg_state_inherit_run (dst, src, inheritfunction, 1);
 }
-
-/* Defined in rust/src/length.rs */
-extern RsvgStrokeDasharray rsvg_parse_stroke_dasharray(const char *str);
 
 typedef enum {
     PAIR_SOURCE_STYLE,
@@ -1156,8 +1153,15 @@ rsvg_parse_style_pair (RsvgState *state,
 
     case RSVG_ATTRIBUTE_STROKE_DASHARRAY:
     {
-        state->has_dash = TRUE;
-        state->dash = rsvg_parse_stroke_dasharray (value);
+        /* FIXME: the following returns NULL on error; find a way to propagate
+         * errors from here.
+         */
+        RsvgStrokeDasharray *dash = rsvg_parse_stroke_dasharray (value);
+
+        if (dash) {
+            state->has_dash = TRUE;
+            state->dash = dash;
+        }
     }
     break;
 
@@ -1167,6 +1171,53 @@ rsvg_parse_style_pair (RsvgState *state,
          */
         break;
     }
+}
+
+/* returns TRUE if this element should be processed according to <switch> semantics
+   http://www.w3.org/TR/SVG/struct.html#SwitchElement */
+static gboolean
+rsvg_eval_switch_attributes (RsvgPropertyBag * atts, gboolean * p_has_cond)
+{
+    gboolean required_features_ok = TRUE;
+    gboolean required_extensions_ok = TRUE;
+    gboolean system_language_ok = TRUE;
+    gboolean has_cond = FALSE;
+
+    RsvgPropertyBagIter *iter;
+    const char *key;
+    RsvgAttribute attr;
+    const char *value;
+
+    iter = rsvg_property_bag_iter_begin (atts);
+
+    while (rsvg_property_bag_iter_next (iter, &key, &attr, &value)) {
+        switch (attr) {
+        case RSVG_ATTRIBUTE_REQUIRED_FEATURES:
+            required_features_ok = rsvg_cond_check_required_features (value);
+            has_cond = TRUE;
+            break;
+
+        case RSVG_ATTRIBUTE_REQUIRED_EXTENSIONS:
+            required_extensions_ok = rsvg_cond_check_required_extensions (value);
+            has_cond = TRUE;
+            break;
+
+        case RSVG_ATTRIBUTE_SYSTEM_LANGUAGE:
+            system_language_ok = rsvg_cond_check_system_language (value);
+            has_cond = TRUE;
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    rsvg_property_bag_iter_end (iter);
+
+    if (p_has_cond)
+        *p_has_cond = has_cond;
+
+    return required_features_ok && required_extensions_ok && system_language_ok;
 }
 
 /* take a pair of the form (fill="#ff00ff") and parse it as a style */
@@ -1783,6 +1834,12 @@ rsvg_state_reconstruct (RsvgState *state, RsvgNode *current)
     state_inherit (state, rsvg_node_get_state (current));
 }
 
+cairo_matrix_t
+rsvg_state_get_affine (RsvgState *state)
+{
+    return state->affine;
+}
+
 gboolean
 rsvg_state_is_overflow (RsvgState *state)
 {
@@ -1793,6 +1850,42 @@ gboolean
 rsvg_state_has_overflow (RsvgState *state)
 {
     return state->has_overflow;
+}
+
+RsvgPaintServer *
+rsvg_state_get_stroke (RsvgState *state)
+{
+    return state->stroke;
+}
+
+guint8
+rsvg_state_get_stroke_opacity (RsvgState *state)
+{
+    return state->stroke_opacity;
+}
+
+RsvgLength
+rsvg_state_get_stroke_width (RsvgState *state)
+{
+    return state->stroke_width;
+}
+
+double
+rsvg_state_get_miter_limit (RsvgState *state)
+{
+    return state->miter_limit;
+}
+
+cairo_line_cap_t
+rsvg_state_get_line_cap (RsvgState *state)
+{
+    return state->cap;
+}
+
+cairo_line_join_t
+rsvg_state_get_line_join (RsvgState *state)
+{
+    return state->join;
 }
 
 gboolean
@@ -1825,6 +1918,18 @@ rsvg_state_get_stop_opacity (RsvgState *state)
     } else {
         return NULL;
     }
+}
+
+RsvgStrokeDasharray *
+rsvg_state_get_stroke_dasharray (RsvgState *state)
+{
+    return state->dash;
+}
+
+RsvgLength
+rsvg_state_get_dash_offset (RsvgState *state)
+{
+    return state->dash_offset;
 }
 
 guint32
@@ -1901,4 +2006,40 @@ rsvg_state_get_font_decor (RsvgState *state)
     } else {
         return NULL;
     }
+}
+
+cairo_fill_rule_t
+rsvg_state_get_clip_rule (RsvgState *state)
+{
+    return state->clip_rule;
+}
+
+RsvgPaintServer *
+rsvg_state_get_fill (RsvgState *state)
+{
+    return state->fill;
+}
+
+guint8
+rsvg_state_get_fill_opacity (RsvgState *state)
+{
+    return state->fill_opacity;
+}
+
+cairo_fill_rule_t
+rsvg_state_get_fill_rule (RsvgState *state)
+{
+    return state->fill_rule;
+}
+
+cairo_antialias_t
+rsvg_state_get_shape_rendering_type (RsvgState *state)
+{
+    return state->shape_rendering_type;
+}
+
+cairo_antialias_t
+rsvg_state_get_text_rendering_type (RsvgState *state)
+{
+    return state->text_rendering_type;
 }

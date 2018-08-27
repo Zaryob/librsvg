@@ -8,11 +8,12 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
+use std::cmp;
 use std::mem;
 
 use aho_corasick::{Automaton, AcAutomaton, FullAcAutomaton};
 use memchr::{memchr, memchr2, memchr3};
-use syntax;
+use syntax::hir::literal::{Literal, Literals};
 
 use freqs::BYTE_FREQUENCIES;
 
@@ -42,7 +43,7 @@ enum Matcher {
     /// A single substring, find using Boyer-Moore.
     BoyerMoore(BoyerMooreSearch),
     /// An Aho-Corasick automaton.
-    AC(FullAcAutomaton<syntax::Lit>),
+    AC(FullAcAutomaton<Literal>),
     /// A simd accelerated multiple string matcher. Used only for a small
     /// number of small literals.
     Teddy128(Teddy),
@@ -51,22 +52,22 @@ enum Matcher {
 impl LiteralSearcher {
     /// Returns a matcher that never matches and never advances the input.
     pub fn empty() -> Self {
-        Self::new(syntax::Literals::empty(), Matcher::Empty)
+        Self::new(Literals::empty(), Matcher::Empty)
     }
 
     /// Returns a matcher for literal prefixes from the given set.
-    pub fn prefixes(lits: syntax::Literals) -> Self {
+    pub fn prefixes(lits: Literals) -> Self {
         let matcher = Matcher::prefixes(&lits);
         Self::new(lits, matcher)
     }
 
     /// Returns a matcher for literal suffixes from the given set.
-    pub fn suffixes(lits: syntax::Literals) -> Self {
+    pub fn suffixes(lits: Literals) -> Self {
         let matcher = Matcher::suffixes(&lits);
         Self::new(lits, matcher)
     }
 
-    fn new(lits: syntax::Literals, matcher: Matcher) -> Self {
+    fn new(lits: Literals, matcher: Matcher) -> Self {
         let complete = lits.all_complete();
         LiteralSearcher {
             complete: complete,
@@ -183,17 +184,17 @@ impl LiteralSearcher {
 }
 
 impl Matcher {
-    fn prefixes(lits: &syntax::Literals) -> Self {
+    fn prefixes(lits: &Literals) -> Self {
         let sset = SingleByteSet::prefixes(lits);
         Matcher::new(lits, sset)
     }
 
-    fn suffixes(lits: &syntax::Literals) -> Self {
+    fn suffixes(lits: &Literals) -> Self {
         let sset = SingleByteSet::suffixes(lits);
         Matcher::new(lits, sset)
     }
 
-    fn new(lits: &syntax::Literals, sset: SingleByteSet) -> Self {
+    fn new(lits: &Literals, sset: SingleByteSet) -> Self {
         if lits.literals().is_empty() {
             return Matcher::Empty;
         }
@@ -245,7 +246,7 @@ pub enum LiteralIter<'a> {
     Empty,
     Bytes(&'a [u8]),
     Single(&'a [u8]),
-    AC(&'a [syntax::Lit]),
+    AC(&'a [Literal]),
     Teddy128(&'a [Vec<u8>]),
 }
 
@@ -313,7 +314,7 @@ impl SingleByteSet {
         }
     }
 
-    fn prefixes(lits: &syntax::Literals) -> SingleByteSet {
+    fn prefixes(lits: &Literals) -> SingleByteSet {
         let mut sset = SingleByteSet::new();
         for lit in lits.literals() {
             sset.complete = sset.complete && lit.len() == 1;
@@ -330,7 +331,7 @@ impl SingleByteSet {
         sset
     }
 
-    fn suffixes(lits: &syntax::Literals) -> SingleByteSet {
+    fn suffixes(lits: &Literals) -> SingleByteSet {
         let mut sset = SingleByteSet::new();
         for lit in lits.literals() {
             sset.complete = sset.complete && lit.len() == 1;
@@ -627,7 +628,9 @@ impl BoyerMooreSearch {
                 if self.check_match(haystack, window_end) {
                     return Some(window_end - (self.pattern.len() - 1));
                 } else {
-                    window_end += self.md2_shift;
+                    let skip = self.skip_table[haystack[window_end] as usize];
+                    window_end +=
+                        if skip == 0 { self.md2_shift } else { skip };
                     continue;
                 }
             }
@@ -680,13 +683,7 @@ impl BoyerMooreSearch {
     /// to beat the asm deep magic that is memchr. Unfortunately,
     /// I had trouble proving a useful turnover point. Hopefully,
     /// we can find one in the future.
-    fn should_use(_pattern: &[u8]) -> bool {
-        // TBM is disabled until the bm_backstop_boundary unit test can pass
-        // and we're more confident that the implementation is correct.
-        //
-        // See: https://github.com/rust-lang/regex/issues/446
-        false
-        /*
+    fn should_use(pattern: &[u8]) -> bool {
         // The minimum pattern length required to use TBM.
         const MIN_LEN: usize = 9;
         // The minimum frequency rank (lower is rarer) that every byte in the
@@ -714,7 +711,6 @@ impl BoyerMooreSearch {
         pattern.len() > MIN_LEN
             // all the bytes must be more common than the cutoff.
             && pattern.iter().all(|c| freq_rank(*c) >= cutoff)
-        */
     }
 
     /// Check to see if there is a match at the given position
@@ -925,7 +921,7 @@ mod tests {
         let haystack = vec![91];
         let needle = vec![91];
 
-        let naive_offset = naive_find(needle, haystack.as_slice()).unwrap();
+        let naive_offset = naive_find(&needle, &haystack).unwrap();
         assert_eq!(0, naive_offset);
     }
 
@@ -946,7 +942,6 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
     fn bm_backstop_boundary() {
         let haystack = b"\
 // aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
@@ -980,12 +975,12 @@ aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
     use quickcheck::TestResult;
 
-    fn naive_find(needle: Vec<u8>, haystack: &[u8]) -> Option<usize> {
+    fn naive_find(needle: &[u8], haystack: &[u8]) -> Option<usize> {
         assert!(needle.len() <= haystack.len());
 
         for i in 0..(haystack.len() - (needle.len() - 1)) {
             if haystack[i] == needle[0]
-                && &haystack[i..(i+needle.len())] == needle.as_slice() {
+                && &haystack[i..(i+needle.len())] == needle {
                 return Some(i)
             }
         }
@@ -1007,7 +1002,7 @@ aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
             let searcher = BoyerMooreSearch::new(needle.clone());
             TestResult::from_bool(
-                searcher.find(haystack) == naive_find(needle, haystack))
+                searcher.find(haystack) == naive_find(&needle, haystack))
         }
 
         fn qc_bm_equals_single(pile1: Vec<u8>, pile2: Vec<u8>) -> TestResult {
@@ -1060,6 +1055,44 @@ aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
                 searcher.find(haystack.as_slice())
                         .map(|x| x == haystack_pre.len())
                         .unwrap_or(false))
+        }
+
+        // qc_equals_* is only testing the negative case as @burntsushi
+        // pointed out in https://github.com/rust-lang/regex/issues/446.
+        // This quickcheck prop represents an effort to force testing of
+        // the positive case. qc_bm_finds_first and qc_bm_finds_trailing_needle
+        // already check some of the positive cases, but they don't cover
+        // cases where the needle is in the middle of haystack. This prop
+        // fills that hole.
+        fn qc_bm_finds_subslice(
+            haystack: Vec<u8>,
+            needle_start: usize,
+            needle_length: usize
+        ) -> TestResult {
+            if haystack.len() == 0 {
+                return TestResult::discard();
+            }
+
+            let needle_start = needle_start % haystack.len();
+            let needle_length = needle_length % (haystack.len() - needle_start);
+
+            if needle_length == 0 {
+                return TestResult::discard();
+            }
+
+            let needle = &haystack[needle_start..(needle_start + needle_length)];
+
+            let bm_searcher = BoyerMooreSearch::new(needle.to_vec());
+
+            let start = naive_find(&needle, &haystack);
+            match start {
+                None => TestResult::from_bool(false),
+                Some(nf_start) =>
+                    TestResult::from_bool(
+                        nf_start <= needle_start
+                            && bm_searcher.find(&haystack) == start
+                    )
+            }
         }
 
         fn qc_bm_finds_first(needle: Vec<u8>) -> TestResult {

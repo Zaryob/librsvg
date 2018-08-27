@@ -2,6 +2,7 @@
 #[macro_use] extern crate itertools as it;
 extern crate permutohedron;
 
+use it::flatten;
 use it::Itertools;
 use it::multizip;
 use it::multipeek;
@@ -224,19 +225,19 @@ fn merge_by_btree() {
 fn kmerge() {
     let its = (0..4).map(|s| (s..10).step(4));
 
-    it::assert_equal(its.kmerge(), (0..10));
+    it::assert_equal(its.kmerge(), 0..10);
 }
 
 #[test]
 fn kmerge_2() {
     let its = vec![3, 2, 1, 0].into_iter().map(|s| (s..10).step(4));
 
-    it::assert_equal(its.kmerge(), (0..10));
+    it::assert_equal(its.kmerge(), 0..10);
 }
 
 #[test]
 fn kmerge_empty() {
-    let its = (0..4).map(|_| (0..0));
+    let its = (0..4).map(|_| 0..0);
     assert_eq!(its.kmerge().next(), None);
 }
 
@@ -352,7 +353,7 @@ fn test_multipeek_peeking_next() {
 
 #[test]
 fn pad_using() {
-    it::assert_equal((0..0).pad_using(1, |_| 1), (1..2));
+    it::assert_equal((0..0).pad_using(1, |_| 1), 1..2);
 
     let v: Vec<usize> = vec![0, 1, 2];
     let r = v.into_iter().pad_using(5, |n| n);
@@ -539,17 +540,15 @@ fn concat_non_empty() {
 
 #[test]
 fn flatten_iter() {
-    let data = vec![vec![1,2,3], vec![4,5,6]];
-    let flattened = data.into_iter().flatten();
-
-    it::assert_equal(flattened, vec![1,2,3,4,5,6]);
+    let data = vec![vec![1,2,3], vec![4,5], vec![], vec![6]];
+    it::assert_equal(flatten(data), vec![1,2,3,4,5,6]);
 }
 
 #[test]
 fn flatten_fold() {
     let xs = [0, 1, 1, 1, 2, 1, 3, 3];
     let ch = xs.iter().chunks(3);
-    let mut iter = ch.into_iter().flatten();
+    let mut iter = flatten(&ch);
     iter.next();
     let mut xs_d = Vec::new();
     iter.fold((), |(), &elt| xs_d.push(elt));

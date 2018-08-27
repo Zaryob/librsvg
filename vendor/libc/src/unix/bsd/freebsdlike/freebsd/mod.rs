@@ -15,6 +15,9 @@ pub type key_t = ::c_long;
 pub type msglen_t = ::c_ulong;
 pub type msgqnum_t = ::c_ulong;
 
+pub type posix_spawnattr_t = *mut ::c_void;
+pub type posix_spawn_file_actions_t = *mut ::c_void;
+
 s! {
     pub struct utmpx {
         pub ut_type: ::c_short,
@@ -200,9 +203,12 @@ pub const EVFILT_VNODE: ::int16_t = -4;
 pub const EVFILT_PROC: ::int16_t = -5;
 pub const EVFILT_SIGNAL: ::int16_t = -6;
 pub const EVFILT_TIMER: ::int16_t = -7;
+pub const EVFILT_PROCDESC: ::int16_t = -8;
 pub const EVFILT_FS: ::int16_t = -9;
 pub const EVFILT_LIO: ::int16_t = -10;
 pub const EVFILT_USER: ::int16_t = -11;
+pub const EVFILT_SENDFILE: ::int16_t = -12;
+pub const EVFILT_EMPTY: ::int16_t = -13;
 
 pub const EV_ADD: ::uint16_t = 0x1;
 pub const EV_DELETE: ::uint16_t = 0x2;
@@ -838,6 +844,23 @@ pub const _SC_CPUSET_SIZE: ::c_int = 122;
 pub const XU_NGROUPS: ::c_int = 16;
 pub const XUCRED_VERSION: ::c_uint = 0;
 
+// Flags which can be passed to pdfork(2)
+pub const PD_DAEMON: ::c_int = 0x00000001;
+pub const PD_CLOEXEC: ::c_int = 0x00000002;
+pub const PD_ALLOWED_AT_FORK: ::c_int = PD_DAEMON | PD_CLOEXEC;
+
+// Values for struct rtprio (type_ field)
+pub const RTP_PRIO_REALTIME: ::c_ushort = 2;
+pub const RTP_PRIO_NORMAL: ::c_ushort = 3;
+pub const RTP_PRIO_IDLE: ::c_ushort = 4;
+
+pub const POSIX_SPAWN_RESETIDS: ::c_int = 0x01;
+pub const POSIX_SPAWN_SETPGROUP: ::c_int = 0x02;
+pub const POSIX_SPAWN_SETSCHEDPARAM: ::c_int = 0x04;
+pub const POSIX_SPAWN_SETSCHEDULER: ::c_int = 0x08;
+pub const POSIX_SPAWN_SETSIGDEF: ::c_int = 0x10;
+pub const POSIX_SPAWN_SETSIGMASK: ::c_int = 0x20;
+
 extern {
     pub fn __error() -> *mut ::c_int;
 
@@ -893,6 +916,79 @@ extern {
     pub fn fexecve(fd: ::c_int, argv: *const *const ::c_char,
                    envp: *const *const ::c_char)
                    -> ::c_int;
+
+    pub fn pdfork(fdp: *mut ::c_int, flags: ::c_int) -> ::pid_t;
+    pub fn pdgetpid(fd: ::c_int, pidp: *mut ::pid_t) -> ::c_int;
+    pub fn pdkill(fd: ::c_int, signum: ::c_int) -> ::c_int;
+
+    pub fn rtprio_thread(function: ::c_int, lwpid: ::lwpid_t,
+                         rtp: *mut super::rtprio) -> ::c_int;
+
+    pub fn posix_spawn(pid: *mut ::pid_t,
+                       path: *const ::c_char,
+                       file_actions: *const ::posix_spawn_file_actions_t,
+                       attrp: *const ::posix_spawnattr_t,
+                       argv: *const *mut ::c_char,
+                       envp: *const *mut ::c_char) -> ::c_int;
+    pub fn posix_spawnp(pid: *mut ::pid_t,
+                       file: *const ::c_char,
+                        file_actions: *const ::posix_spawn_file_actions_t,
+                        attrp: *const ::posix_spawnattr_t,
+                        argv: *const *mut ::c_char,
+                        envp: *const *mut ::c_char) -> ::c_int;
+    pub fn posix_spawnattr_init(attr: *mut posix_spawnattr_t) -> ::c_int;
+    pub fn posix_spawnattr_destroy(attr: *mut posix_spawnattr_t) -> ::c_int;
+    pub fn posix_spawnattr_getsigdefault(attr: *const posix_spawnattr_t,
+                                         default: *mut ::sigset_t) -> ::c_int;
+    pub fn posix_spawnattr_setsigdefault(attr: *mut posix_spawnattr_t,
+                                         default: *const ::sigset_t) -> ::c_int;
+    pub fn posix_spawnattr_getsigmask(attr: *const posix_spawnattr_t,
+                                      default: *mut ::sigset_t) -> ::c_int;
+    pub fn posix_spawnattr_setsigmask(attr: *mut posix_spawnattr_t,
+                                      default: *const ::sigset_t) -> ::c_int;
+    pub fn posix_spawnattr_getflags(attr: *const posix_spawnattr_t,
+                                    flags: *mut ::c_short) -> ::c_int;
+    pub fn posix_spawnattr_setflags(attr: *mut posix_spawnattr_t,
+                                    flags: ::c_short) -> ::c_int;
+    pub fn posix_spawnattr_getpgroup(attr: *const posix_spawnattr_t,
+                                     flags: *mut ::pid_t) -> ::c_int;
+    pub fn posix_spawnattr_setpgroup(attr: *mut posix_spawnattr_t,
+                                     flags: ::pid_t) -> ::c_int;
+    pub fn posix_spawnattr_getschedpolicy(attr: *const posix_spawnattr_t,
+                                          flags: *mut ::c_int) -> ::c_int;
+    pub fn posix_spawnattr_setschedpolicy(attr: *mut posix_spawnattr_t,
+                                          flags: ::c_int) -> ::c_int;
+    pub fn posix_spawnattr_getschedparam(
+        attr: *const posix_spawnattr_t,
+        param: *mut ::sched_param,
+    ) -> ::c_int;
+    pub fn posix_spawnattr_setschedparam(
+        attr: *mut posix_spawnattr_t,
+        param: *const ::sched_param,
+    ) -> ::c_int;
+
+    pub fn posix_spawn_file_actions_init(
+        actions: *mut posix_spawn_file_actions_t,
+    ) -> ::c_int;
+    pub fn posix_spawn_file_actions_destroy(
+        actions: *mut posix_spawn_file_actions_t,
+    ) -> ::c_int;
+    pub fn posix_spawn_file_actions_addopen(
+        actions: *mut posix_spawn_file_actions_t,
+        fd: ::c_int,
+        path: *const ::c_char,
+        oflag: ::c_int,
+        mode: ::mode_t,
+    ) -> ::c_int;
+    pub fn posix_spawn_file_actions_addclose(
+        actions: *mut posix_spawn_file_actions_t,
+        fd: ::c_int,
+    ) -> ::c_int;
+    pub fn posix_spawn_file_actions_adddup2(
+        actions: *mut posix_spawn_file_actions_t,
+        fd: ::c_int,
+        newfd: ::c_int,
+    ) -> ::c_int;
 }
 
 cfg_if! {

@@ -170,6 +170,11 @@ s! {
         pub cmcred_ngroups: ::c_short,
         pub cmcred_groups: [::gid_t; CMGROUP_MAX],
     }
+
+    pub struct rtprio {
+        pub type_: ::c_ushort,
+        pub prio: ::c_ushort,
+    }
 }
 
 pub const AIO_LISTIO_MAX: ::c_int = 16;
@@ -960,6 +965,12 @@ pub const CMGROUP_MAX: usize = 16;
 // sizeof(long)
 pub const BPF_ALIGNMENT: ::c_int = 8;
 
+// Values for rtprio struct (prio field) and syscall (function argument)
+pub const RTP_PRIO_MIN: ::c_ushort = 0;
+pub const RTP_PRIO_MAX: ::c_ushort = 31;
+pub const RTP_LOOKUP: ::c_int = 0;
+pub const RTP_SET: ::c_int = 1;
+
 f! {
     pub fn WIFCONTINUED(status: ::c_int) -> bool {
         status == 0x13
@@ -993,6 +1004,15 @@ extern {
                         groups: *mut ::gid_t,
                         ngroups: *mut ::c_int) -> ::c_int;
     pub fn initgroups(name: *const ::c_char, basegid: ::gid_t) -> ::c_int;
+    #[cfg_attr(target_os = "netbsd", link_name = "__getpwent_r50")]
+    pub fn getpwent_r(pwd: *mut ::passwd,
+                      buf: *mut ::c_char,
+                      buflen: ::size_t,
+                      result: *mut *mut ::passwd) -> ::c_int;
+    pub fn getgrent_r(grp: *mut ::group,
+                      buf: *mut ::c_char,
+                      buflen: ::size_t,
+                      result: *mut *mut ::group) -> ::c_int;
     pub fn mq_open(name: *const ::c_char, oflag: ::c_int, ...) -> ::mqd_t;
     pub fn mq_close(mqd: ::mqd_t) -> ::c_int;
     pub fn mq_getattr(mqd: ::mqd_t, attr: *mut ::mq_attr) -> ::c_int;
@@ -1041,6 +1061,7 @@ extern {
                        serv: *mut ::c_char,
                        servlen: ::size_t,
                        flags: ::c_int) -> ::c_int;
+    #[cfg_attr(target_os = "freebsd", link_name = "kevent@FBSD_1.0")]
     pub fn kevent(kq: ::c_int,
                   changelist: *const ::kevent,
                   nchanges: ::c_int,
@@ -1135,9 +1156,11 @@ extern {
                                          val: ::c_int) -> ::c_int;
     pub fn getpriority(which: ::c_int, who: ::c_int) -> ::c_int;
     pub fn setpriority(which: ::c_int, who: ::c_int, prio: ::c_int) -> ::c_int;
+    pub fn rtprio(function: ::c_int, pid: ::pid_t, rtp: *mut rtprio) -> ::c_int;
 
     pub fn fdopendir(fd: ::c_int) -> *mut ::DIR;
 
+    #[cfg_attr(target_os = "freebsd", link_name = "mknodat@FBSD_1.1")]
     pub fn mknodat(dirfd: ::c_int, pathname: *const ::c_char,
                   mode: ::mode_t, dev: dev_t) -> ::c_int;
     pub fn mkfifoat(dirfd: ::c_int, pathname: *const ::c_char,
@@ -1157,6 +1180,8 @@ extern {
                  timeout: *const ::timespec,
                  sigmask: *const sigset_t) -> ::c_int;
     pub fn settimeofday(tv: *const ::timeval, tz: *const ::timezone) -> ::c_int;
+    pub fn getdomainname(name: *mut ::c_char, len: ::c_int) -> ::c_int;
+    pub fn setdomainname(name: *const ::c_char, len: ::c_int) -> ::c_int;
 }
 
 cfg_if! {

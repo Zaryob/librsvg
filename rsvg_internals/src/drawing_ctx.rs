@@ -1,16 +1,13 @@
 use cairo;
 use cairo_sys;
 use glib::translate::*;
-use glib_sys;
 use libc;
 use pango;
 use pango_sys;
 
-use color::*;
-use error::*;
+use bbox::RsvgBbox;
 use node::NodeType;
 use node::RsvgNode;
-use opacity::*;
 use path_builder::RsvgPathBuilder;
 use state::RsvgState;
 
@@ -48,10 +45,18 @@ extern "C" {
 
     fn rsvg_drawing_ctx_release_node(draw_ctx: *const RsvgDrawingCtx, node: *mut RsvgNode);
 
+    fn rsvg_drawing_ctx_increase_num_elements_rendered_through_use(draw_ctx: *const RsvgDrawingCtx);
+
     fn rsvg_drawing_ctx_get_current_state_affine(draw_ctx: *const RsvgDrawingCtx) -> cairo::Matrix;
 
     fn rsvg_drawing_ctx_set_current_state_affine(
         draw_ctx: *const RsvgDrawingCtx,
+        affine: *const cairo::Matrix,
+    );
+
+    fn rsvg_drawing_ctx_set_affine_on_cr(
+        draw_ctx: *const RsvgDrawingCtx,
+        cr: *mut cairo_sys::cairo_t,
         affine: *const cairo::Matrix,
     );
 
@@ -67,6 +72,8 @@ extern "C" {
         h: f64,
     );
 
+    fn rsvg_drawing_ctx_insert_bbox(draw_ctx: *const RsvgDrawingCtx, bbox: *const RsvgBbox);
+
     fn rsvg_drawing_ctx_draw_node_from_stack(
         draw_ctx: *const RsvgDrawingCtx,
         node: *const RsvgNode,
@@ -74,17 +81,6 @@ extern "C" {
     );
 
     fn rsvg_current_state(draw_ctx: *const RsvgDrawingCtx) -> *mut RsvgState;
-    fn rsvg_state_new() -> *mut RsvgState;
-    fn rsvg_state_free(state: *mut RsvgState);
-    fn rsvg_state_reinit(state: *mut RsvgState);
-    fn rsvg_state_reconstruct(state: *mut RsvgState, node: *const RsvgNode);
-    fn rsvg_state_is_overflow(state: *const RsvgState) -> glib_sys::gboolean;
-    fn rsvg_state_has_overflow(state: *const RsvgState) -> glib_sys::gboolean;
-    fn rsvg_state_get_cond_true(state: *const RsvgState) -> glib_sys::gboolean;
-    fn rsvg_state_set_cond_true(state: *const RsvgState, cond_true: glib_sys::gboolean);
-    fn rsvg_state_get_stop_color(state: *const RsvgState) -> *const ColorSpec;
-    fn rsvg_state_get_stop_opacity(state: *const RsvgState) -> *const OpacitySpec;
-    fn rsvg_state_get_current_color(state: *const RsvgState) -> u32;
 
     fn rsvg_state_push(draw_ctx: *const RsvgDrawingCtx);
     fn rsvg_state_pop(draw_ctx: *const RsvgDrawingCtx);
@@ -98,8 +94,11 @@ extern "C" {
     fn rsvg_push_discrete_layer(draw_ctx: *const RsvgDrawingCtx);
     fn rsvg_pop_discrete_layer(draw_ctx: *const RsvgDrawingCtx);
 
-    fn rsvg_render_path_builder(draw_ctx: *const RsvgDrawingCtx, builder: *const RsvgPathBuilder);
-    fn rsvg_render_surface(
+    fn rsvg_drawing_ctx_render_path_builder(
+        draw_ctx: *const RsvgDrawingCtx,
+        builder: *const RsvgPathBuilder,
+    );
+    fn rsvg_drawing_ctx_render_surface(
         draw_ctx: *const RsvgDrawingCtx,
         surface: *const cairo_sys::cairo_surface_t,
         x: f64,
@@ -150,21 +149,29 @@ pub fn pop_view_box(draw_ctx: *const RsvgDrawingCtx) {
     }
 }
 
-pub fn acquire_node(draw_ctx: *const RsvgDrawingCtx, url: &str) -> *mut RsvgNode {
-    unsafe { rsvg_drawing_ctx_acquire_node(draw_ctx, str::to_glib_none(url).0) }
+pub fn get_acquired_node(draw_ctx: *const RsvgDrawingCtx, url: &str) -> Option<AcquiredNode> {
+    let raw_node = unsafe { rsvg_drawing_ctx_acquire_node(draw_ctx, str::to_glib_none(url).0) };
+
+    if raw_node.is_null() {
+        None
+    } else {
+        Some(AcquiredNode(draw_ctx, raw_node))
+    }
 }
 
-pub fn acquire_node_of_type(
+pub fn get_acquired_node_of_type(
     draw_ctx: *const RsvgDrawingCtx,
     url: &str,
     node_type: NodeType,
-) -> *mut RsvgNode {
-    unsafe { rsvg_drawing_ctx_acquire_node_of_type(draw_ctx, str::to_glib_none(url).0, node_type) }
-}
+) -> Option<AcquiredNode> {
+    let raw_node = unsafe {
+        rsvg_drawing_ctx_acquire_node_of_type(draw_ctx, str::to_glib_none(url).0, node_type)
+    };
 
-pub fn release_node(draw_ctx: *const RsvgDrawingCtx, node: *mut RsvgNode) {
-    unsafe {
-        rsvg_drawing_ctx_release_node(draw_ctx, node);
+    if raw_node.is_null() {
+        None
+    } else {
+        Some(AcquiredNode(draw_ctx, raw_node))
     }
 }
 
@@ -188,7 +195,7 @@ pub fn pop_discrete_layer(draw_ctx: *const RsvgDrawingCtx) {
 
 pub fn render_path_builder(draw_ctx: *const RsvgDrawingCtx, builder: &RsvgPathBuilder) {
     unsafe {
-        rsvg_render_path_builder(draw_ctx, builder);
+        rsvg_drawing_ctx_render_path_builder(draw_ctx, builder);
     }
 }
 
@@ -201,7 +208,7 @@ pub fn render_surface(
     h: f64,
 ) {
     unsafe {
-        rsvg_render_surface(draw_ctx, surface.to_raw_none(), x, y, w, h);
+        rsvg_drawing_ctx_render_surface(draw_ctx, surface.to_raw_none(), x, y, w, h);
     }
 }
 
@@ -231,6 +238,20 @@ pub fn set_current_state_affine(draw_ctx: *const RsvgDrawingCtx, affine: cairo::
     }
 }
 
+pub fn set_affine_on_cr(
+    draw_ctx: *const RsvgDrawingCtx,
+    cr: &cairo::Context,
+    affine: &cairo::Matrix,
+) {
+    unsafe {
+        rsvg_drawing_ctx_set_affine_on_cr(
+            draw_ctx,
+            cr.to_glib_none().0,
+            affine as *const cairo::Matrix,
+        );
+    }
+}
+
 pub fn get_pango_context(draw_ctx: *const RsvgDrawingCtx) -> pango::Context {
     unsafe { from_glib_full(rsvg_drawing_ctx_get_pango_context(draw_ctx)) }
 }
@@ -238,6 +259,12 @@ pub fn get_pango_context(draw_ctx: *const RsvgDrawingCtx) -> pango::Context {
 pub fn add_clipping_rect(draw_ctx: *const RsvgDrawingCtx, x: f64, y: f64, w: f64, h: f64) {
     unsafe {
         rsvg_drawing_ctx_add_clipping_rect(draw_ctx, x, y, w, h);
+    }
+}
+
+pub fn insert_bbox(draw_ctx: *const RsvgDrawingCtx, bbox: &RsvgBbox) {
+    unsafe {
+        rsvg_drawing_ctx_insert_bbox(draw_ctx, bbox as *const _);
     }
 }
 
@@ -249,46 +276,6 @@ pub fn draw_node_from_stack(draw_ctx: *const RsvgDrawingCtx, node: *const RsvgNo
 
 pub fn get_current_state(draw_ctx: *const RsvgDrawingCtx) -> *mut RsvgState {
     unsafe { rsvg_current_state(draw_ctx) }
-}
-
-pub fn state_new() -> *mut RsvgState {
-    unsafe { rsvg_state_new() }
-}
-
-pub fn state_free(state: *mut RsvgState) {
-    unsafe {
-        rsvg_state_free(state);
-    }
-}
-
-pub fn state_reinit(state: *mut RsvgState) {
-    unsafe {
-        rsvg_state_reinit(state);
-    }
-}
-
-pub fn state_reconstruct(state: *mut RsvgState, node: *const RsvgNode) {
-    unsafe {
-        rsvg_state_reconstruct(state, node);
-    }
-}
-
-pub fn state_is_overflow(state: *const RsvgState) -> bool {
-    unsafe { from_glib(rsvg_state_is_overflow(state)) }
-}
-
-pub fn state_has_overflow(state: *const RsvgState) -> bool {
-    unsafe { from_glib(rsvg_state_has_overflow(state)) }
-}
-
-pub fn state_get_cond_true(state: *const RsvgState) -> bool {
-    unsafe { from_glib(rsvg_state_get_cond_true(state)) }
-}
-
-pub fn state_set_cond_true(state: *const RsvgState, cond_true: bool) {
-    unsafe {
-        rsvg_state_set_cond_true(state, cond_true.to_glib());
-    }
 }
 
 pub fn state_push(draw_ctx: *const RsvgDrawingCtx) {
@@ -303,32 +290,24 @@ pub fn state_pop(draw_ctx: *const RsvgDrawingCtx) {
     }
 }
 
-pub fn state_get_stop_color(state: *const RsvgState) -> Result<Option<Color>, AttributeError> {
+pub fn increase_num_elements_rendered_through_use(draw_ctx: *const RsvgDrawingCtx) {
     unsafe {
-        let spec_ptr = rsvg_state_get_stop_color(state);
+        rsvg_drawing_ctx_increase_num_elements_rendered_through_use(draw_ctx);
+    }
+}
 
-        if spec_ptr.is_null() {
-            Ok(None)
-        } else {
-            Color::from_color_spec(&*spec_ptr).map(Some)
+pub struct AcquiredNode(*const RsvgDrawingCtx, *mut RsvgNode);
+
+impl Drop for AcquiredNode {
+    fn drop(&mut self) {
+        unsafe {
+            rsvg_drawing_ctx_release_node(self.0, self.1);
         }
     }
 }
 
-pub fn state_get_stop_opacity(state: *const RsvgState) -> Result<Option<Opacity>, AttributeError> {
-    unsafe {
-        let opacity_ptr = rsvg_state_get_stop_opacity(state);
-
-        if opacity_ptr.is_null() {
-            Ok(None)
-        } else {
-            Opacity::from_opacity_spec(&*opacity_ptr).map(Some)
-        }
+impl AcquiredNode {
+    pub fn get(&self) -> RsvgNode {
+        unsafe { (*self.1).clone() }
     }
-}
-
-pub fn state_get_current_color(state: *const RsvgState) -> Color {
-    let argb = unsafe { rsvg_state_get_current_color(state) };
-
-    Color::from(argb)
 }

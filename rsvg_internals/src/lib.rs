@@ -5,12 +5,14 @@
 extern crate cairo;
 extern crate cairo_sys;
 extern crate cssparser;
+extern crate float_cmp;
 extern crate glib;
 extern crate glib_sys;
 extern crate itertools;
 extern crate libc;
 extern crate pango;
 extern crate pango_sys;
+extern crate pangocairo;
 extern crate regex;
 
 #[macro_use]
@@ -31,6 +33,14 @@ pub use cnode::{rsvg_rust_cnode_get_impl, rsvg_rust_cnode_new};
 
 pub use color::{rsvg_css_parse_color, AllowCurrentColor, AllowInherit, ColorKind, ColorSpec};
 
+pub use cond::{
+    rsvg_cond_check_required_extensions,
+    rsvg_cond_check_required_features,
+    rsvg_cond_check_system_language,
+};
+
+pub use draw::{rsvg_draw_pango_layout, rsvg_draw_path_builder};
+
 pub use gradient::{rsvg_node_linear_gradient_new, rsvg_node_radial_gradient_new};
 
 pub use length::{
@@ -38,6 +48,8 @@ pub use length::{
     rsvg_length_normalize,
     rsvg_length_parse,
     rsvg_parse_stroke_dasharray,
+    rsvg_stroke_dasharray_clone,
+    rsvg_stroke_dasharray_free,
     LengthDir,
     LengthUnit,
     RsvgLength,
@@ -61,14 +73,18 @@ pub use mask::{
 
 pub use node::{
     rsvg_node_add_child,
+    rsvg_node_children_iter_begin,
+    rsvg_node_children_iter_end,
+    rsvg_node_children_iter_next,
+    rsvg_node_children_iter_next_back,
     rsvg_node_draw,
     rsvg_node_draw_children,
-    rsvg_node_foreach_child,
     rsvg_node_get_parent,
     rsvg_node_get_state,
     rsvg_node_get_type,
     rsvg_node_is_same,
     rsvg_node_ref,
+    rsvg_node_result_is_ok,
     rsvg_node_set_attribute_parse_error,
     rsvg_node_set_atts,
     rsvg_node_unref,
@@ -77,10 +93,10 @@ pub use node::{
 pub use opacity::{rsvg_css_parse_opacity, OpacityKind, OpacitySpec};
 
 pub use paint_server::{
-    _set_source_rsvg_paint_server,
     rsvg_paint_server_parse,
     rsvg_paint_server_ref,
     rsvg_paint_server_unref,
+    rsvg_set_source_rsvg_paint_server,
 };
 
 pub use parsers::{rsvg_css_parse_number_list, rsvg_css_parse_number_optional_number};
@@ -140,8 +156,11 @@ mod chars;
 mod clip_path;
 mod cnode;
 mod color;
+mod cond;
+mod draw;
 mod drawing_ctx;
 mod error;
+mod float_eq_cairo;
 mod gradient;
 mod handle;
 mod image;

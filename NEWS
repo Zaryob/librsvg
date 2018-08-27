@@ -1,3 +1,45 @@
+Version 2.42.7
+- #323 - Fix a denial-of-service condition from exponential explosion
+  of rendered elements, through nested use of SVG "use" elements in
+  malicious SVGs.  This is similar to the XML "billion laughs attack"
+  but for SVG instancing.
+
+Version 2.42.6
+- #282 - Fix drop-shadows generated from Inkscape; we were overwriting
+  a surface inadvertently.
+- #241 - Fix confusion between feSpotLight and feDistantLight (Ivan
+  Molodetskikh).
+- #292 - Don't panic if we try to clip with an empty region.
+- Fix out-of-tree builds and tests (Jehan).
+- Compilation can now use a RUST_TARGET variable to override the host
+  triplet when cross-compiling.  See COMPILING.md for details (Fabrice
+  Fontaine).
+
+Version 2.42.5
+- #266 - Don't render filter primitives that have invalid attributes.
+  This was causing a crash in feColorMatrix.
+- #276 - rsvg_handle_render_cairo() will now refuse to render if the
+  cairo_t passed to it is in an error state.  Fixes a panic in the
+  cairo-dock program.
+- #206 - The test suite now writes test artifacts to tests/output
+  instead of /tmp (Saurav Sachidanand).
+
+Version 2.42.4
+- Fix: elements with systemLanguage attributes without variants now
+  work better (Paolo Borelli).
+- gitlab#227 - Fix: we now catch negative values in stroke-dasharray
+  properties instead of leaving the cairo_t in an error state.
+- gitlab#228 - Fix: empty transform attribute now correctly yields an
+  identity transform (Dmitry Kontsevoy).
+- Fix possible crash on invalid gradient references.
+- Make robust against patterns and gradients with no children.
+- Lots of code cleanups and refactorings (Jordan Petridis, Dmitry
+  Kontsevoy, Ivan Molodetskikh).
+- Code moved to Rust: low-level path and PangoLayout drawing, "switch"
+  element (Paolo Borelli).
+- New Rust dependencies: float_cmp, pangocairo crates.
+- We now require Rust 1.21 or later.
+
 Version 2.42.3
 - gitlab#205 - The configure script now checks for Rust 1.20.0 -
   previously this minimum requirement was not well-defined.

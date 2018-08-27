@@ -34,7 +34,6 @@ librsvg_@RSVG_API_MAJOR_VERSION@_la_SOURCES =	\
 	librsvg/rsvg-cairo-render.c		\
 	librsvg/rsvg-cairo-render.h		\
 	librsvg/rsvg-cairo.h			\
-	librsvg/rsvg-cond.c			\
 	librsvg/rsvg-css.c 			\
 	librsvg/rsvg-css.h 			\
 	librsvg/rsvg-defs.c 			\
@@ -74,9 +73,12 @@ RUST_SRC =					\
 	rsvg_internals/src/clip_path.rs		\
 	rsvg_internals/src/cnode.rs		\
 	rsvg_internals/src/color.rs		\
+	rsvg_internals/src/cond.rs		\
 	rsvg_internals/src/coord_units.rs	\
+	rsvg_internals/src/draw.rs		\
 	rsvg_internals/src/drawing_ctx.rs	\
 	rsvg_internals/src/error.rs		\
+	rsvg_internals/src/float_eq_cairo.rs	\
 	rsvg_internals/src/gradient.rs		\
 	rsvg_internals/src/handle.rs		\
 	rsvg_internals/src/image.rs		\
@@ -115,7 +117,7 @@ CARGO_RELEASE_ARGS=--release
 endif
 
 if CROSS_COMPILING
-CARGO_TARGET_ARGS=--target=$(host)
+CARGO_TARGET_ARGS=--target=$(RUST_TARGET)
 endif
 
 CARGO_VERBOSE = $(cargo_verbose_$(V))
@@ -128,7 +130,7 @@ CARGO_TARGET_DIR=@abs_top_builddir@/target
 
 check-local:
 	cd $(srcdir) && \
-	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) cargo test
+	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) cargo test $(CARGO_VERBOSE) $(CARGO_TARGET_ARGS) $(CARGO_RELEASE_ARGS)
 
 clean-local:
 	cd $(top_srcdir) && \
@@ -150,6 +152,7 @@ $(RUST_LIB): $(RUST_SRC)
 librsvg_@RSVG_API_MAJOR_VERSION@_la_CPPFLAGS = \
 	-I$(top_srcdir) 			\
 	-I$(top_builddir) 			\
+	-I$(top_builddir)/librsvg 		\
 	-DG_LOG_DOMAIN=\"librsvg\" 		\
 	-DLIBRSVG_DATADIR="\"$(datadir)\""	\
 	-DSRCDIR=\""${abs_top_srcdir}"\"	\
@@ -191,6 +194,7 @@ rsvg_convert_SOURCES =			\
 rsvg_convert_CPPFLAGS = \
 	-I$(top_srcdir) 			\
 	-I$(top_builddir) 			\
+	-I$(top_builddir)/librsvg 		\
 	-DLIBRSVG_DATADIR="\"$(datadir)\""	\
 	$(AM_CPPFLAGS)
 
@@ -211,7 +215,7 @@ rsvg_view_3_SOURCES =			\
 
 rsvg_view_3_CPPFLAGS = \
 	-I$(top_srcdir) 			\
-	-I$(top_builddir) 			\
+	-I$(top_builddir)/librsvg 		\
 	-DLIBRSVG_DATADIR="\"$(datadir)\""	\
 	$(AM_CPPFLAGS)
 
@@ -324,7 +328,7 @@ Rsvg_@RSVG_API_VERSION_U@_gir_PACKAGES = \
 	pango \
 	libxml-2.0 \
 	$(NULL)
-Rsvg_@RSVG_API_VERSION_U@_gir_CFLAGS = -I$(top_builddir) -DRSVG_COMPILATION
+Rsvg_@RSVG_API_VERSION_U@_gir_CFLAGS = -I$(top_builddir) -I$(top_builddir)/librsvg -DRSVG_COMPILATION
 Rsvg_@RSVG_API_VERSION_U@_gir_LIBS = librsvg-@RSVG_API_MAJOR_VERSION@.la
 Rsvg_@RSVG_API_VERSION_U@_gir_SCANNERFLAGS = --c-include="librsvg/rsvg.h"
 

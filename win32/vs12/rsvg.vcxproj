@@ -178,7 +178,6 @@
    <ClCompile Include="..\..\librsvg\rsvg-cairo-clip.c" />
    <ClCompile Include="..\..\librsvg\rsvg-cairo-draw.c" />
    <ClCompile Include="..\..\librsvg\rsvg-cairo-render.c" />
-   <ClCompile Include="..\..\librsvg\rsvg-cond.c" />
    <ClCompile Include="..\..\librsvg\rsvg-css.c" />
    <ClCompile Include="..\..\librsvg\rsvg-defs.c" />
    <ClCompile Include="..\..\librsvg\rsvg-file-util.c" />

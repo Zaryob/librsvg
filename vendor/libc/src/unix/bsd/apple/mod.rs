@@ -28,6 +28,10 @@ pub type integer_t = ::c_int;
 pub type cpu_type_t = integer_t;
 pub type cpu_subtype_t = integer_t;
 pub type vm_prot_t = ::c_int;
+pub type posix_spawnattr_t = *mut ::c_void;
+pub type posix_spawn_file_actions_t = *mut ::c_void;
+pub type key_t = ::c_int;
+pub type shmatt_t = ::c_ushort;
 
 pub enum timezone {}
 
@@ -497,6 +501,42 @@ s! {
         pub sin_srcaddr: ::in_addr,
         pub sin_tos: ::c_ushort,
         pub sin_other: ::c_ushort,
+    }
+
+    pub struct sockaddr_ctl {
+        pub sc_len: ::c_uchar,
+        pub sc_family: ::c_uchar,
+        pub ss_sysaddr: ::uint16_t,
+        pub sc_id: ::uint32_t,
+        pub sc_unit: ::uint32_t,
+        pub sc_reserved: [::uint32_t; 5],
+    }
+
+    // sys/ipc.h:
+
+    pub struct ipc_perm {
+        pub uid: ::uid_t,
+        pub gid: ::gid_t,
+        pub cuid: ::uid_t,
+        pub cgid: ::gid_t,
+        pub mode: ::mode_t,
+        pub _seq: ::c_ushort,
+        pub _key: ::key_t,
+    }
+
+    // FIXME: this should have align 4 but it's got align 8 on 64-bit
+    pub struct shmid_ds {
+        pub shm_perm: ipc_perm,
+        pub shm_segsz: ::size_t,
+        pub shm_lpid: ::pid_t,
+        pub shm_cpid: ::pid_t,
+        pub shm_nattch: ::shmatt_t,
+        pub shm_atime: ::time_t,  // FIXME: 64-bit wrong align => wrong offset
+        pub shm_dtime: ::time_t,  // FIXME: 64-bit wrong align => wrong offset
+        pub shm_ctime: ::time_t,  // FIXME: 64-bit wrong align => wrong offset
+        // FIXME: 64-bit wrong align => wrong offset:
+        pub shm_internal: *mut ::c_void,
+
     }
 }
 
@@ -2187,6 +2227,32 @@ pub const DLT_LOOP: ::c_uint = 108;
 // sizeof(int32_t)
 pub const BPF_ALIGNMENT: ::c_int = 4;
 
+pub const POSIX_SPAWN_RESETIDS: ::c_int = 0x01;
+pub const POSIX_SPAWN_SETPGROUP: ::c_int = 0x02;
+pub const POSIX_SPAWN_SETSIGDEF: ::c_int = 0x04;
+pub const POSIX_SPAWN_SETSIGMASK: ::c_int = 0x08;
+
+// sys/ipc.h:
+pub const IPC_CREAT: ::c_int = 0x200;
+pub const IPC_EXCL: ::c_int = 0x400;
+pub const IPC_NOWAIT: ::c_int = 0x800;
+pub const IPC_PRIVATE: key_t = 0;
+
+pub const IPC_RMID: ::c_int = 0;
+pub const IPC_SET: ::c_int = 1;
+pub const IPC_STAT: ::c_int = 2;
+
+pub const IPC_R: ::c_int = 0x100;
+pub const IPC_W: ::c_int = 0x80;
+pub const IPC_M: ::c_int = 0x1000;
+
+// sys/shm.h
+pub const SHM_RDONLY: ::c_int = 0x1000;
+pub const SHM_RND: ::c_int = 0x2000;
+pub const SHMLBA: ::c_int = 4096;
+pub const SHM_R: ::c_int = IPC_R;
+pub const SHM_W: ::c_int = IPC_W;
+
 f! {
     pub fn WSTOPSIG(status: ::c_int) -> ::c_int {
         status >> 8
@@ -2255,6 +2321,14 @@ extern {
     pub fn mprotect(addr: *mut ::c_void, len: ::size_t, prot: ::c_int)
                     -> ::c_int;
     pub fn shm_open(name: *const ::c_char, oflag: ::c_int, ...) -> ::c_int;
+    pub fn shmat(shmid: ::c_int, shmaddr: *const ::c_void,
+                 shmflg: ::c_int) -> *mut ::c_void;
+    pub fn shmdt(shmaddr: *const ::c_void) -> ::c_int;
+    #[cfg_attr(all(target_os = "macos", target_arch = "x86"),
+               link_name = "shmctl$UNIX2003")]
+    pub fn shmctl(shmid: ::c_int, cmd: ::c_int,
+                  buf: *mut ::shmid_ds) -> ::c_int;
+    pub fn shmget(key: key_t, size: ::size_t, shmflg: ::c_int) -> ::c_int;
     pub fn sysctl(name: *mut ::c_int,
                   namelen: ::c_uint,
                   oldp: *mut ::c_void,
@@ -2343,7 +2417,8 @@ extern {
     pub fn querylocale(mask: ::c_int, loc: ::locale_t) -> *const ::c_char;
     pub fn getpriority(which: ::c_int, who: ::id_t) -> ::c_int;
     pub fn setpriority(which: ::c_int, who: ::id_t, prio: ::c_int) -> ::c_int;
-
+    pub fn getdomainname(name: *mut ::c_char, len: ::c_int) -> ::c_int;
+    pub fn setdomainname(name: *const ::c_char, len: ::c_int) -> ::c_int;
     pub fn getxattr(path: *const ::c_char, name: *const ::c_char,
                     value: *mut ::c_void, size: ::size_t, position: u32,
                     flags: ::c_int) -> ::ssize_t;
@@ -2382,6 +2457,60 @@ extern {
     pub fn _dyld_get_image_header(image_index: u32) -> *const mach_header;
     pub fn _dyld_get_image_vmaddr_slide(image_index: u32) -> ::intptr_t;
     pub fn _dyld_get_image_name(image_index: u32) -> *const ::c_char;
+
+    pub fn posix_spawn(pid: *mut ::pid_t,
+                       path: *const ::c_char,
+                       file_actions: *const ::posix_spawn_file_actions_t,
+                       attrp: *const ::posix_spawnattr_t,
+                       argv: *const *mut ::c_char,
+                       envp: *const *mut ::c_char) -> ::c_int;
+    pub fn posix_spawnp(pid: *mut ::pid_t,
+                       file: *const ::c_char,
+                        file_actions: *const ::posix_spawn_file_actions_t,
+                        attrp: *const ::posix_spawnattr_t,
+                        argv: *const *mut ::c_char,
+                        envp: *const *mut ::c_char) -> ::c_int;
+    pub fn posix_spawnattr_init(attr: *mut posix_spawnattr_t) -> ::c_int;
+    pub fn posix_spawnattr_destroy(attr: *mut posix_spawnattr_t) -> ::c_int;
+    pub fn posix_spawnattr_getsigdefault(attr: *const posix_spawnattr_t,
+                                         default: *mut ::sigset_t) -> ::c_int;
+    pub fn posix_spawnattr_setsigdefault(attr: *mut posix_spawnattr_t,
+                                         default: *const ::sigset_t) -> ::c_int;
+    pub fn posix_spawnattr_getsigmask(attr: *const posix_spawnattr_t,
+                                      default: *mut ::sigset_t) -> ::c_int;
+    pub fn posix_spawnattr_setsigmask(attr: *mut posix_spawnattr_t,
+                                      default: *const ::sigset_t) -> ::c_int;
+    pub fn posix_spawnattr_getflags(attr: *const posix_spawnattr_t,
+                                    flags: *mut ::c_short) -> ::c_int;
+    pub fn posix_spawnattr_setflags(attr: *mut posix_spawnattr_t,
+                                    flags: ::c_short) -> ::c_int;
+    pub fn posix_spawnattr_getpgroup(attr: *const posix_spawnattr_t,
+                                     flags: *mut ::pid_t) -> ::c_int;
+    pub fn posix_spawnattr_setpgroup(attr: *mut posix_spawnattr_t,
+                                     flags: ::pid_t) -> ::c_int;
+
+    pub fn posix_spawn_file_actions_init(
+        actions: *mut posix_spawn_file_actions_t,
+    ) -> ::c_int;
+    pub fn posix_spawn_file_actions_destroy(
+        actions: *mut posix_spawn_file_actions_t,
+    ) -> ::c_int;
+    pub fn posix_spawn_file_actions_addopen(
+        actions: *mut posix_spawn_file_actions_t,
+        fd: ::c_int,
+        path: *const ::c_char,
+        oflag: ::c_int,
+        mode: ::mode_t,
+    ) -> ::c_int;
+    pub fn posix_spawn_file_actions_addclose(
+        actions: *mut posix_spawn_file_actions_t,
+        fd: ::c_int,
+    ) -> ::c_int;
+    pub fn posix_spawn_file_actions_adddup2(
+        actions: *mut posix_spawn_file_actions_t,
+        fd: ::c_int,
+        newfd: ::c_int,
+    ) -> ::c_int;
 }
 
 cfg_if! {

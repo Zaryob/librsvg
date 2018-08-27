@@ -21,6 +21,7 @@ explains librsvg's peculiarities.
 * [Debug or release builds](#debug-or-release-builds)
 * [Cross-compilation](#cross-compilation)
 * [Building with no network access](#building-with-no-network-access)
+* [Running `make distcheck`](#running-make-distcheck)
 
 # Installing dependencies for building
 
@@ -56,24 +57,10 @@ several systems.
 As of 2018/Feb/22, librsvg cannot be built in `debian stable` and
 `ubuntu 16.04`, as they have packages that are too old.
 
-**Build dependencies on Debian Testing:**
+**Build dependencies on Debian Testing or Ubuntu 18.04+:**
 
 ```sh
 apt-get install -y gcc make rustc cargo \
-automake autoconf libtool gettext itstool \
-libgdk-pixbuf2.0-dev libgirepository1.0-dev \
-gtk-doc-tools git libgtk-3-dev \
-libxml2-dev libcroco3-dev libcairo2-dev libpango1.0-dev
-```
-
-**Build dependencies on Ubuntu 18.04 or newer:**
-
-As of 2018/Feb/22 you will need to install `rustc` and `cargo` with
-[rustup.rs](https://rustup.rs), as the `rustc` package from Ubuntu is
-too old.  Please follow the instructions there to install Rust and Cargo.
-
-```sh
-apt-get install -y gcc make \
 automake autoconf libtool gettext itstool \
 libgdk-pixbuf2.0-dev libgirepository1.0-dev \
 gtk-doc-tools git libgtk-3-dev \
@@ -213,6 +200,17 @@ compiler's source code.
 You can check Jorge Aparicio's [guide on cross-compilation for
 Rust][rust-cross] for more details.
 
+## Overriding the Rust target name
+
+If you need `cargo --target=FOO` to obtain a different value from the
+one you specified for `--host=TRIPLE`, you can use the `RUST_TARGET`
+variable, and this will be passed to `cargo`.  For example,
+
+```sh
+RUST_TARGET=aarch64-unknown-linux-gnu ./configure --host=aarch64-buildroot-linux-gnu
+# will run "cargo --target=aarch64-unknown-linux-gnu" for the Rust part
+```
+
 ## Cross-compiling to a target not supported by Rust out of the box
 
 When building with a target that is not supported out of the box by
@@ -254,6 +252,22 @@ one of the Rust crates that librsvg uses internally.
 
 The source replacement information is in `rust/.cargo/config` in the
 unpacked tarball.  Your build system can patch this file as needed.
+
+# Running `make distcheck`
+
+The `make distcheck` command will built a release tarball, extract it,
+compile it and test it.  However, part of the `make install` process
+within that command will try to install the gdk-pixbuf loader in your
+system location, and it will fail.
+
+Please run `make distcheck` like this:
+
+```
+$ make distcheck DESTDIR=/tmp/foo
+```
+
+That `DESTDIR` will keep the gdk-pixbuf loader installation from
+trying to modify your system locations.
 
 [autotools]: https://autotools.io/index.html
 [blog]: https://people.gnome.org/~federico/blog/librsvg-build-infrastructure.html

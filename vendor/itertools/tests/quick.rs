@@ -17,6 +17,7 @@ use itertools::{
     multizip,
     EitherOrBoth,
 };
+use itertools::flatten;
 use itertools::free::{
     cloned,
     enumerate,
@@ -604,12 +605,12 @@ quickcheck! {
     }
 
     fn equal_flatten(a: Vec<Option<i32>>) -> bool {
-        itertools::equal(a.iter().flatten(),
+        itertools::equal(flatten(&a),
                          a.iter().filter_map(|x| x.as_ref()))
     }
 
     fn equal_flatten_vec(a: Vec<Vec<u8>>) -> bool {
-        itertools::equal(a.iter().flatten(),
+        itertools::equal(flatten(&a),
                          a.iter().flat_map(|x| x))
     }
 
@@ -905,6 +906,20 @@ quickcheck! {
     }
     fn with_position_exact_size_2(a: Iter<u8, Exact>) -> bool {
         exact_size_for_this(a.with_position())
+    }
+}
+
+quickcheck! {
+    fn correct_group_map_modulo_key(a: Vec<u8>, modulo: u8) -> () {
+        let modulo = if modulo == 0 { 1 } else { modulo }; // Avoid `% 0`
+        let count = a.len();
+        let lookup = a.into_iter().map(|i| (i % modulo, i)).into_group_map();
+
+        assert_eq!(lookup.values().flat_map(|vals| vals.iter()).count(), count);
+
+        for (&key, vals) in lookup.iter() {
+            assert!(vals.iter().all(|&val| val % modulo == key));
+        }
     }
 }
 

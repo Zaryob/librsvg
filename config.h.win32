@@ -39,9 +39,6 @@
 /* Define to 1 if you have the <string.h> header file. */
 #define HAVE_STRING_H 1
 
-/* Define to 1 if you have the `strtok_r' function. */
-/* #undef HAVE_STRTOK_R */
-
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #define HAVE_SYS_STAT_H 1
 
@@ -67,7 +64,7 @@
 #define PACKAGE_NAME "RSVG"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "RSVG 2.42.3"
+#define PACKAGE_STRING "RSVG 2.42.7"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "librsvg"
@@ -76,13 +73,13 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "2.42.3"
+#define PACKAGE_VERSION "2.42.7"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "2.42.3"
+#define VERSION "2.42.7"
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */

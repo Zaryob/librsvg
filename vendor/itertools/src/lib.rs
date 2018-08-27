@@ -31,6 +31,8 @@ extern crate core as std;
 
 pub use either::Either;
 
+#[cfg(feature = "use_std")]
+use std::collections::HashMap;
 use std::iter::{IntoIterator};
 use std::cmp::Ordering;
 use std::fmt;
@@ -101,6 +103,7 @@ pub mod structs {
     pub use ziptuple::Zip;
 }
 pub use structs::*;
+pub use adaptors::flatten;
 pub use concat_impl::concat;
 pub use cons_tuples_impl::cons_tuples;
 pub use diff::diff_with;
@@ -127,6 +130,8 @@ mod cons_tuples_impl;
 mod combinations;
 mod diff;
 mod format;
+#[cfg(feature = "use_std")]
+mod group_map;
 #[cfg(feature = "use_std")]
 mod groupbylazy;
 mod intersperse;
@@ -1084,12 +1089,15 @@ pub trait Itertools : Iterator {
         pad_tail::pad_using(self, min, f)
     }
 
-    /// Unravel a nested iterator.
+    /// Flatten an iterator of iterables into a single combined sequence of all
+    /// the elements in the iterables.
     ///
     /// This is more or less equivalent to `.flat_map` with an identity
     /// function.
     ///
-    /// ```
+    /// See also the [`flatten`](fn.flatten.html) function.
+    ///
+    /// ```ignore
     /// use itertools::Itertools;
     ///
     /// let data = vec![vec![1, 2, 3], vec![4, 5, 6]];
@@ -1768,6 +1776,28 @@ pub trait Itertools : Iterator {
         }
 
         (left, right)
+    }
+
+    /// Return a `HashMap` of keys mapped to `Vec`s of values. Keys and values
+    /// are taken from `(Key, Value)` tuple pairs yielded by the input iterator.
+    /// 
+    /// ```
+    /// use itertools::Itertools;
+    /// 
+    /// let data = vec![(0, 10), (2, 12), (3, 13), (0, 20), (3, 33), (2, 42)];
+    /// let lookup = data.into_iter().into_group_map();
+    /// 
+    /// assert_eq!(lookup[&0], vec![10, 20]);
+    /// assert_eq!(lookup.get(&1), None);
+    /// assert_eq!(lookup[&2], vec![12, 42]);
+    /// assert_eq!(lookup[&3], vec![13, 33]);
+    /// ```
+    #[cfg(feature = "use_std")]
+    fn into_group_map<K, V>(self) -> HashMap<K, Vec<V>>
+        where Self: Iterator<Item=(K, V)> + Sized,
+              K: Hash + Eq,
+    {
+        group_map::into_group_map(self)
     }
 
     /// Return the minimum and maximum elements in the iterator.

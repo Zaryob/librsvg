@@ -7,7 +7,7 @@ contributing to librsvg, and we appreciate all of them.
 * [Source repository](#source-code)
 * [Reporting bugs](#reporting-bugs)
 * [Feature requests](#feature-requests)
-* [Merge requests](#merge-requests)
+* [Hacking on librsvg](#hacking-on-librsvg)
 
 There is a **code of conduct** for contributors to librsvg; please see the
 file [`code-of-conduct.md`][coc].
@@ -32,6 +32,9 @@ section.
 If you need to publish a branch, feel free to do it at any
 publically-accessible Git hosting service, although gitlab.gnome.org
 makes things easier for the maintainers of librsvg.
+
+To work on the source code, you may find the "[Hacking on
+librsvg](#hacking-on-librsvg)" section helpful.
 
 ## Reporting bugs
 
@@ -62,36 +65,7 @@ directed there.
 It is especially helpful if you file bug for a feature request along
 with a sample SVG file.
 
-## Merge requests
-
-### Creating a merge request
-
-You may create a forked version of librsvg in [GNOME's Gitlab
-instance][gitlab], or any other publically-accesible Git hosting
-service.  You can register an account there, or log in with your
-account from other OAuth services.
-
-Note that the maintainers of librsvg only get notified about merge
-requests (or pull requests) if your fork is in
-[gitlab.gnome.org][gitlab].
-
-For technical reasons, the maintainers of librsvg do not get
-automatically notified if you submit a pull request through the GNOME
-mirror in Github.  [Please contact the maintainer][maintainer] directly if you
-have a pull request there or a branch that you would like to
-contribute.
-
-### Test suite
-
-Please make sure that the test suite passes with the changes in your
-branch.  The easiest way to run all the tests is to go to librsvg's
-toplevel directory and run `make check`.  This will run both the small
-unit tests and the black box tests in the `librsvg/tests` directory.
-
-If you need to add new tests (you should, for new features, or for
-things that we weren't testing!), or for additional information on how
-the test suite works, please see the file
-[`tests/README.md`][tests-readme].
+## Hacking on librsvg
 
 ### Working on the source
 
@@ -106,6 +80,102 @@ file changed so it can call `cargo` as appropriate.
 It is perfectly fine to [ask the maintainer][maintainer] if you have
 questions about the Autotools setup; it's a tricky bit of machinery,
 and we are glad to help.
+
+Please read the file [`ARCHITECTURE.md`][arch]; this describes the
+overall flow of the source code, so hopefully it will be easier for
+you to navigate.
+
+### Taking advantage of Continuous Integration
+
+If you fork librsvg in `gitlab.gnome.org` and push commits to your
+forked version, the Continuous Integration machinery (CI) will run
+automatically.
+
+A little glossary:
+
+* ***Continuous Integration (CI)*** - A tireless robot that builds
+  librsvg on every push, and runs various kinds of tests.
+  
+* ***Pipeline*** - A set of ***jobs*** that may happen on every push.
+  Every pipeline has ***stages*** of things that get run.  You can
+  [view recent
+  pipelines](https://gitlab.gnome.org/GNOME/librsvg/pipelines) and
+  examine their status.
+  
+* ***Stages*** - Each stage runs some kind of test on librsvg, and
+  depends on the previous stages succeeding.  We have a *Test* stage
+  that just builds librsvg as quickly as possible and runs its test
+  suite.  If that succeeds, then it will go to a *Lint* stage which
+  runs `rustfmt` to ensure that the coding style remains consistent.
+  Finally, there is a `Cross_distro` stage that tries to build/test
+  librsvg on various operating systems and configurations.
+  
+* ***Jobs*** - You can think of a job as "something that runs in a
+  specific container image, and emits a success/failure result".  For
+  example, the `Test` stage runs a job in a fast Fedora container.
+  The `Lint` stage runs `rustfmt` in a Rust-specific container that
+  always contains a recent version of `rustfmt`.  Distro-specific jobs
+  run on container images for each distro we support.
+  
+The default CI pipeline for people's branches is set up to build your
+branch and to run the test suite and lints.  If any tests fail, the
+pipeline will fail and you can then examine the job's build
+artifacts.  If the lint stage fails, you will have to reindent your
+code.
+
+***Automating the code formatting:*** You may want to enable a
+[client-side git
+hook](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks) to run
+`rustfmt` before you can commit something; otherwise the `Lint` stage
+of CI pipelines will fail:
+
+1. `cd librsvg`
+
+1. `mv .git/hooks/pre-commit.sample .git/hooks/pre-commit`
+
+1. Edit `.git/hooks/pre-commit` and put in one of the following
+   commands:
+
+  * If you want code reformatted automatically, no questions asked:
+    `cargo fmt`
+    ***Note:*** if this actually reformats your code while committing,
+    you'll have to re-stage the new changes and `git commit --amend`.  Be
+    careful if you had unstaged changes that got reformatted!
+
+  * If you want to examine errors if rustfmt doesn't like your
+    indentation, but don't want it to make changes on its own:  
+    `cargo fmt --all -- --check`
+
+***Installing rustfmt*** As of 2018/Jun, our continuous integration
+pipeline assumes the Rust nightly version of rustfmt.  You can install
+it with
+
+```
+cargo +nightly install --force rustfmt-nightly
+```
+
+Note that rustfmt changes frequently.  If the CI pipeline fails on the
+`Lint` stage because your code is formatted differently, try updating
+your rustfmt.  Hopefully this will stabilize once rustfmt reaches
+version 1.0.
+
+### Test suite
+
+Please make sure that the test suite passes with the changes in your
+branch.  The easiest way to run all the tests is to go to librsvg's
+toplevel directory and run `make check`.  This will run both the small
+unit tests and the black box tests in the `librsvg/tests` directory.
+
+If you need to add new tests (you should, for new features, or for
+things that we weren't testing!), or for additional information on how
+the test suite works, please see the file
+[`tests/README.md`][tests-readme].
+
+In addition, the CI machinery will run librsvg's test suite
+automatically when you push some commits.  You can tweak what happens
+during CI for your branch in the [`.gitlab-ci.yml`
+file](.gitlab-ci.yml) — for example, if you want to enable
+distro-specific tests to test things on a system that you don't have.
 
 ### Testing changes
 
@@ -125,6 +195,51 @@ can use `./rsvg-view-3` for a quick-and-dirty SVG viewer.
 have things working (or before even writing code, if you like
 test-driven development), so we can avoid regressions later.  The test
 suite is documented in [`tests/README.md`][tests-readme].
+
+### Creating a merge request
+
+You may create a forked version of librsvg in [GNOME's Gitlab
+instance][gitlab], or any other publically-accesible Git hosting
+service.  You can register an account there, or log in with your
+account from other OAuth services.
+
+Note that the maintainers of librsvg only get notified about merge
+requests (or pull requests) if your fork is in
+[gitlab.gnome.org][gitlab].
+
+For technical reasons, the maintainers of librsvg do not get
+automatically notified if you submit a pull request through the GNOME
+mirror in Github.  [Please contact the maintainer][maintainer] directly if you
+have a pull request there or a branch that you would like to
+contribute.
+
+### Formatting commit messages
+
+If a commit fixes a bug, please format its commit message like this:
+
+```
+(#123): Don't crash when foo is bar
+
+Explanation for why the crash happened, or anything that is not
+obvious from looking at the diff.
+
+https://gitlab.gnome.org/GNOME/librsvg/issues/123
+```
+
+Note the `(#123)` in the first line.  This is the line that shows up
+in single-line git logs, and having the bug number there makes it
+easier to write the release notes later — one does not have to read
+all the commit messages to find the ids of fixed bugs.
+
+Also, please paste the complete URL to the bug report somewhere in the
+commit message, so that it's easier to visit when reading the commit
+logs.
+
+Generally, commit messages should summarize *what* you did, and *why*.
+Think of someone doing `git blame` in the future when trying to figure
+out how some code works:  they will want to see *why* a certain line
+of source code is there.  The commit where that line was introduced
+should explain it.
 
 ### Testing performance-related changes
 
@@ -150,3 +265,4 @@ the future.  Of course all help is appreciated!
 [tests-readme]: tests/README.md
 [rsvg-bench]: https://gitlab.gnome.org/federico/rsvg-bench
 [rsvg-rs]: https://github.com/selaux/rsvg-rs
+[arch]: ARCHITECTURE.md

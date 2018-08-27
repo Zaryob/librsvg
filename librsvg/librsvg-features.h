@@ -7,8 +7,8 @@
 
 #define LIBRSVG_MAJOR_VERSION (2)
 #define LIBRSVG_MINOR_VERSION (42)
-#define LIBRSVG_MICRO_VERSION (3)
-#define LIBRSVG_VERSION "2.42.3"
+#define LIBRSVG_MICRO_VERSION (7)
+#define LIBRSVG_VERSION "2.42.7"
 
 #define LIBRSVG_CHECK_VERSION(major,minor,micro) \
   (LIBRSVG_MAJOR_VERSION > (major) || \

@@ -882,34 +882,6 @@ node_is_text_or_tspan (RsvgNode *node)
     return type == RSVG_NODE_TYPE_TEXT || type == RSVG_NODE_TYPE_TSPAN;
 }
 
-static gboolean
-find_last_chars_node_foreach (RsvgNode *node, gpointer data)
-{
-    RsvgNode **dest;
-
-    dest = data;
-
-    if (rsvg_node_get_type (node) == RSVG_NODE_TYPE_CHARS) {
-        *dest = rsvg_node_ref (node);
-    } else if (rsvg_node_get_type (node) == RSVG_NODE_TYPE_TSPAN) {
-        /* If we have
-         *   <text>
-         *     First                        (1)
-         *     <tspan>foo bar</tspan>
-         *     Second                       (2)
-         *   </text>
-         *
-         * Then we want (1) to go into a chars node.  However, the "foo bar" tspan will go
-         * into its own node.  When we read (2), we want it to go into a *new* chars node,
-         * not the one from (1).  So, here we discard the last chars node we found if
-         * we run into a tspan.
-         */
-        *dest = rsvg_node_unref (*dest);
-    }
-
-    return TRUE;
-}
-
 /* Finds the last chars child inside a given @node to which new characters can
  * be appended.  @node can be null; in this case we'll return NULL as we didn't
  * find any children.
@@ -919,13 +891,32 @@ find_last_chars_child (RsvgNode *node)
 {
     RsvgNode *child = NULL;
 
+    RsvgNode *temp;
+    RsvgNodeChildrenIter *iter;
+
     if (node_is_text_or_tspan (node)) {
         /* find the last CHARS node in the text or tspan node, so that we can
          * coalesce the text, and thus avoid screwing up the Pango layouts.
          */
-        rsvg_node_foreach_child (node,
-                                 find_last_chars_node_foreach,
-                                 &child);
+        iter = rsvg_node_children_iter_begin (node);
+
+        while (rsvg_node_children_iter_next_back (iter, &temp)) {
+            /* If a tspan node is encountered before any chars node
+             * (which means there's a tspan node after any chars nodes,
+             * because this is backwards iteration), return NULL.
+             */
+            if (rsvg_node_get_type (temp) == RSVG_NODE_TYPE_TSPAN) {
+                temp = rsvg_node_unref (temp);
+                break;
+            } else if (rsvg_node_get_type (temp) == RSVG_NODE_TYPE_CHARS) {
+                child = temp;
+                break;
+            } else {
+                temp = rsvg_node_unref (temp);
+            }
+        }
+
+        rsvg_node_children_iter_end (iter);
     }
 
     return child;
@@ -1750,6 +1741,12 @@ rsvg_drawing_ctx_release_node (RsvgDrawingCtx * ctx, RsvgNode *node)
 }
 
 void
+rsvg_drawing_ctx_increase_num_elements_rendered_through_use (RsvgDrawingCtx *draw_ctx)
+{
+    draw_ctx->num_elements_rendered_through_use++;
+}
+
+void
 rsvg_drawing_ctx_add_node_and_ancestors_to_stack (RsvgDrawingCtx *draw_ctx, RsvgNode *node)
 {
     if (node) {
@@ -1762,18 +1759,28 @@ rsvg_drawing_ctx_add_node_and_ancestors_to_stack (RsvgDrawingCtx *draw_ctx, Rsvg
     }
 }
 
-void
+static gboolean
+limits_exceeded (RsvgDrawingCtx *draw_ctx)
+{
+    return draw_ctx->num_elements_rendered_through_use > 500000;
+}
+
+gboolean
 rsvg_drawing_ctx_draw_node_from_stack (RsvgDrawingCtx *ctx, RsvgNode *node, int dominate)
 {
     RsvgState *state;
     GSList *stacksave;
+
+    if (limits_exceeded (ctx)) {
+        return FALSE;
+    }
 
     stacksave = ctx->drawsub_stack;
     if (stacksave) {
         RsvgNode *stack_node = stacksave->data;
 
         if (!rsvg_node_is_same (stack_node, node))
-            return;
+            return TRUE;
 
         ctx->drawsub_stack = stacksave->next;
     }
@@ -1789,6 +1796,21 @@ rsvg_drawing_ctx_draw_node_from_stack (RsvgDrawingCtx *ctx, RsvgNode *node, int 
     }
 
     ctx->drawsub_stack = stacksave;
+
+    /* We check the limits this both at the beginning of this function and at
+     * the end:
+     *
+     * - At the beginning, to avoid drawing further child nodes when we already
+     *   reached the limits.
+     *
+     * - At the end, to return a meaningful error from the *toplevel* call to
+     *   rsvg_drawing_ctx_draw_node_from_stack(), since in librsvg-2.42 we don't
+     *   have error propagation in the rendering code:  in the 2.43/2.44
+     *   branches, we are able to catch this condition deep down in the call
+     *   stack, and propagate the error upstream quickly.  In 2.42, however, we
+     *   have no such luxury and instead do a catch-all test here.
+     */
+    return !limits_exceeded (ctx);
 }
 
 cairo_matrix_t
@@ -1802,6 +1824,12 @@ rsvg_drawing_ctx_set_current_state_affine (RsvgDrawingCtx *ctx, cairo_matrix_t *
 {
     rsvg_current_state (ctx)->personal_affine =
         rsvg_current_state (ctx)->affine = *affine;
+}
+
+void
+rsvg_drawing_ctx_set_affine_on_cr (RsvgDrawingCtx *draw_ctx, cairo_t *cr, cairo_matrix_t *affine)
+{
+    draw_ctx->render->set_affine_on_cr (draw_ctx, cr, affine);
 }
 
 PangoContext *
@@ -1820,28 +1848,20 @@ rsvg_drawing_ctx_render_pango_layout (RsvgDrawingCtx *draw_ctx,
 }
 
 void
-rsvg_render_path_builder (RsvgDrawingCtx * ctx, RsvgPathBuilder *builder)
+rsvg_drawing_ctx_render_path_builder (RsvgDrawingCtx * ctx, RsvgPathBuilder *builder)
 {
     ctx->render->render_path_builder (ctx, builder);
 }
 
 void
-rsvg_render_surface (RsvgDrawingCtx * ctx, cairo_surface_t *surface, double x, double y, double w, double h)
+rsvg_drawing_ctx_render_surface (RsvgDrawingCtx * ctx, cairo_surface_t *surface,
+                                 double x, double y, double w, double h)
 {
     /* surface must be a cairo image surface */
     g_return_if_fail (cairo_surface_get_type (surface) == CAIRO_SURFACE_TYPE_IMAGE);
 
     ctx->render->render_surface (ctx, surface, x, y, w, h);
 }
-
-double
-rsvg_get_normalized_stroke_width (RsvgDrawingCtx *ctx)
-{
-    RsvgState *state = rsvg_current_state (ctx);
-
-    return rsvg_length_normalize (&state->stroke_width, ctx);
-}
-
 
 const char *
 rsvg_get_start_marker (RsvgDrawingCtx *ctx)
@@ -1877,6 +1897,12 @@ cairo_surface_t *
 rsvg_get_surface_of_node (RsvgDrawingCtx * ctx, RsvgNode * drawable, double w, double h)
 {
     return ctx->render->get_surface_of_node (ctx, drawable, w, h);
+}
+
+void
+rsvg_drawing_ctx_insert_bbox (RsvgDrawingCtx *draw_ctx, RsvgBbox *bbox)
+{
+    draw_ctx->render->insert_bbox (draw_ctx, bbox);
 }
 
 cairo_surface_t *

@@ -34,10 +34,13 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <glib/gstdio.h>
 
 #include "librsvg/rsvg.h"
 
 #include "test-utils.h"
+
+static char *_output_dir;
 
 typedef struct _buffer_diff_result {
     unsigned int pixels_changed;
@@ -139,10 +142,19 @@ compare_surfaces (cairo_surface_t	*surface_a,
 }
 
 static char *
+get_output_dir (void) {
+    if (_output_dir == NULL) {
+        _output_dir = g_strconcat (g_get_current_dir (), G_DIR_SEPARATOR_S, "output", NULL);
+        g_mkdir (_output_dir, 0777);
+    }
+    return _output_dir;
+}
+
+static char *
 get_output_file (const char *test_file,
                  const char *extension)
 {
-  const char *output_dir = g_get_tmp_dir ();
+  const char *output_dir = get_output_dir ();
   char *result, *base;
 
   base = g_path_get_basename (test_file);
@@ -306,7 +318,7 @@ rsvg_cairo_check (gconstpointer data)
 						 dimensions.height + 2 * FRAME_SIZE);
     cr = cairo_create (render_surface);
     cairo_translate (cr, FRAME_SIZE, FRAME_SIZE);
-    rsvg_handle_render_cairo (rsvg, cr);
+    g_assert (rsvg_handle_render_cairo (rsvg, cr));
 
     surface_a = extract_rectangle (render_surface,
 				   FRAME_SIZE,
@@ -361,6 +373,9 @@ int
 main (int argc, char **argv)
 {
     int result;
+
+    /* For systemLanguage attribute tests */
+    g_setenv ("LANGUAGE", "de:en_US", TRUE);
 
     g_test_init (&argc, &argv, NULL);
 

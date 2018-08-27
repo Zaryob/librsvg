@@ -1,11 +1,10 @@
+use cairo;
 use cssparser::{Parser, ParserInput, Token};
 use glib::translate::*;
-use glib_sys;
 use libc;
 use regex::Regex;
 
 use std::f64::consts::*;
-use std::mem;
 use std::ptr;
 
 use drawing_ctx;
@@ -334,28 +333,40 @@ fn viewport_percentage(x: f64, y: f64) -> f64 {
     (x * x + y * y).sqrt() / SQRT_2
 }
 
-// Keep in sync with rsvg-styles.h:RsvgStrokeDasharrayKind
-#[repr(C)]
-pub enum RsvgStrokeDasharrayKind {
-    None,
-    Inherit,
-    Dashes,
-    Error,
-}
-
-// Keep in sync with rsvg-styles.h:RsvgStrokeDasharray
-#[repr(C)]
-pub struct RsvgStrokeDasharray {
-    pub kind: RsvgStrokeDasharrayKind,
-    pub num_dashes: usize,
-    pub dashes: *mut RsvgLength,
-}
-
-#[derive(Debug, PartialEq)]
-enum StrokeDasharray {
+#[derive(Debug, PartialEq, Clone)]
+pub enum StrokeDasharray {
     None,
     Inherit,
     Dasharray(Vec<RsvgLength>),
+}
+
+impl StrokeDasharray {
+    pub fn set_on_cairo(
+        &self,
+        draw_ctx: *const RsvgDrawingCtx,
+        cr: &cairo::Context,
+        offset: &RsvgLength,
+    ) {
+        match *self {
+            StrokeDasharray::None | StrokeDasharray::Inherit => {
+                // FIXME: for inheritance, do it in the caller
+                cr.set_dash(&[], 0.0);
+            }
+
+            StrokeDasharray::Dasharray(ref dashes) => {
+                let normalized_dashes: Vec<f64> =
+                    dashes.iter().map(|l| l.normalize(draw_ctx)).collect();
+
+                let total_length = normalized_dashes.iter().fold(0.0, |acc, &len| acc + len);
+
+                if total_length > 0.0 {
+                    cr.set_dash(&normalized_dashes, offset.normalize(draw_ctx));
+                } else {
+                    cr.set_dash(&[], 0.0);
+                }
+            }
+        }
+    }
 }
 
 fn parse_stroke_dash_array(s: &str) -> Result<StrokeDasharray, AttributeError> {
@@ -400,7 +411,8 @@ fn parse_dash_array(s: &str) -> Result<Vec<RsvgLength>, AttributeError> {
         // split at whitespace
         .flat_map(|slice| slice.split_whitespace())
         // parse it into an RsvgLength
-        .map(|d| RsvgLength::parse(d, LengthDir::Both))
+        .map(|d| RsvgLength::parse(d, LengthDir::Both)
+             .and_then(|l| l.check_nonnegative()))
         // collect into a Result<Vec<T>, E>.
         // it will short-circuit iteslf upon the first error encountered
         // like if you returned from a for-loop
@@ -434,41 +446,29 @@ pub extern "C" fn rsvg_length_hand_normalize(
 }
 
 #[no_mangle]
-pub extern "C" fn rsvg_parse_stroke_dasharray(string: *const libc::c_char) -> RsvgStrokeDasharray {
+pub extern "C" fn rsvg_parse_stroke_dasharray(
+    string: *const libc::c_char,
+) -> *const StrokeDasharray {
     let my_string = unsafe { &String::from_glib_none(string) };
 
     match parse_stroke_dash_array(my_string) {
-        Ok(StrokeDasharray::None) => RsvgStrokeDasharray {
-            kind: RsvgStrokeDasharrayKind::None,
-            num_dashes: 0,
-            dashes: ptr::null_mut(),
-        },
+        Ok(dash) => Box::into_raw(Box::new(dash)),
 
-        Ok(StrokeDasharray::Inherit) => RsvgStrokeDasharray {
-            kind: RsvgStrokeDasharrayKind::Inherit,
-            num_dashes: 0,
-            dashes: ptr::null_mut(),
-        },
-
-        Ok(StrokeDasharray::Dasharray(ref v)) => RsvgStrokeDasharray {
-            kind: RsvgStrokeDasharrayKind::Dashes,
-            num_dashes: v.len(),
-            dashes: to_c_array(v),
-        },
-
-        Err(_) => RsvgStrokeDasharray {
-            kind: RsvgStrokeDasharrayKind::Error,
-            num_dashes: 0,
-            dashes: ptr::null_mut(),
-        },
+        Err(_) => ptr::null(),
     }
 }
 
-fn to_c_array<T>(v: &[T]) -> *mut T {
+#[no_mangle]
+pub extern "C" fn rsvg_stroke_dasharray_clone(
+    dash: *const StrokeDasharray,
+) -> *mut StrokeDasharray {
+    unsafe { Box::into_raw(Box::new((*dash).clone())) }
+}
+
+#[no_mangle]
+pub extern "C" fn rsvg_stroke_dasharray_free(dash: *mut StrokeDasharray) {
     unsafe {
-        let res = glib_sys::g_malloc(mem::size_of::<T>() * v.len()) as *mut T;
-        ptr::copy_nonoverlapping(v.as_ptr(), res, v.len());
-        res
+        Box::from_raw(dash);
     }
 }
 
@@ -588,7 +588,7 @@ mod tests {
     #[test]
     fn parses_named_sizes() {
         let names = vec![
-            "xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large"
+            "xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large",
         ];
 
         let mut previous_value: Option<f64> = None;
@@ -705,6 +705,14 @@ mod tests {
         assert_eq!(parse_dash_array("3.1415926,8").unwrap(), sample_5);
         assert_eq!(parse_dash_array("5, 3.14").unwrap(), sample_6);
         assert_eq!(parse_dash_array("2").unwrap(), sample_7);
+
+        // Negative numbers
+        assert_eq!(
+            parse_dash_array("20,40,-20"),
+            Err(AttributeError::Value(String::from(
+                "value must be non-negative"
+            )))
+        );
 
         // Empty dash_array
         assert_eq!(

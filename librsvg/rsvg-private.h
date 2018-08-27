@@ -200,6 +200,7 @@ struct RsvgDrawingCtx {
     RsvgState *state;
     GError **error;
     RsvgDefs *defs;
+    gsize num_elements_rendered_through_use;
     PangoContext *pango_context;
     double dpi_x, dpi_y;
     RsvgViewBox vb;
@@ -208,6 +209,13 @@ struct RsvgDrawingCtx {
     GSList *acquired_nodes;
     gboolean is_testing;
 };
+
+/* Keep this in sync with rust/src/bbox.rs:RsvgBbox */
+typedef struct {
+    cairo_rectangle_t rect;
+    cairo_matrix_t affine;
+    gboolean virgin;
+} RsvgBbox;
 
 /*Abstract base class for context for our backends (one as yet)*/
 
@@ -225,18 +233,20 @@ struct RsvgRender {
 
     void (*free) (RsvgRender * self);
 
-    PangoContext    *(*get_pango_context)       (RsvgDrawingCtx * ctx);
-    void             (*render_pango_layout)	(RsvgDrawingCtx * ctx, PangoLayout *layout,
+    void             (*set_affine_on_cr)        (RsvgDrawingCtx *ctx, cairo_t *cr, cairo_matrix_t *affine);
+    PangoContext    *(*get_pango_context)       (RsvgDrawingCtx *ctx);
+    void             (*render_pango_layout)	(RsvgDrawingCtx *ctx, PangoLayout *layout,
                                                  double x, double y);
-    void             (*render_path_builder)     (RsvgDrawingCtx * ctx, RsvgPathBuilder *builder);
-    void             (*render_surface)          (RsvgDrawingCtx * ctx, cairo_surface_t *surface,
+    void             (*render_path_builder)     (RsvgDrawingCtx *ctx, RsvgPathBuilder *builder);
+    void             (*render_surface)          (RsvgDrawingCtx *ctx, cairo_surface_t *surface,
                                                  double x, double y, double w, double h);
-    void             (*pop_discrete_layer)      (RsvgDrawingCtx * ctx);
-    void             (*push_discrete_layer)     (RsvgDrawingCtx * ctx);
-    void             (*add_clipping_rect)       (RsvgDrawingCtx * ctx, double x, double y,
+    void             (*pop_discrete_layer)      (RsvgDrawingCtx *ctx);
+    void             (*push_discrete_layer)     (RsvgDrawingCtx *ctx);
+    void             (*add_clipping_rect)       (RsvgDrawingCtx *ctx, double x, double y,
                                                  double w, double h);
-    cairo_surface_t *(*get_surface_of_node)     (RsvgDrawingCtx * ctx, RsvgNode * drawable,
+    cairo_surface_t *(*get_surface_of_node)     (RsvgDrawingCtx *ctx, RsvgNode * drawable,
                                                  double w, double h);
+    void             (*insert_bbox)             (RsvgDrawingCtx *ctx, RsvgBbox *bbox);
 };
 
 static inline RsvgRender *
@@ -274,13 +284,6 @@ typedef struct {
     LengthUnit unit;
     LengthDir dir;
 } RsvgLength;
-
-/* Keep this in sync with rust/src/bbox.rs:RsvgBbox */
-typedef struct {
-    cairo_rectangle_t rect;
-    cairo_matrix_t affine;
-    gboolean virgin;
-} RsvgBbox;
 
 typedef enum {
     userSpaceOnUse,
@@ -408,26 +411,41 @@ void rsvg_node_draw (RsvgNode *node, RsvgDrawingCtx *draw, int dominate);
 G_GNUC_INTERNAL
 void rsvg_node_set_attribute_parse_error (RsvgNode *node, const char *attr_name, const char *description);
 
-/* Used to iterate among a node's children with rsvg_node_foreach_child().
- * If this caller-supplied function returns FALSE, iteration will stop.
- * Otherwise, iteration will continue to the next child node.
- *
- * Keep this in sync with rust/src/node.rs:NodeForeachChild
- */
-typedef gboolean (* RsvgNodeForeachChildFn) (RsvgNode *node, gpointer data);
+typedef struct RsvgNodeChildrenIter *RsvgNodeChildrenIter;
 
 /* Implemented in rust/src/node.rs */
 G_GNUC_INTERNAL
-void rsvg_node_foreach_child (RsvgNode *node, RsvgNodeForeachChildFn fn, gpointer data);
+RsvgNodeChildrenIter *rsvg_node_children_iter_begin (RsvgNode *node);
+
+/* Implemented in rust/src/node.rs */
+G_GNUC_INTERNAL
+gboolean rsvg_node_children_iter_next (RsvgNodeChildrenIter *iter,
+                                       RsvgNode **out_child);
+
+/* Implemented in rust/src/node.rs */
+G_GNUC_INTERNAL
+gboolean rsvg_node_children_iter_next_back (RsvgNodeChildrenIter *iter,
+                                            RsvgNode **out_child);
+
+/* Implemented in rust/src/node.rs */
+G_GNUC_INTERNAL
+void rsvg_node_children_iter_end (RsvgNodeChildrenIter *iter);
+
 /* generic function for drawing all of the children of a particular node */
 
 /* Implemented in rust/src/node.rs */
 G_GNUC_INTERNAL
 void rsvg_node_draw_children (RsvgNode *node, RsvgDrawingCtx *ctx, int dominate);
 
+/* Implemented in rust/src/node.rs */
+G_GNUC_INTERNAL
+gboolean rsvg_node_result_is_ok (RsvgNode *node);
+
 /* Implemented in rust/src/chars.rs */
 G_GNUC_INTERNAL
 void rsvg_node_chars_get_string (RsvgNode *node, const char **out_str, gsize *out_len);
+
+
 
 typedef void (*RsvgPropertyBagEnumFunc) (const char *key, const char *value, gpointer user_data);
 
@@ -461,8 +479,18 @@ GdkPixbuf *rsvg_pixbuf_from_data_with_size_data (const guchar * buff,
                                                  size_t len,
                                                  gpointer data,
                                                  const char *base_uri, GError ** error);
+
+/* Implemented in rust/src/cond.rs */
 G_GNUC_INTERNAL
-gboolean     rsvg_eval_switch_attributes	(RsvgPropertyBag * atts, gboolean * p_has_cond);
+gboolean rsvg_cond_check_required_features (const char *value);
+
+/* Implemented in rust/src/cond.rs */
+G_GNUC_INTERNAL
+gboolean rsvg_cond_check_required_extensions (const char *value);
+
+/* Implemented in rust/src/cond.rs */
+G_GNUC_INTERNAL
+gboolean rsvg_cond_check_system_language (const char *value);
 
 G_GNUC_INTERNAL
 void rsvg_pop_discrete_layer    (RsvgDrawingCtx * ctx);
@@ -479,16 +507,14 @@ void rsvg_drawing_ctx_release_node              (RsvgDrawingCtx * ctx, RsvgNode 
 G_GNUC_INTERNAL
 void rsvg_drawing_ctx_add_node_and_ancestors_to_stack (RsvgDrawingCtx *draw_ctx, RsvgNode *node);
 G_GNUC_INTERNAL
-void rsvg_drawing_ctx_draw_node_from_stack            (RsvgDrawingCtx *ctx, RsvgNode *node, int dominate);
+gboolean rsvg_drawing_ctx_draw_node_from_stack (RsvgDrawingCtx *ctx, RsvgNode *node, int dominate);
 
 G_GNUC_INTERNAL
-void rsvg_render_path_builder   (RsvgDrawingCtx * ctx, RsvgPathBuilder *builder);
-G_GNUC_INTERNAL
-void rsvg_render_surface        (RsvgDrawingCtx * ctx, cairo_surface_t *surface,
-                                 double x, double y, double w, double h);
+void rsvg_drawing_ctx_render_path_builder (RsvgDrawingCtx * ctx, RsvgPathBuilder *builder);
 
 G_GNUC_INTERNAL
-double rsvg_get_normalized_stroke_width (RsvgDrawingCtx *ctx);
+void rsvg_drawing_ctx_render_surface (RsvgDrawingCtx * ctx, cairo_surface_t *surface,
+                                      double x, double y, double w, double h);
 
 G_GNUC_INTERNAL
 const char *rsvg_get_start_marker (RsvgDrawingCtx *ctx);
@@ -507,6 +533,9 @@ G_GNUC_INTERNAL
 GdkPixbuf *rsvg_cairo_surface_to_pixbuf (cairo_surface_t *surface);
 G_GNUC_INTERNAL
 cairo_surface_t *rsvg_get_surface_of_node (RsvgDrawingCtx * ctx, RsvgNode * drawable, double w, double h);
+
+G_GNUC_INTERNAL
+void rsvg_drawing_ctx_insert_bbox (RsvgDrawingCtx *draw_ctx, RsvgBbox *bbox);
 
 G_GNUC_INTERNAL
 cairo_surface_t *rsvg_cairo_surface_new_from_href (RsvgHandle *handle, const char *href, GError ** error);
@@ -545,6 +574,9 @@ cairo_matrix_t rsvg_drawing_ctx_get_current_state_affine (RsvgDrawingCtx *ctx);
 
 G_GNUC_INTERNAL
 void rsvg_drawing_ctx_set_current_state_affine (RsvgDrawingCtx *ctx, cairo_matrix_t *affine);
+
+G_GNUC_INTERNAL
+void rsvg_drawing_ctx_set_affine_on_cr (RsvgDrawingCtx *draw_ctx, cairo_t *cr, cairo_matrix_t *affine);
 
 G_GNUC_INTERNAL
 PangoContext *rsvg_drawing_ctx_get_pango_context (RsvgDrawingCtx *draw_ctx);

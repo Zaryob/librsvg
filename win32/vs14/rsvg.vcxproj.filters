@@ -22,7 +22,6 @@
    <ClCompile Include="..\..\librsvg\rsvg-cairo-clip.c"><Filter>Source Files</Filter></ClCompile>
    <ClCompile Include="..\..\librsvg\rsvg-cairo-draw.c"><Filter>Source Files</Filter></ClCompile>
    <ClCompile Include="..\..\librsvg\rsvg-cairo-render.c"><Filter>Source Files</Filter></ClCompile>
-   <ClCompile Include="..\..\librsvg\rsvg-cond.c"><Filter>Source Files</Filter></ClCompile>
    <ClCompile Include="..\..\librsvg\rsvg-css.c"><Filter>Source Files</Filter></ClCompile>
    <ClCompile Include="..\..\librsvg\rsvg-defs.c"><Filter>Source Files</Filter></ClCompile>
    <ClCompile Include="..\..\librsvg\rsvg-file-util.c"><Filter>Source Files</Filter></ClCompile>

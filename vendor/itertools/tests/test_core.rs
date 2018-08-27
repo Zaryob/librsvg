@@ -7,6 +7,7 @@
 
 #[macro_use] extern crate itertools as it;
 
+use it::flatten;
 use it::Itertools;
 use it::interleave;
 use it::multizip;
@@ -144,14 +145,14 @@ fn test_put_back() {
 
 #[test]
 fn step() {
-    it::assert_equal((0..10).step(1), (0..10));
+    it::assert_equal((0..10).step(1), 0..10);
     it::assert_equal((0..10).step(2), (0..10).filter(|x: &i32| *x % 2 == 0));
     it::assert_equal((0..10).step(10), 0..1);
 }
 
 #[test]
 fn merge() {
-    it::assert_equal((0..10).step(2).merge((1..10).step(2)), (0..10));
+    it::assert_equal((0..10).step(2).merge((1..10).step(2)), 0..10);
 }
 
 
@@ -224,7 +225,7 @@ fn flatten_clone() {
         &[1,2,3],
         &[4,5,6]
     ];
-    let flattened1 = data.into_iter().cloned().flatten();
+    let flattened1 = flatten(data.into_iter().cloned());
     let flattened2 = flattened1.clone();
 
     it::assert_equal(flattened1, &[1,2,3,4,5,6]);

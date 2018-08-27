@@ -41,12 +41,12 @@ fn parse_transform_list(s: &str) -> Result<cairo::Matrix, AttributeError> {
     let mut matrix = cairo::Matrix::identity();
 
     loop {
-        let m = parse_transform_command(&mut parser)?;
-        matrix = cairo::Matrix::multiply(&m, &matrix);
-
         if parser.is_exhausted() {
             break;
         }
+
+        let m = parse_transform_command(&mut parser)?;
+        matrix = cairo::Matrix::multiply(&m, &matrix);
 
         optional_comma(&mut parser);
     }
@@ -109,8 +109,7 @@ fn parse_matrix_args(parser: &mut Parser) -> Result<cairo::Matrix, AttributeErro
             let y0 = f64::from(p.expect_number()?);
 
             Ok(cairo::Matrix::new(xx, yx, xy, yy, x0, y0))
-        })
-        .map_err(CssParseError::<()>::basic)
+        }).map_err(CssParseError::<()>::basic)
         .map_err(AttributeError::from)
 }
 
@@ -119,14 +118,15 @@ fn parse_translate_args(parser: &mut Parser) -> Result<cairo::Matrix, AttributeE
         .parse_nested_block(|p| {
             let tx = f64::from(p.expect_number()?);
 
-            let ty = f64::from(p.try(|p| -> Result<f32, CssParseError<()>> {
-                optional_comma(p);
-                Ok(p.expect_number()?)
-            }).unwrap_or(0.0));
+            let ty = f64::from(
+                p.try(|p| -> Result<f32, CssParseError<()>> {
+                    optional_comma(p);
+                    Ok(p.expect_number()?)
+                }).unwrap_or(0.0),
+            );
 
             Ok(cairo::Matrix::new(1.0, 0.0, 0.0, 1.0, tx, ty))
-        })
-        .map_err(CssParseError::<()>::basic)
+        }).map_err(CssParseError::<()>::basic)
         .map_err(AttributeError::from)
 }
 
@@ -135,15 +135,15 @@ fn parse_scale_args(parser: &mut Parser) -> Result<cairo::Matrix, AttributeError
         .parse_nested_block(|p| {
             let x = f64::from(p.expect_number()?);
 
-            let y = p.try(|p| -> Result<f32, CssParseError<()>> {
-                optional_comma(p);
-                Ok(p.expect_number()?)
-            }).map(f64::from)
+            let y = p
+                .try(|p| -> Result<f32, CssParseError<()>> {
+                    optional_comma(p);
+                    Ok(p.expect_number()?)
+                }).map(f64::from)
                 .unwrap_or(x);
 
             Ok(cairo::Matrix::new(x, 0.0, 0.0, y, 0.0, 0.0))
-        })
-        .map_err(CssParseError::<()>::basic)
+        }).map_err(CssParseError::<()>::basic)
         .map_err(AttributeError::from)
 }
 
@@ -153,23 +153,23 @@ fn parse_rotate_args(parser: &mut Parser) -> Result<cairo::Matrix, AttributeErro
             let angle = f64::from(p.expect_number()?) * PI / 180.0;
             let (s, c) = angle.sin_cos();
 
-            let (tx, ty) = p.try(|p| -> Result<_, CssParseError<()>> {
-                optional_comma(p);
-                let tx = f64::from(p.expect_number()?);
+            let (tx, ty) = p
+                .try(|p| -> Result<_, CssParseError<()>> {
+                    optional_comma(p);
+                    let tx = f64::from(p.expect_number()?);
 
-                optional_comma(p);
-                let ty = f64::from(p.expect_number()?);
+                    optional_comma(p);
+                    let ty = f64::from(p.expect_number()?);
 
-                Ok((tx, ty))
-            }).unwrap_or((0.0, 0.0));
+                    Ok((tx, ty))
+                }).unwrap_or((0.0, 0.0));
 
             let mut m = cairo::Matrix::new(1.0, 0.0, 0.0, 1.0, tx, ty);
 
             m = cairo::Matrix::multiply(&cairo::Matrix::new(c, s, -s, c, 0.0, 0.0), &m);
             m = cairo::Matrix::multiply(&cairo::Matrix::new(1.0, 0.0, 0.0, 1.0, -tx, -ty), &m);
             Ok(m)
-        })
-        .map_err(CssParseError::<()>::basic)
+        }).map_err(CssParseError::<()>::basic)
         .map_err(AttributeError::from)
 }
 
@@ -178,8 +178,7 @@ fn parse_skewx_args(parser: &mut Parser) -> Result<cairo::Matrix, AttributeError
         .parse_nested_block(|p| {
             let a = f64::from(p.expect_number()?) * PI / 180.0;
             Ok(cairo::Matrix::new(1.0, 0.0, a.tan(), 1.0, 0.0, 0.0))
-        })
-        .map_err(CssParseError::<()>::basic)
+        }).map_err(CssParseError::<()>::basic)
         .map_err(AttributeError::from)
 }
 
@@ -188,8 +187,7 @@ fn parse_skewy_args(parser: &mut Parser) -> Result<cairo::Matrix, AttributeError
         .parse_nested_block(|p| {
             let a = f64::from(p.expect_number()?) * PI / 180.0;
             Ok(cairo::Matrix::new(1.0, a.tan(), 0.0, 1.0, 0.0, 0.0))
-        })
-        .map_err(CssParseError::<()>::basic)
+        }).map_err(CssParseError::<()>::basic)
         .map_err(AttributeError::from)
 }
 
@@ -417,5 +415,10 @@ mod parser_tests {
             parse_transform("translate(20, 30), scale (10) rotate (30 10 10)").unwrap(),
             cairo::Matrix::multiply(&r, &a)
         );
+    }
+
+    #[test]
+    fn parses_empty() {
+        assert_eq!(parse_transform("").unwrap(), cairo::Matrix::identity());
     }
 }

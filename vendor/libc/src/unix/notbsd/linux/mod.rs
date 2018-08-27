@@ -463,6 +463,32 @@ s! {
         pub mnt_freq: ::c_int,
         pub mnt_passno: ::c_int,
     }
+
+    pub struct posix_spawn_file_actions_t {
+        __allocated: ::c_int,
+        __used: ::c_int,
+        __actions: *mut ::c_int,
+        __pad: [::c_int; 16],
+    }
+
+    pub struct posix_spawnattr_t {
+        __flags: ::c_short,
+        __pgrp: ::pid_t,
+        __sd: ::sigset_t,
+        __ss: ::sigset_t,
+        #[cfg(target_env = "musl")]
+        __prio: ::c_int,
+        #[cfg(not(target_env = "musl"))]
+        __sp: ::sched_param,
+        __policy: ::c_int,
+        __pad: [::c_int; 16],
+    }
+
+    pub struct genlmsghdr {
+        cmd: u8,
+        version: u8,
+        reserved: u16,
+    }
 }
 
 pub const ABDAY_1: ::nl_item = 0x20000;
@@ -736,16 +762,15 @@ pub const IFF_DORMANT: ::c_int = 0x20000;
 pub const IFF_ECHO: ::c_int = 0x40000;
 
 // linux/if_tun.h
+pub const IFF_TUN: ::c_short = 0x0001;
+pub const IFF_TAP: ::c_short = 0x0002;
+pub const IFF_NO_PI: ::c_short = 0x1000;
 // Read queue size
 pub const TUN_READQ_SIZE: ::c_short = 500;
 // TUN device type flags: deprecated. Use IFF_TUN/IFF_TAP instead.
-pub const TUN_TUN_DEV: ::c_short   = IFF_TUN;
-pub const TUN_TAP_DEV: ::c_short   = IFF_TAP;
+pub const TUN_TUN_DEV: ::c_short   = ::IFF_TUN;
+pub const TUN_TAP_DEV: ::c_short   = ::IFF_TAP;
 pub const TUN_TYPE_MASK: ::c_short = 0x000f;
-// TUNSETIFF ifr flags
-pub const IFF_TUN: ::c_short        = 0x0001;
-pub const IFF_TAP: ::c_short        = 0x0002;
-pub const IFF_NO_PI: ::c_short      = 0x1000;
 // This flag has no real effect
 pub const IFF_ONE_QUEUE: ::c_short    = 0x2000;
 pub const IFF_VNET_HDR: ::c_short     = 0x4000;
@@ -1238,6 +1263,137 @@ pub const ETH_P_PHONET: ::c_int = 0x00F5;
 pub const ETH_P_IEEE802154: ::c_int = 0x00F6;
 pub const ETH_P_CAIF: ::c_int = 0x00F7;
 
+pub const POSIX_SPAWN_RESETIDS: ::c_int = 0x01;
+pub const POSIX_SPAWN_SETPGROUP: ::c_int = 0x02;
+pub const POSIX_SPAWN_SETSIGDEF: ::c_int = 0x04;
+pub const POSIX_SPAWN_SETSIGMASK: ::c_int = 0x08;
+pub const POSIX_SPAWN_SETSCHEDPARAM: ::c_int = 0x10;
+pub const POSIX_SPAWN_SETSCHEDULER: ::c_int = 0x20;
+
+pub const NLMSG_NOOP: ::c_int = 0x1;
+pub const NLMSG_ERROR: ::c_int = 0x2;
+pub const NLMSG_DONE: ::c_int = 0x3;
+pub const NLMSG_OVERRUN: ::c_int = 0x4;
+pub const NLMSG_MIN_TYPE: ::c_int = 0x10;
+
+pub const GENL_NAMSIZ: ::c_int = 16;
+
+pub const GENL_MIN_ID: ::c_int = NLMSG_MIN_TYPE;
+pub const GENL_MAX_ID: ::c_int = 1023;
+
+pub const GENL_ADMIN_PERM: ::c_int = 0x01;
+pub const GENL_CMD_CAP_DO: ::c_int = 0x02;
+pub const GENL_CMD_CAP_DUMP: ::c_int = 0x04;
+pub const GENL_CMD_CAP_HASPOL: ::c_int = 0x08;
+
+pub const GENL_ID_CTRL: ::c_int = NLMSG_MIN_TYPE;
+
+pub const CTRL_CMD_UNSPEC: ::c_int = 0;
+pub const CTRL_CMD_NEWFAMILY: ::c_int = 1;
+pub const CTRL_CMD_DELFAMILY: ::c_int = 2;
+pub const CTRL_CMD_GETFAMILY: ::c_int = 3;
+pub const CTRL_CMD_NEWOPS: ::c_int = 4;
+pub const CTRL_CMD_DELOPS: ::c_int = 5;
+pub const CTRL_CMD_GETOPS: ::c_int = 6;
+pub const CTRL_CMD_NEWMCAST_GRP: ::c_int = 7;
+pub const CTRL_CMD_DELMCAST_GRP: ::c_int = 8;
+pub const CTRL_CMD_GETMCAST_GRP: ::c_int = 9;
+
+pub const CTRL_ATTR_UNSPEC: ::c_int = 0;
+pub const CTRL_ATTR_FAMILY_ID: ::c_int = 1;
+pub const CTRL_ATTR_FAMILY_NAME: ::c_int = 2;
+pub const CTRL_ATTR_VERSION: ::c_int = 3;
+pub const CTRL_ATTR_HDRSIZE: ::c_int = 4;
+pub const CTRL_ATTR_MAXATTR: ::c_int = 5;
+pub const CTRL_ATTR_OPS: ::c_int = 6;
+pub const CTRL_ATTR_MCAST_GROUPS: ::c_int = 7;
+
+pub const CTRL_ATTR_OP_UNSPEC: ::c_int = 0;
+pub const CTRL_ATTR_OP_ID: ::c_int = 1;
+pub const CTRL_ATTR_OP_FLAGS: ::c_int = 2;
+
+pub const CTRL_ATTR_MCAST_GRP_UNSPEC: ::c_int = 0;
+pub const CTRL_ATTR_MCAST_GRP_NAME: ::c_int = 1;
+pub const CTRL_ATTR_MCAST_GRP_ID: ::c_int = 2;
+
+// linux/netfilter.h
+pub const NF_DROP: ::c_int = 0;
+pub const NF_ACCEPT: ::c_int =  1;
+pub const NF_STOLEN: ::c_int =  2;
+pub const NF_QUEUE: ::c_int =  3;
+pub const NF_REPEAT: ::c_int =  4;
+pub const NF_STOP: ::c_int =  5;
+pub const NF_MAX_VERDICT: ::c_int = NF_STOP;
+
+pub const NF_VERDICT_MASK: ::c_int = 0x000000ff;
+pub const NF_VERDICT_FLAG_QUEUE_BYPASS: ::c_int = 0x00008000;
+
+pub const NF_VERDICT_QMASK: ::c_int = 0xffff0000;
+pub const NF_VERDICT_QBITS: ::c_int = 16;
+
+pub const NF_VERDICT_BITS: ::c_int = 16;
+
+pub const NF_INET_PRE_ROUTING: ::c_int = 0;
+pub const NF_INET_LOCAL_IN: ::c_int = 1;
+pub const NF_INET_FORWARD: ::c_int = 2;
+pub const NF_INET_LOCAL_OUT: ::c_int = 3;
+pub const NF_INET_POST_ROUTING: ::c_int = 4;
+pub const NF_INET_NUMHOOKS: ::c_int = 5;
+
+// Some NFPROTO are not compatible with musl and are defined in submodules.
+pub const NFPROTO_UNSPEC: ::c_int = 0;
+pub const NFPROTO_IPV4: ::c_int = 2;
+pub const NFPROTO_ARP: ::c_int = 3;
+pub const NFPROTO_BRIDGE: ::c_int = 7;
+pub const NFPROTO_IPV6: ::c_int = 10;
+pub const NFPROTO_DECNET: ::c_int = 12;
+pub const NFPROTO_NUMPROTO: ::c_int = 13;
+
+// linux/netfilter_ipv4.h
+pub const NF_IP_PRE_ROUTING: ::c_int = 0;
+pub const NF_IP_LOCAL_IN: ::c_int = 1;
+pub const NF_IP_FORWARD: ::c_int = 2;
+pub const NF_IP_LOCAL_OUT: ::c_int = 3;
+pub const NF_IP_POST_ROUTING: ::c_int = 4;
+pub const NF_IP_NUMHOOKS: ::c_int = 5;
+
+pub const NF_IP_PRI_FIRST: ::c_int = ::INT_MIN;
+pub const NF_IP_PRI_CONNTRACK_DEFRAG: ::c_int = -400;
+pub const NF_IP_PRI_RAW: ::c_int = -300;
+pub const NF_IP_PRI_SELINUX_FIRST: ::c_int = -225;
+pub const NF_IP_PRI_CONNTRACK: ::c_int = -200;
+pub const NF_IP_PRI_MANGLE: ::c_int = -150;
+pub const NF_IP_PRI_NAT_DST: ::c_int = -100;
+pub const NF_IP_PRI_FILTER: ::c_int = 0;
+pub const NF_IP_PRI_SECURITY: ::c_int = 50;
+pub const NF_IP_PRI_NAT_SRC: ::c_int = 100;
+pub const NF_IP_PRI_SELINUX_LAST: ::c_int = 225;
+pub const NF_IP_PRI_CONNTRACK_HELPER: ::c_int = 300;
+pub const NF_IP_PRI_CONNTRACK_CONFIRM: ::c_int = ::INT_MAX;
+pub const NF_IP_PRI_LAST: ::c_int = ::INT_MAX;
+
+// linux/netfilter_ipv6.h
+pub const NF_IP6_PRE_ROUTING: ::c_int = 0;
+pub const NF_IP6_LOCAL_IN: ::c_int = 1;
+pub const NF_IP6_FORWARD: ::c_int = 2;
+pub const NF_IP6_LOCAL_OUT: ::c_int = 3;
+pub const NF_IP6_POST_ROUTING: ::c_int = 4;
+pub const NF_IP6_NUMHOOKS: ::c_int = 5;
+
+pub const NF_IP6_PRI_FIRST: ::c_int = ::INT_MIN;
+pub const NF_IP6_PRI_CONNTRACK_DEFRAG: ::c_int = -400;
+pub const NF_IP6_PRI_RAW: ::c_int = -300;
+pub const NF_IP6_PRI_SELINUX_FIRST: ::c_int = -225;
+pub const NF_IP6_PRI_CONNTRACK: ::c_int = -200;
+pub const NF_IP6_PRI_MANGLE: ::c_int = -150;
+pub const NF_IP6_PRI_NAT_DST: ::c_int = -100;
+pub const NF_IP6_PRI_FILTER: ::c_int = 0;
+pub const NF_IP6_PRI_SECURITY: ::c_int = 50;
+pub const NF_IP6_PRI_NAT_SRC: ::c_int = 100;
+pub const NF_IP6_PRI_SELINUX_LAST: ::c_int = 225;
+pub const NF_IP6_PRI_CONNTRACK_HELPER: ::c_int = 300;
+pub const NF_IP6_PRI_LAST: ::c_int = ::INT_MAX;
+
 f! {
     pub fn CPU_ZERO(cpuset: &mut cpu_set_t) -> () {
         for slot in cpuset.bits.iter_mut() {
@@ -1312,9 +1468,13 @@ extern {
     pub fn setpwent();
     pub fn endpwent();
     pub fn getpwent() -> *mut passwd;
+    pub fn setgrent();
+    pub fn endgrent();
+    pub fn getgrent() -> *mut ::group;
     pub fn setspent();
     pub fn endspent();
     pub fn getspent() -> *mut spwd;
+
     pub fn getspnam(__name: *const ::c_char) -> *mut spwd;
 
     pub fn shm_open(name: *const c_char, oflag: ::c_int,
@@ -1481,7 +1641,6 @@ extern {
                            nbytes: ::off64_t, flags: ::c_uint) -> ::c_int;
     pub fn getifaddrs(ifap: *mut *mut ::ifaddrs) -> ::c_int;
     pub fn freeifaddrs(ifa: *mut ::ifaddrs);
-
     pub fn mremap(addr: *mut ::c_void,
                   len: ::size_t,
                   new_len: ::size_t,
@@ -1507,7 +1666,8 @@ extern {
                   -> ::c_int;
 
     pub fn msync(addr: *mut ::c_void, len: ::size_t, flags: ::c_int) -> ::c_int;
-
+    pub fn remap_file_pages(addr: *mut ::c_void, size: ::size_t, prot: ::c_int,
+                            pgoff: ::size_t, flags: ::c_int) -> ::c_int;
     pub fn recvfrom(socket: ::c_int, buf: *mut ::c_void, len: ::size_t,
                     flags: ::c_int, addr: *mut ::sockaddr,
                     addrlen: *mut ::socklen_t) -> ::ssize_t;
@@ -1711,6 +1871,72 @@ extern {
     pub fn endmntent(streamp: *mut ::FILE) -> ::c_int;
     pub fn hasmntopt(mnt: *const ::mntent,
                      opt: *const ::c_char) -> *mut ::c_char;
+
+    pub fn posix_spawn(pid: *mut ::pid_t,
+                       path: *const ::c_char,
+                       file_actions: *const ::posix_spawn_file_actions_t,
+                       attrp: *const ::posix_spawnattr_t,
+                       argv: *const *mut ::c_char,
+                       envp: *const *mut ::c_char) -> ::c_int;
+    pub fn posix_spawnp(pid: *mut ::pid_t,
+                       file: *const ::c_char,
+                        file_actions: *const ::posix_spawn_file_actions_t,
+                        attrp: *const ::posix_spawnattr_t,
+                        argv: *const *mut ::c_char,
+                        envp: *const *mut ::c_char) -> ::c_int;
+    pub fn posix_spawnattr_init(attr: *mut posix_spawnattr_t) -> ::c_int;
+    pub fn posix_spawnattr_destroy(attr: *mut posix_spawnattr_t) -> ::c_int;
+    pub fn posix_spawnattr_getsigdefault(attr: *const posix_spawnattr_t,
+                                         default: *mut ::sigset_t) -> ::c_int;
+    pub fn posix_spawnattr_setsigdefault(attr: *mut posix_spawnattr_t,
+                                         default: *const ::sigset_t) -> ::c_int;
+    pub fn posix_spawnattr_getsigmask(attr: *const posix_spawnattr_t,
+                                      default: *mut ::sigset_t) -> ::c_int;
+    pub fn posix_spawnattr_setsigmask(attr: *mut posix_spawnattr_t,
+                                      default: *const ::sigset_t) -> ::c_int;
+    pub fn posix_spawnattr_getflags(attr: *const posix_spawnattr_t,
+                                    flags: *mut ::c_short) -> ::c_int;
+    pub fn posix_spawnattr_setflags(attr: *mut posix_spawnattr_t,
+                                    flags: ::c_short) -> ::c_int;
+    pub fn posix_spawnattr_getpgroup(attr: *const posix_spawnattr_t,
+                                     flags: *mut ::pid_t) -> ::c_int;
+    pub fn posix_spawnattr_setpgroup(attr: *mut posix_spawnattr_t,
+                                     flags: ::pid_t) -> ::c_int;
+    pub fn posix_spawnattr_getschedpolicy(attr: *const posix_spawnattr_t,
+                                          flags: *mut ::c_int) -> ::c_int;
+    pub fn posix_spawnattr_setschedpolicy(attr: *mut posix_spawnattr_t,
+                                          flags: ::c_int) -> ::c_int;
+    pub fn posix_spawnattr_getschedparam(
+        attr: *const posix_spawnattr_t,
+        param: *mut ::sched_param,
+    ) -> ::c_int;
+    pub fn posix_spawnattr_setschedparam(
+        attr: *mut posix_spawnattr_t,
+        param: *const ::sched_param,
+    ) -> ::c_int;
+
+    pub fn posix_spawn_file_actions_init(
+        actions: *mut posix_spawn_file_actions_t,
+    ) -> ::c_int;
+    pub fn posix_spawn_file_actions_destroy(
+        actions: *mut posix_spawn_file_actions_t,
+    ) -> ::c_int;
+    pub fn posix_spawn_file_actions_addopen(
+        actions: *mut posix_spawn_file_actions_t,
+        fd: ::c_int,
+        path: *const ::c_char,
+        oflag: ::c_int,
+        mode: ::mode_t,
+    ) -> ::c_int;
+    pub fn posix_spawn_file_actions_addclose(
+        actions: *mut posix_spawn_file_actions_t,
+        fd: ::c_int,
+    ) -> ::c_int;
+    pub fn posix_spawn_file_actions_adddup2(
+        actions: *mut posix_spawn_file_actions_t,
+        fd: ::c_int,
+        newfd: ::c_int,
+    ) -> ::c_int;
 }
 
 cfg_if! {

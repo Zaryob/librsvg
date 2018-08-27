@@ -12,9 +12,9 @@
 
 [package]
 name = "dtoa-short"
-version = "0.3.1"
+version = "0.3.2"
 authors = ["Xidorn Quan <me@upsuper.org>"]
-include = ["src/*.rs", "Cargo.toml"]
+include = ["src/*.rs", "Cargo.toml", "LICENSE"]
 description = "Serialize float number and truncate to certain precision"
 keywords = ["float"]
 categories = ["value-formatting"]
@@ -23,7 +23,7 @@ repository = "https://github.com/upsuper/dtoa-short"
 [dependencies.dtoa]
 version = "0.4.1"
 [dev-dependencies.float-cmp]
-version = "0.2.3"
+version = "0.3"
 [badges.codecov]
 repository = "upsuper/dtoa-short"
 

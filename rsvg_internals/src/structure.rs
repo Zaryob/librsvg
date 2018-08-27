@@ -10,12 +10,13 @@ use aspect_ratio::*;
 use attributes::Attribute;
 use drawing_ctx;
 use drawing_ctx::RsvgDrawingCtx;
+use float_eq_cairo::ApproxEqCairo;
 use handle::RsvgHandle;
 use length::*;
 use node::*;
 use parsers::{parse, Parse};
 use property_bag::{OwnedPropertyBag, PropertyBag};
-use util::*;
+use state;
 use viewbox::*;
 use viewport::{draw_in_viewport, ClipMode};
 
@@ -84,19 +85,17 @@ impl NodeTrait for NodeSwitch {
 
         drawing_ctx::push_discrete_layer(draw_ctx);
 
-        node.foreach_child(|child| {
-            if drawing_ctx::state_get_cond_true(child.get_state()) {
+        for child in node.children() {
+            if state::get_cond_true(child.get_state()) {
                 let boxed_child = box_node(child.clone());
 
                 drawing_ctx::draw_node_from_stack(draw_ctx, boxed_child, 0);
 
                 rsvg_node_unref(boxed_child);
 
-                false // just draw this child
-            } else {
-                true
+                break; // just draw this child
             }
-        });
+        }
 
         drawing_ctx::pop_discrete_layer(draw_ctx);
     }
@@ -192,7 +191,7 @@ impl NodeTrait for NodeSvg {
         drawing_ctx::state_reinherit_top(draw_ctx, node.get_state(), dominate);
 
         let state = drawing_ctx::get_current_state(draw_ctx);
-        let do_clip = !drawing_ctx::state_is_overflow(state) && node.get_parent().is_some();
+        let do_clip = !state::is_overflow(state) && node.get_parent().is_some();
 
         draw_in_viewport(
             nx,
@@ -248,18 +247,22 @@ impl NodeTrait for NodeUse {
                 Attribute::X => self.x.set(parse("x", value, LengthDir::Horizontal, None)?),
                 Attribute::Y => self.y.set(parse("y", value, LengthDir::Vertical, None)?),
 
-                Attribute::Width => self.w.set(parse(
-                    "width",
-                    value,
-                    LengthDir::Horizontal,
-                    Some(RsvgLength::check_nonnegative),
-                ).map(Some)?),
-                Attribute::Height => self.h.set(parse(
-                    "height",
-                    value,
-                    LengthDir::Vertical,
-                    Some(RsvgLength::check_nonnegative),
-                ).map(Some)?),
+                Attribute::Width => self.w.set(
+                    parse(
+                        "width",
+                        value,
+                        LengthDir::Horizontal,
+                        Some(RsvgLength::check_nonnegative),
+                    ).map(Some)?,
+                ),
+                Attribute::Height => self.h.set(
+                    parse(
+                        "height",
+                        value,
+                        LengthDir::Vertical,
+                        Some(RsvgLength::check_nonnegative),
+                    ).map(Some)?,
+                ),
 
                 _ => (),
             }
@@ -275,17 +278,20 @@ impl NodeTrait for NodeUse {
             return;
         }
 
-        let raw_child = drawing_ctx::acquire_node(draw_ctx, link.as_ref().unwrap());
-        if raw_child.is_null() {
+        let child = if let Some(acquired) =
+            drawing_ctx::get_acquired_node(draw_ctx, link.as_ref().unwrap())
+        {
+            acquired.get()
+        } else {
+            return;
+        };
+
+        if Node::is_ancestor(node.clone(), child.clone()) {
+            // or, if we're <use>'ing ourselves
             return;
         }
 
-        let child: &RsvgNode = unsafe { &*raw_child };
-        if Node::is_ancestor(node.clone(), child.clone()) {
-            // or, if we're <use>'ing ourselves
-            drawing_ctx::release_node(draw_ctx, raw_child);
-            return;
-        }
+        drawing_ctx::increase_num_elements_rendered_through_use(draw_ctx);
 
         let nx = self.x.get().normalize(draw_ctx);
         let ny = self.y.get().normalize(draw_ctx);
@@ -295,19 +301,20 @@ impl NodeTrait for NodeUse {
         // From https://www.w3.org/TR/SVG/struct.html#UseElement in
         // "If the ‘use’ element references a ‘symbol’ element"
 
-        let nw = self.w
+        let nw = self
+            .w
             .get()
             .unwrap_or_else(|| RsvgLength::parse("100%", LengthDir::Horizontal).unwrap())
             .normalize(draw_ctx);
-        let nh = self.h
+        let nh = self
+            .h
             .get()
             .unwrap_or_else(|| RsvgLength::parse("100%", LengthDir::Vertical).unwrap())
             .normalize(draw_ctx);
 
         // width or height set to 0 disables rendering of the element
         // https://www.w3.org/TR/SVG/struct.html#UseElementWidthAttribute
-        if double_equals(nw, 0.0) || double_equals(nh, 0.0) {
-            drawing_ctx::release_node(draw_ctx, raw_child);
+        if nw.approx_eq_cairo(&0.0) || nh.approx_eq_cairo(&0.0) {
             return;
         }
 
@@ -326,13 +333,11 @@ impl NodeTrait for NodeUse {
             drawing_ctx::draw_node_from_stack(draw_ctx, boxed_child, 1);
             rsvg_node_unref(boxed_child);
 
-            drawing_ctx::release_node(draw_ctx, raw_child);
             drawing_ctx::pop_discrete_layer(draw_ctx);
         } else {
             child.with_impl(|symbol: &NodeSymbol| {
-                let do_clip = !drawing_ctx::state_is_overflow(state)
-                    || (!drawing_ctx::state_has_overflow(state)
-                        && drawing_ctx::state_is_overflow(child.get_state()));
+                let do_clip = !state::is_overflow(state)
+                    || (!state::has_overflow(state) && state::is_overflow(child.get_state()));
 
                 draw_in_viewport(
                     nx,
@@ -352,8 +357,6 @@ impl NodeTrait for NodeUse {
                     },
                 );
             });
-
-            drawing_ctx::release_node(draw_ctx, raw_child);
         }
     }
 
