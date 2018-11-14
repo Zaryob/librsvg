@@ -2,7 +2,7 @@
 #
 # Modifications should be made to debian/control.in instead.
 # This file is regenerated automatically in the clean target.
-Source: librsvg
+Source: librsvg-c
 Section: libs
 Priority: optional
 Maintainer: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>
@@ -25,12 +25,12 @@ Build-Depends: debhelper (>= 11),
 Rules-Requires-Root: no
 Standards-Version: 4.2.1
 Homepage: https://wiki.gnome.org/Projects/LibRsvg
-Vcs-Git: https://salsa.debian.org/gnome-team/librsvg.git
-Vcs-Browser: https://salsa.debian.org/gnome-team/librsvg
+Vcs-Git: https://salsa.debian.org/gnome-team/librsvg-c.git
+Vcs-Browser: https://salsa.debian.org/gnome-team/librsvg-c
 
 Package: librsvg2-dev
 Section: libdevel
-Architecture: any
+Architecture: alpha hppa hurd-i386 ia64 kfreebsd-amd64 kfreebsd-i386 m68k powerpc riscv64 sh4 x32
 Depends: ${misc:Depends},
          librsvg2-2 (= ${binary:Version}),
          librsvg2-common (= ${binary:Version}),
@@ -48,7 +48,7 @@ Description: SAX-based renderer library for SVG files (development)
  files to allow you to develop with librsvg.
 
 Package: librsvg2-2
-Architecture: any
+Architecture: alpha hppa hurd-i386 ia64 kfreebsd-amd64 kfreebsd-i386 m68k powerpc riscv64 sh4 x32
 Depends: ${misc:Depends},
          ${shlibs:Depends}
 Recommends: librsvg2-common
@@ -62,7 +62,7 @@ Description: SAX-based renderer library for SVG files (runtime)
  applications using librsvg.
 
 Package: librsvg2-common
-Architecture: any
+Architecture: alpha hppa hurd-i386 ia64 kfreebsd-amd64 kfreebsd-i386 m68k powerpc riscv64 sh4 x32
 Depends: ${misc:Depends},
          ${shlibs:Depends},
          librsvg2-2 (= ${binary:Version})
@@ -88,7 +88,7 @@ Description: SAX-based renderer library for SVG files (documentation)
 
 Package: librsvg2-bin
 Section: graphics
-Architecture: any
+Architecture: alpha hppa hurd-i386 ia64 kfreebsd-amd64 kfreebsd-i386 m68k powerpc riscv64 sh4 x32
 Depends: ${misc:Depends},
          ${shlibs:Depends},
          librsvg2-2 (>= ${binary:Version})
@@ -102,7 +102,7 @@ Description: command-line and graphical viewers for SVG files
 
 Package: gir1.2-rsvg-2.0
 Section: introspection
-Architecture: any
+Architecture: alpha hppa hurd-i386 ia64 kfreebsd-amd64 kfreebsd-i386 m68k powerpc riscv64 sh4 x32
 Depends: ${misc:Depends},
          ${shlibs:Depends},
          ${gir:Depends}
