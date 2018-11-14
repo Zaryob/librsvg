@@ -12,11 +12,8 @@ Build-Depends: debhelper (>= 11),
                libgtk-3-dev (>= 3.2.0) <!stage1>,
                gnome-pkg-tools (>= 0.10),
                libcroco3-dev (>= 0.6.1),
-               gtk-doc-tools (>= 1.13),
                gobject-introspection (>= 0.10.8),
                libgirepository1.0-dev (>= 0.10.8),
-               libglib2.0-doc,
-               libcairo2-doc,
                valac (>= 0.17.5)
 Rules-Requires-Root: no
 Standards-Version: 4.2.1
@@ -69,18 +66,6 @@ Description: SAX-based renderer library for SVG files (extra runtime)
  .
  This package includes the gdk-pixbuf loader allowing
  to load SVG images transparently inside GTK+ applications.
-
-Package: librsvg2-doc
-Section: doc
-Architecture: all
-Multi-Arch: foreign
-Depends: ${misc:Depends}
-Suggests: devhelp
-Description: SAX-based renderer library for SVG files (documentation)
- The rsvg library is an efficient renderer for Scalable Vector Graphics
- (SVG) pictures.
- .
- This package provides the API documentation.
 
 Package: librsvg2-bin
 Section: graphics

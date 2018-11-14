@@ -1,5 +1,4 @@
 #!/usr/bin/make -f
--include /usr/share/gnome-pkg-tools/1/rules/gnome-get-source.mk
 
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 export DEB_LDFLAGS_MAINT_APPEND = -Wl,-z,defs -Wl,--as-needed
@@ -16,7 +15,7 @@ override_dh_auto_configure:
 		--enable-pixbuf-loader \
 		--enable-introspection \
 		--enable-vala \
-		--enable-gtk-doc \
+		--disable-gtk-doc \
 		GDK_PIXBUF_QUERYLOADERS=/usr/lib/$(DEB_HOST_MULTIARCH)/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders \
 		$(NULL)
 
@@ -34,7 +33,7 @@ override_dh_installchangelogs:
 	dh_installchangelogs -XChangeLog
 
 override_dh_missing:
-	dh_missing --fail-missing
+	dh_missing --fail-missing -Xusr/share/gtk-doc
 
 override_dh_clean:
 	dh_clean
