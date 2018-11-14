@@ -2,6 +2,7 @@ librsvg-c (2.40.20-4) UNRELEASED; urgency=medium
 
   * Re-introduce the last version of librsvg built before the
     Rust dependency. This source package is now named librsvg-c.
+    (Closes: #913766)
   * Only build binary packages for the ports where the newer
     librsvg isn't built yet.
 
