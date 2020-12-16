@@ -131,17 +131,22 @@ AC_CHECK_FUNCS(strtok_r)
 # GTK
 # ===========================================================================
 
-PKG_CHECK_MODULES([GTK3],[gtk+-3.0 >= $GTK3_REQUIRED],[have_gtk_3=yes],[have_gtk_3=no])
-
 GTK3_BINARY_VERSION=
 
-if test "$have_gtk_3" = "yes"; then
-    GTK3_BINARY_VERSION="`$PKG_CONFIG --variable=gtk_binary_version gtk+-3.0`"
+AC_MSG_CHECKING([whether to use GTK+ 3])
+AC_ARG_WITH([gtk3],
+  [AS_HELP_STRING([--without-gtk3],[Don't build GTK+3 tools (default=auto)])],
+  [],[PKG_CHECK_EXISTS([gtk+-3.0 >= $GTK3_REQUIRED],[with_gtk3=yes],[with_gtk3=no])])
+AC_MSG_RESULT([$with_gtk3])
+
+if test "$with_gtk3" = "yes"; then
+  PKG_CHECK_MODULES(GTK3, [gtk+-3.0 >= $GTK3_REQUIRED])
+  GTK3_BINARY_VERSION="`$PKG_CONFIG --variable=gtk_binary_version gtk+-3.0`"
 fi
 
 AC_SUBST([GTK3_BINARY_VERSION])
 
-AM_CONDITIONAL([HAVE_GTK_3],[test "$have_gtk_3" = "yes"])
+AM_CONDITIONAL([HAVE_GTK_3],[test "$with_gtk3" = "yes"])
 
 dnl ===========================================================================
 dnl GDK-Pixbuf SVG loader
@@ -327,6 +332,6 @@ librsvg-$VERSION
 	Build introspectable bindings:  ${found_introspection}
 	Build Vala bindings:            ${enable_vala}
 	Build GdkPixbuf loader:         ${enable_pixbuf_loader}
-        GTK+ $GTK3_REQUIRED or later:           ${have_gtk_3}
+        GTK 3.0:                        ${with_gtk3}
 	Build miscellaneous tools:      ${build_misc_tools}
 "
